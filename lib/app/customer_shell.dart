@@ -4,6 +4,7 @@ import '../dashboard/presentation/customer_dashboard_page.dart';
 import '../contexts/profiles_management/infrastructure/in_memory_commercial_client_profile_repository.dart';
 import '../contexts/profiles_management/presentation/customer_profile_page.dart';
 import '../contexts/order_management/presentation/customer_catalog_page.dart';
+import '../contexts/order_management/presentation/customer_orders_page.dart';
 import 'feature_placeholder_page.dart';
 
 /// App-level navigation only. Business logic remains in the bounded contexts.
@@ -44,8 +45,7 @@ class _CustomerShellState extends State<CustomerShell> {
         onPayments: _openPayment,
       ),
       CustomerCatalogPage(onOrderCreated: () => _navigateTo(2)),
-      const FeaturePlaceholderPage(
-          title: 'My orders', boundedContext: 'Order Management'),
+      CustomerOrdersPage(onNewOrder: () => _navigateTo(1)),
       const FeaturePlaceholderPage(
           title: 'Tracking', boundedContext: 'Logistics and Monitoring'),
       CustomerProfilePage(
