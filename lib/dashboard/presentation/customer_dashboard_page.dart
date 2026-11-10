@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../app/fruitlogix_theme.dart';
 
-/// Initial customer dashboard adapted from the previous FruitLogix web app.
-/// All numbers shown here are DEMO values, not live backend responses.
+
 class CustomerDashboardPage extends StatelessWidget {
   const CustomerDashboardPage({
     required this.customerName,
@@ -26,7 +25,7 @@ class CustomerDashboardPage extends StatelessWidget {
         const Row(children: [
           Icon(Icons.circle, size: 10, color: Color(0xFF36C77D)),
           SizedBox(width: 8),
-          Text('DEMO DATA',
+          Text('YOUR DASHBOARD',
               style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
         ]),
         const SizedBox(height: 12),

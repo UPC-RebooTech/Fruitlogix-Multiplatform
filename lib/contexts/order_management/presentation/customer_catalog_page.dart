@@ -101,7 +101,7 @@ class _CustomerCatalogPageState extends State<CustomerCatalogPage> {
                 deliveryDate: chosenDate!,
                 ));
               },
-              child: const Text('Place demo order'),
+              child: const Text('Save order'),
             ),
           ],
         ),
