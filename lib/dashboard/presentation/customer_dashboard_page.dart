@@ -6,12 +6,14 @@ import '../../app/fruitlogix_theme.dart';
 /// All numbers shown here are DEMO values, not live backend responses.
 class CustomerDashboardPage extends StatelessWidget {
   const CustomerDashboardPage({
+    required this.customerName,
     required this.onNewOrder,
     required this.onTrack,
     required this.onPayments,
     super.key,
   });
 
+  final String customerName;
   final VoidCallback onNewOrder;
   final VoidCallback onTrack;
   final VoidCallback onPayments;
@@ -28,8 +30,8 @@ class CustomerDashboardPage extends StatelessWidget {
               style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
         ]),
         const SizedBox(height: 12),
-        const Text('Welcome, Carlos',
-            style: TextStyle(
+        Text('Welcome, $customerName',
+            style: const TextStyle(
               fontWeight: FontWeight.w800,
               fontSize: 29,
               color: FruitLogixPalette.forest,

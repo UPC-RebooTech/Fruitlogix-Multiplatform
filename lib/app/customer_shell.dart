@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../dashboard/presentation/customer_dashboard_page.dart';
+import '../contexts/profiles_management/infrastructure/in_memory_commercial_client_profile_repository.dart';
+import '../contexts/profiles_management/presentation/customer_profile_page.dart';
 import 'feature_placeholder_page.dart';
 
+/// App-level navigation only. A screen is not automatically a bounded context.
 class CustomerShell extends StatefulWidget {
   const CustomerShell({super.key});
 
@@ -12,6 +15,7 @@ class CustomerShell extends StatefulWidget {
 
 class _CustomerShellState extends State<CustomerShell> {
   int _selected = 0;
+  final _profileRepository = InMemoryCommercialClientProfileRepository();
 
   void _navigateTo(int index) {
     setState(() => _selected = index);
@@ -33,6 +37,7 @@ class _CustomerShellState extends State<CustomerShell> {
   Widget build(BuildContext context) {
     final pages = <Widget>[
       CustomerDashboardPage(
+        customerName: _profileRepository.current.firstName,
         onNewOrder: () => _navigateTo(1),
         onTrack: () => _navigateTo(3),
         onPayments: _openPayment,
@@ -43,8 +48,10 @@ class _CustomerShellState extends State<CustomerShell> {
           title: 'My orders', boundedContext: 'Order Management'),
       const FeaturePlaceholderPage(
           title: 'Tracking', boundedContext: 'Logistics and Monitoring'),
-      const FeaturePlaceholderPage(
-          title: 'Profile', boundedContext: 'Profiles Management'),
+      CustomerProfilePage(
+        repository: _profileRepository,
+        onSaved: () => setState(() {}),
+      ),
     ];
     return Scaffold(
       appBar: AppBar(
