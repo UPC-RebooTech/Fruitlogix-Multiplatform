@@ -31,79 +31,100 @@ class _CustomerCatalogPageState extends State<CustomerCatalogPage> {
     super.dispose();
   }
 
+
   Future<void> _reviewOrder() async {
-    final addressController = TextEditingController();
+    String address = '';
     DateTime? chosenDate;
-    try {
-      await showDialog<void>(
-        context: context,
-        builder: (dialogContext) => StatefulBuilder(
-          builder: (dialogContext, updateDialog) => AlertDialog(
-            title: const Text('Confirm order'),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('${_cart.itemCount} kg · S/ ${_cart.total.toStringAsFixed(2)}'),
-                  const SizedBox(height: 14),
-                  TextField(
-                    controller: addressController,
-                    onChanged: (_) => updateDialog(() {}),
-                    decoration: const InputDecoration(
-                      labelText: 'Delivery address',
-                      border: OutlineInputBorder(),
-                    ),
+
+    final route = DialogRoute<({String address, DateTime deliveryDate})>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, updateDialog) => AlertDialog(
+          title: const Text('Confirm order'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${_cart.itemCount} kg · S/ ${_cart.total.toStringAsFixed(2)}',
+                ),
+                const SizedBox(height: 14),
+                TextField(
+                  onChanged: (value) {
+                    updateDialog(() => address = value);
+                  },
+                  decoration: const InputDecoration(
+                    labelText: 'Delivery address',
+                    border: OutlineInputBorder(),
                   ),
-                  const SizedBox(height: 12),
-                  OutlinedButton.icon(
-                    onPressed: () async {
-                      final now = DateTime.now();
-                      final picked = await showDatePicker(
-                        context: dialogContext,
-                        initialDate: now.add(const Duration(days: 1)),
-                        firstDate: now,
-                        lastDate: now.add(const Duration(days: 365)),
-                      );
-                      if (!dialogContext.mounted) return;
-                      updateDialog(() => chosenDate = picked);
-                    },
-                    icon: const Icon(Icons.calendar_month_outlined),
-                    label: Text(chosenDate == null
+                ),
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  onPressed: () async {
+                    final now = DateTime.now();
+                    final picked = await showDatePicker(
+                      context: dialogContext,
+                      initialDate: chosenDate ??
+                          now.add(const Duration(days: 1)),
+                      firstDate: now,
+                      lastDate: now.add(const Duration(days: 365)),
+                    );
+
+                    if (!dialogContext.mounted || picked == null) {
+                      return;
+                    }
+
+                    updateDialog(() => chosenDate = picked);
+                  },
+                  icon: const Icon(Icons.calendar_month_outlined),
+                  label: Text(
+                    chosenDate == null
                         ? 'Choose delivery date'
-                        : '${chosenDate!.day}/${chosenDate!.month}/${chosenDate!.year}'),
+                        : '${chosenDate!.day}/${chosenDate!.month}/${chosenDate!.year}',
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(dialogContext),
-                child: const Text('Cancel'),
-              ),
-              FilledButton(
-                onPressed: chosenDate == null || addressController.text.trim().isEmpty
-                    ? null
-                    : () {
-                        InMemoryOrderRepository.instance.placeOrder(
-                          lines: _cart.lines,
-                          deliveryAddress: addressController.text,
-                          deliveryDate: chosenDate!,
-                        );
-                        _cart.clear();
-                        Navigator.pop(dialogContext);
-                        widget.onOrderCreated();
-                      },
-                child: const Text('Place demo order'),
-              ),
-            ],
           ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: chosenDate == null || address.trim().isEmpty
+                  ? null
+                  : () {
+                Navigator.of(dialogContext).pop((
+                address: address.trim(),
+                deliveryDate: chosenDate!,
+                ));
+              },
+              child: const Text('Save order'),
+            ),
+          ],
         ),
-      );
-    } finally {
-      addressController.dispose();
-    }
+      ),
+    );
+
+    final result = await Navigator.of(context).push(route);
+
+    // Wait until the dialog and its overlay are fully removed.
+    await route.completed;
+
+    if (!mounted || result == null) return;
+
+    InMemoryOrderRepository.instance.placeOrder(
+      lines: _cart.lines,
+      deliveryAddress: result.address,
+      deliveryDate: result.deliveryDate,
+    );
+
+    _cart.clear();
+    widget.onOrderCreated();
   }
+
 
   @override
   Widget build(BuildContext context) {
