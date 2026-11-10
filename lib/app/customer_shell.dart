@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import '../dashboard/presentation/customer_dashboard_page.dart';
 import '../contexts/profiles_management/infrastructure/in_memory_commercial_client_profile_repository.dart';
 import '../contexts/profiles_management/presentation/customer_profile_page.dart';
+import '../contexts/order_management/presentation/customer_catalog_page.dart';
 import 'feature_placeholder_page.dart';
 
-/// App-level navigation only. A screen is not automatically a bounded context.
+/// App-level navigation only. Business logic remains in the bounded contexts.
 class CustomerShell extends StatefulWidget {
   const CustomerShell({super.key});
 
@@ -42,8 +43,7 @@ class _CustomerShellState extends State<CustomerShell> {
         onTrack: () => _navigateTo(3),
         onPayments: _openPayment,
       ),
-      const FeaturePlaceholderPage(
-          title: 'Catalog', boundedContext: 'Order Management'),
+      CustomerCatalogPage(onOrderCreated: () => _navigateTo(2)),
       const FeaturePlaceholderPage(
           title: 'My orders', boundedContext: 'Order Management'),
       const FeaturePlaceholderPage(
