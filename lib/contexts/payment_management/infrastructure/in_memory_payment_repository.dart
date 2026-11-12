@@ -5,18 +5,18 @@ class InMemoryPaymentRepository {
     Payment(
       id: 'INV-1042',
       orderId: 'ORD-1042',
-      status: 'PENDING',
+      status: 'PAID',
       amount: 850.00,
       dueDate: '18 November 2026',
-      method: 'Bank transfer · Reference pending',
+      method: 'Direct deposit · Confirmed',
     ),
     Payment(
       id: 'INV-1040',
       orderId: 'ORD-1040',
-      status: 'PAID',
+      status: 'PENDING',
       amount: 600.00,
       dueDate: '10 November 2026',
-      method: 'Direct deposit · Confirmed',
+      method: 'Bank transfer · Reference pending',
     ),
   ];
 
