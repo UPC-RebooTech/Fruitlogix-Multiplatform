@@ -5,6 +5,8 @@ import '../contexts/profiles_management/infrastructure/in_memory_commercial_clie
 import '../contexts/profiles_management/presentation/customer_profile_page.dart';
 import '../contexts/order_management/presentation/customer_catalog_page.dart';
 import '../contexts/order_management/presentation/customer_orders_page.dart';
+import '../contexts/logistics_and_monitoring/infrastructure/in_memory_shipment_repository.dart';
+import '../contexts/logistics_and_monitoring/presentation/delivery_tracking_page.dart';
 import 'feature_placeholder_page.dart';
 
 /// App-level navigation only. Business logic remains in the bounded contexts.
@@ -18,6 +20,7 @@ class CustomerShell extends StatefulWidget {
 class _CustomerShellState extends State<CustomerShell> {
   int _selected = 0;
   final _profileRepository = InMemoryCommercialClientProfileRepository();
+  final _shipmentRepository = InMemoryShipmentRepository();
 
   void _navigateTo(int index) {
     setState(() => _selected = index);
@@ -46,8 +49,7 @@ class _CustomerShellState extends State<CustomerShell> {
       ),
       CustomerCatalogPage(onOrderCreated: () => _navigateTo(2)),
       CustomerOrdersPage(onNewOrder: () => _navigateTo(1)),
-      const FeaturePlaceholderPage(
-          title: 'Tracking', boundedContext: 'Logistics and Monitoring'),
+      DeliveryTrackingPage(repository: _shipmentRepository),
       CustomerProfilePage(
         repository: _profileRepository,
         onSaved: () => setState(() {}),
