@@ -32,7 +32,7 @@ class CustomerOrdersPage extends StatelessWidget {
               ),
             ]),
             const SizedBox(height: 10),
-            const Text('Session-only demo orders — not synchronized with backend.'),
+            const Text('Your list of orders will be shown below.'),
             const SizedBox(height: 20),
             if (orders.isEmpty)
               const Center(
