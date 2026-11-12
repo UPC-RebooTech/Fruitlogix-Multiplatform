@@ -11,8 +11,8 @@ class InMemoryPaymentRepository {
       method: 'Bank transfer · Reference pending',
     ),
     Payment(
-      id: 'INV-1032',
-      orderId: 'ORD-1032',
+      id: 'INV-1040',
+      orderId: 'ORD-1040',
       status: 'PAID',
       amount: 600.00,
       dueDate: '10 November 2026',
