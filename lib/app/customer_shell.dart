@@ -7,7 +7,7 @@ import '../contexts/order_management/presentation/customer_catalog_page.dart';
 import '../contexts/order_management/presentation/customer_orders_page.dart';
 import '../contexts/logistics_and_monitoring/infrastructure/in_memory_shipment_repository.dart';
 import '../contexts/logistics_and_monitoring/presentation/delivery_tracking_page.dart';
-import 'feature_placeholder_page.dart';
+import '../contexts/payment_management/presentation/payments_page.dart';
 
 /// App-level navigation only. Business logic remains in the bounded contexts.
 class CustomerShell extends StatefulWidget {
@@ -28,13 +28,7 @@ class _CustomerShellState extends State<CustomerShell> {
 
   void _openPayment() {
     Navigator.of(context).push(MaterialPageRoute<void>(
-      builder: (_) => const Scaffold(
-        appBar: _PaymentAppBar(),
-        body: FeaturePlaceholderPage(
-          title: 'Payments',
-          boundedContext: 'Payment Management',
-        ),
-      ),
+      builder: (_) => const PaymentsPage(),
     ));
   }
 
@@ -88,14 +82,4 @@ class _CustomerShellState extends State<CustomerShell> {
       ),
     );
   }
-}
-
-class _PaymentAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const _PaymentAppBar();
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
-
-  @override
-  Widget build(BuildContext context) => AppBar(title: const Text('Payments'));
 }
