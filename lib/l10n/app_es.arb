@@ -1,0 +1,44 @@
+{
+  "@@locale": "es",
+
+  "appTitle": "FruitLogix",
+  "roleCommercialClient": "Cliente comercial",
+  "openProfileTooltip": "Abrir perfil",
+
+  "navHome": "Inicio",
+  "navCatalog": "Catálogo",
+  "navOrders": "Pedidos",
+  "navTracking": "Seguimiento",
+  "navMore": "Más",
+
+  "moreSheetTitle": "Más",
+  "paymentsTitle": "Pagos",
+  "paymentsDetail": "Facturas y saldo pendiente",
+  "profileTitle": "Perfil",
+  "profileDetail": "Datos del negocio y de contacto",
+
+  "dashboardOverline": "Tu panel",
+  "dashboardWelcome": "Hola, {name}",
+  "dashboardSubtitle": "Resumen de tu actividad comercial",
+
+  "dashboardOverviewSection": "Resumen comercial",
+  "kpiActiveOrders": "Pedidos activos",
+  "kpiInTransit": "En ruta",
+  "kpiPendingBalance": "Saldo pendiente",
+
+  "dashboardQuickActionsSection": "Acciones rápidas",
+  "actionNewOrder": "Nuevo pedido",
+  "actionNewOrderDetail": "Explora las frutas disponibles",
+  "actionTrackDelivery": "Ver seguimiento",
+  "actionTrackDeliveryDetail": "Consulta el estado del envío",
+  "actionPayments": "Pagos",
+  "actionPaymentsDetail": "Revisa tu saldo pendiente",
+
+  "dashboardActiveOrdersSection": "Pedidos activos",
+  "orderStatusInTransit": "En ruta",
+  "orderStatusPreparing": "En preparación",
+  "orderExpectedAt": "{product} · Llega a las {time}",
+  "orderProcessing": "{product} · Pedido en proceso",
+  "productHassAvocado": "Palta Hass",
+  "productKentMango": "Mango Kent"
+}

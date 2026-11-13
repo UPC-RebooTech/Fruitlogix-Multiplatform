@@ -1,0 +1,57 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "FruitLogix",
+  "roleCommercialClient": "Commercial client",
+  "@roleCommercialClient": { "description": "Role shown under the business name in the top bar (rendered in uppercase)." },
+  "openProfileTooltip": "Open profile",
+
+  "navHome": "Home",
+  "navCatalog": "Catalog",
+  "navOrders": "Orders",
+  "navTracking": "Tracking",
+  "navMore": "More",
+
+  "moreSheetTitle": "More",
+  "paymentsTitle": "Payments",
+  "paymentsDetail": "Invoices and pending balance",
+  "profileTitle": "Profile",
+  "profileDetail": "Business and contact details",
+
+  "dashboardOverline": "Your dashboard",
+  "dashboardWelcome": "Welcome, {name}",
+  "@dashboardWelcome": {
+    "placeholders": { "name": { "type": "String", "example": "Carlos" } }
+  },
+  "dashboardSubtitle": "Overview of your commercial activity",
+
+  "dashboardOverviewSection": "Commercial overview",
+  "kpiActiveOrders": "Active orders",
+  "kpiInTransit": "In transit",
+  "kpiPendingBalance": "Pending balance",
+
+  "dashboardQuickActionsSection": "Quick actions",
+  "actionNewOrder": "New order",
+  "actionNewOrderDetail": "Browse available fruits",
+  "actionTrackDelivery": "Track delivery",
+  "actionTrackDeliveryDetail": "View shipment status",
+  "actionPayments": "Payments",
+  "actionPaymentsDetail": "Review pending balance",
+
+  "dashboardActiveOrdersSection": "Active orders",
+  "orderStatusInTransit": "In transit",
+  "orderStatusPreparing": "Preparing",
+  "orderExpectedAt": "{product} · Expected {time}",
+  "@orderExpectedAt": {
+    "placeholders": {
+      "product": { "type": "String", "example": "Hass avocado" },
+      "time": { "type": "String", "example": "14:30" }
+    }
+  },
+  "orderProcessing": "{product} · Order processing",
+  "@orderProcessing": {
+    "placeholders": { "product": { "type": "String", "example": "Kent mango" } }
+  },
+  "productHassAvocado": "Hass avocado",
+  "productKentMango": "Kent mango"
+}
