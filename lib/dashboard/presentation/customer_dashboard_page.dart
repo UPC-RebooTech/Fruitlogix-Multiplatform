@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 
-import '../../app/fruitlogix_theme.dart';
+import '../../l10n/app_localizations.dart';
+import '../../shared/ui/components/components.dart';
+import '../../shared/ui/formatters/money_format.dart';
+import '../../shared/ui/theme/theme.dart';
 
-
+/// Home of the Commercial Client.
+///
+/// Cosecha hierarchy: priority information first (dark KPI cards, including
+/// the pending balance required by US36), then quick actions and active
+/// orders in white cards.
 class CustomerDashboardPage extends StatelessWidget {
   const CustomerDashboardPage({
     required this.customerName,
@@ -17,228 +24,173 @@ class CustomerDashboardPage extends StatelessWidget {
   final VoidCallback onTrack;
   final VoidCallback onPayments;
 
+  // Demo data until the dashboard reads from the bounded contexts.
+  static const int _activeOrders = 3;
+  static const int _inTransit = 2;
+  static const double _pendingBalance = 1450.00;
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return ListView(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.fromLTRB(
+        CosechaSpace.screenMargin,
+        CosechaSpace.md,
+        CosechaSpace.screenMargin,
+        CosechaSpace.lg,
+      ),
       children: [
-        const Row(children: [
-          Icon(Icons.circle, size: 10, color: Color(0xFF36C77D)),
-          SizedBox(width: 8),
-          Text('YOUR DASHBOARD',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-        ]),
-        const SizedBox(height: 12),
-        Text('Welcome, $customerName',
-            style: const TextStyle(
-              fontWeight: FontWeight.w800,
-              fontSize: 29,
-              color: FruitLogixPalette.forest,
-            )),
-        const Text('Overview of your commercial activity',
-            style: TextStyle(color: FruitLogixPalette.forestSoft)),
-        const SizedBox(height: 24),
-        const _SectionHeader('QUICK ACTIONS'),
-        const SizedBox(height: 10),
-        _ActionTile(
-          title: 'New order',
-          subtitle: 'Browse available fruits',
-          icon: Icons.add_shopping_cart,
-          onTap: onNewOrder,
+        CosechaPageHeader(
+          overline: l10n.dashboardOverline,
+          title: l10n.dashboardWelcome(customerName),
+          subtitle: l10n.dashboardSubtitle,
         ),
-        const SizedBox(height: 8),
-        _ActionTile(
-          title: 'Track delivery',
-          subtitle: 'View shipment status',
-          icon: Icons.location_on_outlined,
-          onTap: onTrack,
+        const SizedBox(height: CosechaSpace.md),
+
+        _Section(
+          title: l10n.dashboardOverviewSection,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: CosechaKpiCard(
+                    label: l10n.kpiActiveOrders,
+                    value: '$_activeOrders',
+                    icon: Icons.inventory_2_outlined,
+                  ),
+                ),
+                const SizedBox(width: CosechaSpace.xs),
+                Expanded(
+                  child: CosechaKpiCard(
+                    label: l10n.kpiInTransit,
+                    value: '$_inTransit',
+                    icon: Icons.local_shipping_outlined,
+                  ),
+                ),
+              ],
+            ),
+            CosechaKpiCard(
+              label: l10n.kpiPendingBalance,
+              value: formatSoles(_pendingBalance),
+              icon: Icons.payments_outlined,
+            ),
+          ],
         ),
-        const SizedBox(height: 8),
-        _ActionTile(
-          title: 'Payments',
-          subtitle: 'Review pending balance',
-          icon: Icons.account_balance_wallet_outlined,
-          onTap: onPayments,
+        const SizedBox(height: CosechaSpace.md),
+
+        _Section(
+          title: l10n.dashboardQuickActionsSection,
+          children: [
+            CosechaActionRow(
+              icon: Icons.add_shopping_cart_outlined,
+              title: l10n.actionNewOrder,
+              detail: l10n.actionNewOrderDetail,
+              onTap: onNewOrder,
+            ),
+            CosechaActionRow(
+              icon: Icons.local_shipping_outlined,
+              title: l10n.actionTrackDelivery,
+              detail: l10n.actionTrackDeliveryDetail,
+              onTap: onTrack,
+            ),
+            CosechaActionRow(
+              icon: Icons.account_balance_wallet_outlined,
+              title: l10n.actionPayments,
+              detail: l10n.actionPaymentsDetail,
+              onTap: onPayments,
+            ),
+          ],
         ),
-        const SizedBox(height: 26),
-        const _SectionHeader('COMMERCIAL OVERVIEW'),
-        const SizedBox(height: 10),
-        const Row(children: [
-          Expanded(child: _MetricCard(label: 'Active orders', value: '3', icon: Icons.inventory_2_outlined)),
-          SizedBox(width: 10),
-          Expanded(child: _MetricCard(label: 'In transit', value: '2', icon: Icons.local_shipping_outlined)),
-        ]),
-        const SizedBox(height: 10),
-        const _MetricCard(
-          label: 'Pending balance',
-          value: 'S/ 1,450.00',
-          icon: Icons.payments_outlined,
+        const SizedBox(height: CosechaSpace.md),
+
+        _Section(
+          title: l10n.dashboardActiveOrdersSection,
+          children: [
+            _OrderPreview(
+              id: 'ORD-1042',
+              statusLabel: l10n.orderStatusInTransit,
+              status: CosechaStatus.info,
+              description:
+                  l10n.orderExpectedAt(l10n.productHassAvocado, '14:30'),
+            ),
+            _OrderPreview(
+              id: 'ORD-1040',
+              statusLabel: l10n.orderStatusPreparing,
+              status: CosechaStatus.neutral,
+              description: l10n.orderProcessing(l10n.productKentMango),
+            ),
+          ],
         ),
-        const SizedBox(height: 26),
-        const _SectionHeader('ACTIVE ORDERS'),
-        const SizedBox(height: 10),
-        const _OrderPreview(
-          id: 'ORD-1042',
-          status: 'IN TRANSIT',
-          description: 'Hass avocado · Expected 14:30',
-        ),
-        const SizedBox(height: 10),
-        const _OrderPreview(
-          id: 'ORD-1040',
-          status: 'PREPARING',
-          description: 'Kent mango · Order processing',
-        ),
-        const SizedBox(height: 18),
       ],
     );
   }
 }
 
-class _SectionHeader extends StatelessWidget {
-  const _SectionHeader(this.title);
-  final String title;
-
-  @override
-  Widget build(BuildContext context) => Text(
-        title,
-        style: const TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w800,
-          letterSpacing: 1,
-          color: FruitLogixPalette.forestSoft,
-        ),
-      );
-}
-
-class _ActionTile extends StatelessWidget {
-  const _ActionTile({
-    required this.title,
-    required this.subtitle,
-    required this.icon,
-    required this.onTap,
-  });
+/// Overline title followed by its items, 8 apart.
+class _Section extends StatelessWidget {
+  const _Section({required this.title, required this.children});
 
   final String title;
-  final String subtitle;
-  final IconData icon;
-  final VoidCallback onTap;
+  final List<Widget> children;
 
   @override
-  Widget build(BuildContext context) => Material(
-        color: FruitLogixPalette.forest,
-        borderRadius: BorderRadius.circular(18),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(18),
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-            child: Row(
-              children: [
-                Icon(icon, color: FruitLogixPalette.lime),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(title,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 16,
-                          )),
-                      Text(subtitle,
-                          style: const TextStyle(color: FruitLogixPalette.muted)),
-                    ],
-                  ),
-                ),
-                const Icon(Icons.chevron_right, color: FruitLogixPalette.lime),
-              ],
-            ),
-          ),
-        ),
-      );
-}
-
-class _MetricCard extends StatelessWidget {
-  const _MetricCard({required this.label, required this.value, required this.icon});
-  final String label;
-  final String value;
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          color: FruitLogixPalette.forest,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: FruitLogixPalette.lime, size: 23),
-            const SizedBox(height: 12),
-            Text(label,
-                style: const TextStyle(
-                  color: FruitLogixPalette.muted,
-                  fontSize: 12,
-                )),
-            const SizedBox(height: 3),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              alignment: Alignment.centerLeft,
-              child: Text(value,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  )),
-            ),
-          ],
-        ),
-      );
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        CosechaOverline(title),
+        for (final child in children) ...[
+          const SizedBox(height: CosechaSpace.xs),
+          child,
+        ],
+      ],
+    );
+  }
 }
 
 class _OrderPreview extends StatelessWidget {
   const _OrderPreview({
     required this.id,
+    required this.statusLabel,
     required this.status,
     required this.description,
   });
+
   final String id;
-  final String status;
+  final String statusLabel;
+  final CosechaStatus status;
   final String description;
 
   @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          color: FruitLogixPalette.forestSoft,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(children: [
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return CosechaCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
               Expanded(
-                child: Text(id,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    )),
+                child: Text(
+                  id,
+                  style: CosechaDataText.of(context)
+                      .dataMono
+                      .copyWith(color: context.cosechaContent),
+                ),
               ),
-              Text(status,
-                  style: const TextStyle(
-                    color: FruitLogixPalette.lime,
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                  )),
-            ]),
-            const SizedBox(height: 7),
-            Text(description,
-                style: const TextStyle(color: FruitLogixPalette.muted)),
-          ],
-        ),
-      );
+              const SizedBox(width: CosechaSpace.xs),
+              CosechaStatusTag(label: statusLabel, status: status),
+            ],
+          ),
+          const SizedBox(height: CosechaSpace.xs),
+          Text(
+            description,
+            style: textTheme.bodyMedium
+                ?.copyWith(color: context.cosechaContentSecondary),
+          ),
+        ],
+      ),
+    );
+  }
 }

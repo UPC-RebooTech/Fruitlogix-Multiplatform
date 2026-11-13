@@ -1,115 +1,113 @@
 import 'package:flutter/material.dart';
-import '../../../app/fruitlogix_theme.dart';
+
+import '../../../l10n/app_localizations.dart';
+import '../../../shared/ui/components/components.dart';
+import '../../../shared/ui/formatters/money_format.dart';
+import '../../../shared/ui/theme/theme.dart';
 import '../domain/payment.dart';
+import 'payment_status_view.dart';
 
+/// Invoice detail, shown inside the shell (both bars visible). The top bar
+/// shows the invoice title and the back button.
 class PaymentDetailPage extends StatelessWidget {
-  final Payment payment;
+  const PaymentDetailPage({required this.payment, super.key});
 
-  const PaymentDetailPage({super.key, required this.payment});
+  final Payment payment;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFE8ECE4),
-      appBar: AppBar(
-        title: const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('FruitLogix', style: TextStyle(fontWeight: FontWeight.w800)),
-            Text('COMMERCIAL CLIENT', style: TextStyle(fontSize: 10, letterSpacing: 1.2)),
-          ],
-        ),
+    final l10n = AppLocalizations.of(context);
+    final data = CosechaDataText.of(context);
+    final colors = CosechaStatusColors.of(context);
+    final status = paymentStatusView(payment.status, l10n);
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(
+        CosechaSpace.screenMargin,
+        CosechaSpace.md,
+        CosechaSpace.screenMargin,
+        CosechaSpace.lg,
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(18),
-        children: [
-          const Text(
-            'Payment Detail',
-            style: TextStyle(
-              fontSize: 27,
-              fontWeight: FontWeight.bold,
-              color: FruitLogixPalette.forest,
-            ),
-          ),
-          const Text(
-            'Detalle de pago referencial',
-            style: TextStyle(color: FruitLogixPalette.forestSoft),
-          ),
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              color: FruitLogixPalette.forest,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Payment detail',
-                  style: TextStyle(color: FruitLogixPalette.lime, fontSize: 12),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  'Order ${payment.orderId}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
+      children: [
+        CosechaCard(
+          tone: CosechaCardTone.dark,
+          hero: true,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(child: CosechaOverline(l10n.invoiceOverline)),
+                  CosechaStatusTag(label: status.label, status: status.status),
+                ],
+              ),
+              const SizedBox(height: CosechaSpace.xs),
+              Text(
+                payment.id,
+                style: data.dataMono.copyWith(color: colors.onDarkSecondary),
+              ),
+              const SizedBox(height: CosechaSpace.xxs),
+              Semantics(
+                label: '${l10n.invoiceAmount}: ${formatSoles(payment.amount)}',
+                excludeSemantics: true,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: AlignmentDirectional.centerStart,
+                  child: Text(
+                    formatSoles(payment.amount),
+                    style: data.kpiNumber.copyWith(color: colors.onDarkPrimary),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-          const SizedBox(height: 14),
-          _DetailCard(label: 'Payment status', value: payment.status),
-          const SizedBox(height: 10),
-          _DetailCard(label: 'Amount due', value: 'S/ ${payment.amount.toStringAsFixed(2)}'),
-          const SizedBox(height: 10),
-          _DetailCard(label: 'Due date', value: payment.dueDate),
-          const SizedBox(height: 10),
-          _DetailCard(label: 'Payment method', value: payment.method),
-          const SizedBox(height: 24),
-          FilledButton.icon(
-            style: FilledButton.styleFrom(
-              backgroundColor: FruitLogixPalette.forest,
-              foregroundColor: FruitLogixPalette.lime,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-            ),
+        ),
+        const SizedBox(height: CosechaSpace.sm),
+        CosechaCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              CosechaInfoRow(
+                icon: Icons.receipt_long_outlined,
+                label: l10n.invoiceOrder,
+                value: payment.orderId,
+                mono: true,
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: CosechaSpace.inner),
+                child: Divider(),
+              ),
+              CosechaInfoRow(
+                icon: Icons.event_outlined,
+                label: l10n.invoiceDueDate,
+                value: payment.dueDate,
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: CosechaSpace.inner),
+                child: Divider(),
+              ),
+              CosechaInfoRow(
+                icon: Icons.account_balance_outlined,
+                label: l10n.invoiceMethod,
+                value: payment.method,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: CosechaSpace.md),
+        // Demo-only action, kept as a secondary text button.
+        Center(
+          child: CosechaTextButton(
+            label: l10n.invoiceSimulate,
+            icon: Icons.science_outlined,
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Simulación de pago registrada con éxito')),
+                SnackBar(content: Text(l10n.invoiceSimulated)),
               );
             },
-            icon: const Icon(Icons.check_circle_outline),
-            label: const Text('Simular confirmación de pago', style: TextStyle(fontWeight: FontWeight.bold)),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
-}
-
-class _DetailCard extends StatelessWidget {
-  const _DetailCard({required this.label, required this.value});
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(16),
-      border: Border.all(color: const Color(0xFFD0DCD0)),
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: const TextStyle(color: Colors.grey, fontSize: 12)),
-        const SizedBox(height: 4),
-        Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: FruitLogixPalette.forest)),
-      ],
-    ),
-  );
 }
