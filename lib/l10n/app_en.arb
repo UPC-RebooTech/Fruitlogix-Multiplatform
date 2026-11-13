@@ -53,5 +53,152 @@
     "placeholders": { "product": { "type": "String", "example": "Kent mango" } }
   },
   "productHassAvocado": "Hass avocado",
-  "productKentMango": "Kent mango"
+  "productKentMango": "Kent mango",
+
+  "closeMenu": "Close menu",
+  "languageTooltip": "Language",
+  "cancel": "Cancel",
+
+  "catalogTitle": "Commercial catalog",
+  "catalogSubtitle": "Products and prices are demo data",
+  "catalogFilterAll": "All",
+  "catalogFilterFruits": "Fruits",
+  "catalogFilterVegetables": "Vegetables",
+  "catalogEmptyTitle": "No products in this category",
+  "catalogEmptyMessage": "Try another filter.",
+  "productStock": "Stock: {quantity} {unit}",
+  "@productStock": {
+    "placeholders": {
+      "quantity": { "type": "int", "example": "200" },
+      "unit": { "type": "String", "example": "kg" }
+    }
+  },
+  "productAddTooltip": "Add {product}",
+  "@productAddTooltip": {
+    "placeholders": { "product": { "type": "String", "example": "Mango Kent" } }
+  },
+  "productRemoveTooltip": "Remove {product}",
+  "@productRemoveTooltip": {
+    "placeholders": { "product": { "type": "String", "example": "Mango Kent" } }
+  },
+  "productInCart": "{quantity} {unit} in your order",
+  "@productInCart": {
+    "description": "Screen reader label of the quantity stepper.",
+    "placeholders": {
+      "quantity": { "type": "int", "example": "3" },
+      "unit": { "type": "String", "example": "kg" }
+    }
+  },
+  "cartOverline": "Your order",
+  "cartSummary": "{quantity} kg · {total}",
+  "@cartSummary": {
+    "placeholders": {
+      "quantity": { "type": "int", "example": "12" },
+      "total": { "type": "String", "example": "S/ 54.00" }
+    }
+  },
+  "reviewOrder": "Review order",
+  "orderReviewTitle": "Confirm order",
+  "orderReviewTotal": "Total",
+  "deliveryAddressLabel": "Delivery address",
+  "deliveryAddressHint": "Street, number and district",
+  "deliveryAddressRequired": "Enter the delivery address",
+  "deliveryDateLabel": "Delivery date",
+  "deliveryDateHint": "Choose a date",
+  "deliveryDateRequired": "Choose the delivery date",
+  "saveOrder": "Save order",
+
+  "orderReference": "Order {order}",
+  "@orderReference": {
+    "placeholders": { "order": { "type": "String", "example": "ORD-1042" } }
+  },
+  "orderStatusPending": "Pending",
+  "orderStatusDelivered": "Delivered",
+  "orderStatusRejected": "Rejected",
+
+  "ordersTitle": "My orders",
+  "ordersSubtitle": "Orders placed in this session (demo)",
+  "ordersEmptyTitle": "No orders yet",
+  "ordersEmptyMessage": "Add products in the catalog to create your first order.",
+  "orderDeliveryDate": "Delivery: {date}",
+  "@orderDeliveryDate": {
+    "placeholders": { "date": { "type": "String", "example": "Nov 14, 2026" } }
+  },
+
+  "trackingTitle": "Delivery tracking",
+  "trackingSubtitle": "Live temperature and stages of your orders",
+  "trackingEmptyTitle": "No active shipments",
+  "trackingEmptyMessage": "When an order is dispatched, you will see it here.",
+  "trackingActiveShipment": "Active shipment",
+  "trackingProgress": "Shipment progress: {percent}%",
+  "@trackingProgress": {
+    "placeholders": { "percent": { "type": "int", "example": "75" } }
+  },
+  "trackingEta": "Estimated arrival",
+  "trackingStatusReceived": "Received",
+  "trackingColdChain": "Cold chain",
+  "trackingTemperature": "Temperature",
+  "trackingHumidity": "Humidity",
+  "trackingReefer": "Reefer unit",
+  "trackingTransport": "Transport",
+  "trackingEvents": "Route checkpoints",
+  "trackingEventDone": "Completed",
+  "trackingEventPending": "Pending",
+  "trackingConfirmReception": "Confirm reception",
+  "trackingReceptionDone": "Reception confirmed",
+  "trackingReceptionDoneMessage": "You already confirmed this delivery.",
+
+  "receptionArrived": "Arrived at the dock",
+  "receptionProducts": "Received products",
+  "receptionOrderRef": "Order reference",
+  "receptionInspection": "Inspection",
+  "receptionCompliant": "Seal and temperature compliant",
+  "receptionArrivalTemp": "Arrival temperature: {temperature}",
+  "@receptionArrivalTemp": {
+    "placeholders": { "temperature": { "type": "String", "example": "4.2 °C" } }
+  },
+  "receptionReportIncident": "Report an incident",
+  "receptionReportIncidentDetail": "Damaged fruit or delayed cargo",
+  "receptionNotes": "Notes",
+  "receptionNotesHint": "Write what you observed in the cargo",
+  "receptionConfirmed": "Reception confirmed.",
+
+  "paymentsInvoices": "Invoices",
+  "paymentsEmpty": "No invoices yet",
+  "paymentStatusPaid": "Paid",
+  "paymentStatusPending": "Pending",
+  "paymentStatusOverdue": "Overdue",
+  "paymentDue": "Due {date}",
+  "@paymentDue": {
+    "placeholders": { "date": { "type": "String", "example": "18 November 2026" } }
+  },
+  "invoiceTitle": "Invoice {invoice}",
+  "@invoiceTitle": {
+    "placeholders": { "invoice": { "type": "String", "example": "INV-1042" } }
+  },
+  "invoiceOverline": "Invoice",
+  "invoiceAmount": "Amount",
+  "invoiceOrder": "Order",
+  "invoiceDueDate": "Due date",
+  "invoiceMethod": "Payment method",
+  "invoiceSimulate": "Simulate payment confirmation",
+  "invoiceSimulated": "Payment simulation registered (demo)",
+
+  "profileContactSection": "Business and contact",
+  "profileDemoNote": "Demo data · changes last for this session",
+  "profileFullName": "Full name",
+  "profileBusinessName": "Business name",
+  "profileEmail": "Email",
+  "profilePhone": "Contact phone",
+  "profileTaxId": "RUC",
+  "profileFullNameError": "Enter your full name",
+  "profileBusinessNameError": "Enter your business name",
+  "profileEmailError": "Enter a valid email",
+  "profilePhoneError": "Enter a valid phone number",
+  "profileTaxIdError": "The RUC must have 11 digits",
+  "profileEdit": "Edit profile",
+  "profileSave": "Save changes",
+  "profileSaved": "Profile updated for this session (demo)",
+
+  "featurePending": "Implementation pending"
 }

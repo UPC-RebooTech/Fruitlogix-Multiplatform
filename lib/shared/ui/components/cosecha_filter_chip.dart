@@ -33,14 +33,17 @@ class CosechaFilterChip extends StatelessWidget {
             height: CosechaSize.chipHeight,
             constraints: const BoxConstraints(minWidth: CosechaSize.minTouch),
             padding: const EdgeInsets.symmetric(horizontal: CosechaSpace.sm),
-            alignment: Alignment.center,
-            child: Text(
-              label,
-              maxLines: 1,
-              style: Theme.of(context)
-                  .textTheme
-                  .labelMedium
-                  ?.copyWith(color: foreground),
+            // widthFactor 1: the chip is as wide as its label, not the row.
+            child: Center(
+              widthFactor: 1,
+              child: Text(
+                label,
+                maxLines: 1,
+                style: Theme.of(context)
+                    .textTheme
+                    .labelMedium
+                    ?.copyWith(color: foreground),
+              ),
             ),
           ),
         ),

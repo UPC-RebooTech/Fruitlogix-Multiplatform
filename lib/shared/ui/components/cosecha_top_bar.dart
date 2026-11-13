@@ -6,6 +6,9 @@ import 'cosecha_surface.dart';
 
 /// Main top bar: deep forest, 36 lime avatar, white title (titleMedium) and
 /// an uppercase subtitle (labelSmall) in secondary on-dark text.
+///
+/// With [onBack] (sections opened from "More") the avatar is replaced by a
+/// back button.
 class CosechaTopBar extends StatelessWidget implements PreferredSizeWidget {
   const CosechaTopBar({
     required this.title,
@@ -13,6 +16,7 @@ class CosechaTopBar extends StatelessWidget implements PreferredSizeWidget {
     this.subtitle,
     this.onAvatarTap,
     this.avatarTooltip,
+    this.onBack,
     this.actions,
     super.key,
   });
@@ -22,6 +26,7 @@ class CosechaTopBar extends StatelessWidget implements PreferredSizeWidget {
   final String initials;
   final VoidCallback? onAvatarTap;
   final String? avatarTooltip;
+  final VoidCallback? onBack;
   final List<Widget>? actions;
 
   static const double height = 64;
@@ -42,11 +47,19 @@ class CosechaTopBar extends StatelessWidget implements PreferredSizeWidget {
         actions: actions,
         title: Row(
           children: [
-            CosechaAvatar(
-              initials: initials,
-              onTap: onAvatarTap,
-              tooltip: avatarTooltip,
-            ),
+            if (onBack != null)
+              IconButton(
+                onPressed: onBack,
+                tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+                icon: const BackButtonIcon(),
+                color: status.onDarkPrimary,
+              )
+            else
+              CosechaAvatar(
+                initials: initials,
+                onTap: onAvatarTap,
+                tooltip: avatarTooltip,
+              ),
             const SizedBox(width: CosechaSpace.xxs),
             Expanded(
               child: Column(
