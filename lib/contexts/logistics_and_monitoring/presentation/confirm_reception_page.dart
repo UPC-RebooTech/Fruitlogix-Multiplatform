@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
-import '../../../app/fruitlogix_theme.dart';
+
+import '../../../l10n/app_localizations.dart';
+import '../../../shared/ui/components/components.dart';
+import '../../../shared/ui/theme/theme.dart';
 import '../domain/shipment.dart';
 
+/// Reception inspection at the dock. A field action: full-width rows
+/// (whole row is touchable) and a 56 primary button.
 class ConfirmReceptionPage extends StatefulWidget {
   const ConfirmReceptionPage({
     required this.shipment,
@@ -27,156 +32,112 @@ class _ConfirmReceptionPageState extends State<ConfirmReceptionPage> {
     super.dispose();
   }
 
+  void _confirm() {
+    final messenger = ScaffoldMessenger.of(context);
+    final message = AppLocalizations.of(context).receptionConfirmed;
+    widget.onConfirmed(_notesController.text.trim(), _hasIncidents);
+    Navigator.of(context).pop();
+    messenger.showSnackBar(SnackBar(content: Text(message)));
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Confirm Reception'),
-      ),
+    final l10n = AppLocalizations.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    final shipment = widget.shipment;
+    final temperature =
+        '${shipment.telemetry.temperatureC.toStringAsFixed(1)} °C';
+
+    return CosechaSubpageScaffold(
+      title: l10n.trackingConfirmReception,
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(
+          CosechaSpace.screenMargin,
+          CosechaSpace.md,
+          CosechaSpace.screenMargin,
+          CosechaSpace.lg,
+        ),
         children: [
-          // Banner de estado
-          Card(
-            color: FruitLogixPalette.forestSoft,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Delivery status',
-                    style: TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold),
+          CosechaCard(
+            tone: CosechaCardTone.tint,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    shipment.trackingNumber,
+                    style: CosechaDataText.of(context).dataMono.copyWith(
+                          color: context.cosechaContent,
+                          fontWeight: FontWeight.w600,
+                        ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Arrived at Dock • ${widget.shipment.trackingNumber}',
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
-                  ),
-                ],
-              ),
+                ),
+                CosechaStatusTag(
+                  label: l10n.receptionArrived,
+                  status: CosechaStatus.info,
+                  icon: Icons.warehouse_outlined,
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: CosechaSpace.md),
 
-          // Productos Recibidos
-          Card(
-            color: Colors.white,
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Received products',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: FruitLogixPalette.forest),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(widget.shipment.itemsSummary, style: const TextStyle(fontSize: 13, color: Colors.black87)),
-                  const Divider(height: 20),
-                  Text('Order reference: ${widget.shipment.orderId}', style: const TextStyle(fontSize: 11, color: Colors.black45)),
-                ],
-              ),
+          CosechaOverline(l10n.receptionProducts),
+          const SizedBox(height: CosechaSpace.xs),
+          CosechaCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(shipment.itemsSummary, style: textTheme.bodyLarge),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: CosechaSpace.inner),
+                  child: Divider(),
+                ),
+                CosechaInfoRow(
+                  label: l10n.receptionOrderRef,
+                  value: shipment.orderId,
+                  mono: true,
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: CosechaSpace.md),
 
-          // Inspección de Recepción
-          Card(
-            color: Colors.white,
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Inspect delivery',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: FruitLogixPalette.forest),
-                  ),
-                  const SizedBox(height: 6),
-                  SwitchListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: const Text('Cargo seal & temperature compliant', style: TextStyle(fontSize: 13)),
-                    subtitle: Text('Arrival Temp: ${widget.shipment.telemetry.temperatureC} °C', style: const TextStyle(fontSize: 11)),
-                    value: _inspectionAccepted,
-                    activeThumbColor: FruitLogixPalette.forest,
-                    onChanged: (v) => setState(() => _inspectionAccepted = v),
-                  ),
-                  const Divider(height: 16),
-                  CheckboxListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: const Text('Report incident (damaged fruit or delayed cargo)', style: TextStyle(fontSize: 13)),
-                    value: _hasIncidents,
-                    activeColor: Colors.red[800],
-                    onChanged: (v) => setState(() => _hasIncidents = v ?? false),
-                  ),
-                ],
-              ),
+          CosechaOverline(l10n.receptionInspection),
+          const SizedBox(height: CosechaSpace.xs),
+          CosechaCard(
+            padding: EdgeInsets.zero,
+            child: Column(
+              children: [
+                SwitchListTile(
+                  value: _inspectionAccepted,
+                  onChanged: (v) => setState(() => _inspectionAccepted = v),
+                  title: Text(l10n.receptionCompliant),
+                  subtitle: Text(l10n.receptionArrivalTemp(temperature)),
+                ),
+                const Divider(indent: CosechaSpace.sm),
+                CheckboxListTile(
+                  value: _hasIncidents,
+                  onChanged: (v) => setState(() => _hasIncidents = v ?? false),
+                  title: Text(l10n.receptionReportIncident),
+                  subtitle: Text(l10n.receptionReportIncidentDetail),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: CosechaSpace.md),
 
-          // Observaciones
-          Card(
-            color: Colors.white,
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Any incident? / Notes',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: FruitLogixPalette.forest),
-                  ),
-                  const SizedBox(height: 8),
-                  TextField(
-                    controller: _notesController,
-                    maxLines: 3,
-                    decoration: const InputDecoration(
-                      hintText: 'Enter cargo inspection observations...',
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.all(10),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          CosechaTextField(
+            label: l10n.receptionNotes,
+            hint: l10n.receptionNotesHint,
+            controller: _notesController,
+            maxLines: 3,
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: CosechaSpace.md),
 
-          // Botón Confirm Receipt
-          ElevatedButton(
-            onPressed: () {
-              widget.onConfirmed(_notesController.text.trim(), _hasIncidents);
-              Navigator.of(context).pop();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Reception confirmed successfully.')),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: FruitLogixPalette.lime,
-              foregroundColor: FruitLogixPalette.forest,
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: const Text('Confirm receipt', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+          CosechaPrimaryButton(
+            label: l10n.trackingConfirmReception,
+            icon: Icons.check,
+            onPressed: _confirm,
           ),
         ],
       ),

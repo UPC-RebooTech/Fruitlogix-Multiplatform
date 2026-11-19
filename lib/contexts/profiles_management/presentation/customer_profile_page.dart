@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 
-import '../../../app/fruitlogix_theme.dart';
+import '../../../l10n/app_localizations.dart';
+import '../../../shared/ui/components/components.dart';
+import '../../../shared/ui/formatters/initials.dart';
+import '../../../shared/ui/theme/theme.dart';
 import '../domain/commercial_client_profile.dart';
 import '../domain/commercial_client_profile_repository.dart';
 
 /// Read/edit commercial client information with local demo persistence.
 /// Production profile verification and backend persistence are out of scope.
+///
+/// View mode shows read-only data rows; edit mode shows fields with the
+/// label above, validated when tapping Save.
 class CustomerProfilePage extends StatefulWidget {
   const CustomerProfilePage({
     required this.repository,
@@ -50,9 +56,8 @@ class _CustomerProfilePageState extends State<CustomerProfilePage> {
     super.dispose();
   }
 
-  void _reset() {
+  void _cancel() {
     final profile = widget.repository.current;
-    _formKey.currentState?.reset();
     _fullName.text = profile.fullName;
     _businessName.text = profile.businessName;
     _email.text = profile.email;
@@ -76,135 +81,239 @@ class _CustomerProfilePageState extends State<CustomerProfilePage> {
     setState(() => _editing = false);
     widget.onSaved();
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Demo profile updated for this session')),
+      SnackBar(content: Text(AppLocalizations.of(context).profileSaved)),
     );
   }
 
+  /// Uses the domain rule and shows the localized message.
+  String? Function(String?) _rule(
+    String? Function(String?) domainRule,
+    String message,
+  ) =>
+      (value) => domainRule(value) == null ? null : message;
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    final profile = widget.repository.current;
+
     return ListView(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.fromLTRB(
+        CosechaSpace.screenMargin,
+        CosechaSpace.md,
+        CosechaSpace.screenMargin,
+        CosechaSpace.lg,
+      ),
       children: [
-        const Text(
-          'Commercial profile',
-          style: TextStyle(
-            fontSize: 27,
-            fontWeight: FontWeight.w800,
-            color: FruitLogixPalette.forest,
-          ),
+        _AccountCard(
+          businessName: profile.businessName,
+          fullName: profile.fullName,
+          role: l10n.roleCommercialClient,
         ),
-        const SizedBox(height: 5),
-        const Text(
-          'Demo information · changes last for this app session',
-          style: TextStyle(color: FruitLogixPalette.forestSoft),
+        const SizedBox(height: CosechaSpace.xs),
+        Text(
+          l10n.profileDemoNote,
+          style: textTheme.bodySmall
+              ?.copyWith(color: context.cosechaContentSecondary),
         ),
-        const SizedBox(height: 22),
-        Container(
-          decoration: BoxDecoration(
-            color: FruitLogixPalette.forest,
-            borderRadius: BorderRadius.circular(22),
-          ),
-          padding: const EdgeInsets.all(20),
-          child: Form(
+        const SizedBox(height: CosechaSpace.md),
+        CosechaOverline(l10n.profileContactSection),
+        const SizedBox(height: CosechaSpace.xs),
+        if (_editing)
+          Form(
             key: _formKey,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Row(children: [
-                  Icon(Icons.business_outlined, color: FruitLogixPalette.lime),
-                  SizedBox(width: 10),
-                  Text('PROFILE AND CONTACT', style: TextStyle(
-                    color: FruitLogixPalette.lime,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.8,
-                  )),
-                ]),
-                const SizedBox(height: 20),
-                _input(
-                  label: 'Full name',
+                CosechaTextField(
+                  label: l10n.profileFullName,
                   controller: _fullName,
-                  validator: CommercialClientProfile.validateFullName,
+                  textInputAction: TextInputAction.next,
+                  validator: _rule(
+                    CommercialClientProfile.validateFullName,
+                    l10n.profileFullNameError,
+                  ),
                 ),
-                _input(
-                  label: 'Business name',
+                const SizedBox(height: CosechaSpace.sm),
+                CosechaTextField(
+                  label: l10n.profileBusinessName,
                   controller: _businessName,
-                  validator: CommercialClientProfile.validateBusinessName,
+                  textInputAction: TextInputAction.next,
+                  validator: _rule(
+                    CommercialClientProfile.validateBusinessName,
+                    l10n.profileBusinessNameError,
+                  ),
                 ),
-                _input(
-                  label: 'Email',
+                const SizedBox(height: CosechaSpace.sm),
+                CosechaTextField(
+                  label: l10n.profileEmail,
                   controller: _email,
-                  keyboard: TextInputType.emailAddress,
-                  validator: CommercialClientProfile.validateEmail,
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
+                  validator: _rule(
+                    CommercialClientProfile.validateEmail,
+                    l10n.profileEmailError,
+                  ),
                 ),
-                _input(
-                  label: 'Contact phone',
+                const SizedBox(height: CosechaSpace.sm),
+                CosechaTextField(
+                  label: l10n.profilePhone,
                   controller: _phone,
-                  keyboard: TextInputType.phone,
-                  validator: CommercialClientProfile.validatePhone,
+                  keyboardType: TextInputType.phone,
+                  textInputAction: TextInputAction.next,
+                  validator: _rule(
+                    CommercialClientProfile.validatePhone,
+                    l10n.profilePhoneError,
+                  ),
                 ),
-                _input(
-                  label: 'Business RUC',
+                const SizedBox(height: CosechaSpace.sm),
+                CosechaTextField(
+                  label: l10n.profileTaxId,
                   controller: _taxId,
-                  keyboard: TextInputType.number,
-                  validator: CommercialClientProfile.validateTaxId,
+                  keyboardType: TextInputType.number,
+                  textInputAction: TextInputAction.done,
+                  validator: _rule(
+                    CommercialClientProfile.validateTaxId,
+                    l10n.profileTaxIdError,
+                  ),
+                ),
+                const SizedBox(height: CosechaSpace.md),
+                CosechaPrimaryButton(
+                  label: l10n.profileSave,
+                  icon: Icons.save_outlined,
+                  onPressed: _save,
+                ),
+                const SizedBox(height: CosechaSpace.xs),
+                Center(
+                  child: CosechaTextButton(
+                    label: l10n.cancel,
+                    onPressed: _cancel,
+                  ),
+                ),
+              ],
+            ),
+          )
+        else ...[
+          CosechaCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                CosechaInfoRow(
+                  icon: Icons.person_outline,
+                  label: l10n.profileFullName,
+                  value: profile.fullName,
+                ),
+                const _RowDivider(),
+                CosechaInfoRow(
+                  icon: Icons.storefront_outlined,
+                  label: l10n.profileBusinessName,
+                  value: profile.businessName,
+                ),
+                const _RowDivider(),
+                CosechaInfoRow(
+                  icon: Icons.mail_outline,
+                  label: l10n.profileEmail,
+                  value: profile.email,
+                ),
+                const _RowDivider(),
+                CosechaInfoRow(
+                  icon: Icons.phone_outlined,
+                  label: l10n.profilePhone,
+                  value: profile.phone,
+                  mono: true,
+                ),
+                const _RowDivider(),
+                CosechaInfoRow(
+                  icon: Icons.badge_outlined,
+                  label: l10n.profileTaxId,
+                  value: profile.taxId,
+                  mono: true,
                 ),
               ],
             ),
           ),
-        ),
-        const SizedBox(height: 18),
-        if (!_editing)
-          FilledButton.icon(
+          const SizedBox(height: CosechaSpace.md),
+          CosechaSecondaryButton(
+            label: l10n.profileEdit,
+            icon: Icons.edit_outlined,
             onPressed: () => setState(() => _editing = true),
-            icon: const Icon(Icons.edit_outlined),
-            label: const Text('Edit profile'),
-          )
-        else ...[
-          FilledButton.icon(
-            onPressed: _save,
-            icon: const Icon(Icons.save_outlined),
-            label: const Text('Save changes'),
-          ),
-          const SizedBox(height: 8),
-          OutlinedButton(
-            onPressed: _reset,
-            child: const Text('Cancel'),
           ),
         ],
       ],
     );
   }
+}
 
-  Widget _input({
-    required String label,
-    required TextEditingController controller,
-    required String? Function(String?) validator,
-    TextInputType keyboard = TextInputType.text,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: TextFormField(
-        controller: controller,
-        readOnly: !_editing,
-        keyboardType: keyboard,
-        style: const TextStyle(color: Colors.white),
-        validator: validator,
-        autovalidateMode: AutovalidateMode.disabled,
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: const TextStyle(color: FruitLogixPalette.muted),
-          floatingLabelStyle: const TextStyle(color: FruitLogixPalette.lime),
-          filled: true,
-          fillColor: FruitLogixPalette.forestSoft,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 17,
+class _RowDivider extends StatelessWidget {
+  const _RowDivider();
+
+  @override
+  Widget build(BuildContext context) => const Padding(
+        padding: EdgeInsets.symmetric(vertical: CosechaSpace.inner),
+        child: Divider(),
+      );
+}
+
+/// Dark account card (an allowed highlighted block in Cosecha).
+class _AccountCard extends StatelessWidget {
+  const _AccountCard({
+    required this.businessName,
+    required this.fullName,
+    required this.role,
+  });
+
+  final String businessName;
+  final String fullName;
+  final String role;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final colors = CosechaStatusColors.of(context);
+    return CosechaCard(
+      tone: CosechaCardTone.dark,
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: scheme.primaryContainer,
+              shape: BoxShape.circle,
+            ),
+            child: Text(
+              initialsOf(fullName),
+              style: textTheme.titleMedium
+                  ?.copyWith(color: scheme.onPrimaryContainer),
+            ),
           ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: BorderSide.none,
+          const SizedBox(width: CosechaSpace.inner),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  businessName,
+                  style: textTheme.titleMedium
+                      ?.copyWith(color: colors.onDarkPrimary),
+                ),
+                Text(
+                  fullName,
+                  style: textTheme.bodyMedium
+                      ?.copyWith(color: colors.onDarkSecondary),
+                ),
+                const SizedBox(height: CosechaSpace.xs),
+                CosechaStatusTag(
+                  label: role,
+                  status: CosechaStatus.highlight,
+                ),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

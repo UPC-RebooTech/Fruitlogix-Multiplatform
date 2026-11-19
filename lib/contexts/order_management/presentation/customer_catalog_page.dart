@@ -1,10 +1,33 @@
 import 'package:flutter/material.dart';
 
-import '../../../app/fruitlogix_theme.dart';
+import '../../../l10n/app_localizations.dart';
+import '../../../shared/ui/components/components.dart';
+import '../../../shared/ui/formatters/money_format.dart';
+import '../../../shared/ui/theme/theme.dart';
 import '../application/cart_controller.dart';
 import '../domain/fruit_product.dart';
 import '../infrastructure/demo_catalog_repository.dart';
 import '../infrastructure/in_memory_order_repository.dart';
+
+/// Category filters. [key] matches `FruitProduct.category` (domain data);
+/// the label comes from the ARB files.
+enum _CatalogFilter {
+  all(null),
+  fruits('Fruits'),
+  vegetables('Vegetables');
+
+  const _CatalogFilter(this.key);
+
+  final String? key;
+
+  bool matches(FruitProduct product) => key == null || product.category == key;
+
+  String label(AppLocalizations l10n) => switch (this) {
+        _CatalogFilter.all => l10n.catalogFilterAll,
+        _CatalogFilter.fruits => l10n.catalogFilterFruits,
+        _CatalogFilter.vegetables => l10n.catalogFilterVegetables,
+      };
+}
 
 class CustomerCatalogPage extends StatefulWidget {
   const CustomerCatalogPage({required this.onOrderCreated, super.key});
@@ -17,7 +40,7 @@ class CustomerCatalogPage extends StatefulWidget {
 
 class _CustomerCatalogPageState extends State<CustomerCatalogPage> {
   late final CartController _cart;
-  String _category = 'All';
+  _CatalogFilter _filter = _CatalogFilter.all;
 
   @override
   void initState() {
@@ -31,88 +54,15 @@ class _CustomerCatalogPageState extends State<CustomerCatalogPage> {
     super.dispose();
   }
 
-
   Future<void> _reviewOrder() async {
-    String address = '';
-    DateTime? chosenDate;
-
-    final route = DialogRoute<({String address, DateTime deliveryDate})>(
+    final result = await showModalBottomSheet<_OrderReviewResult>(
       context: context,
-      builder: (dialogContext) => StatefulBuilder(
-        builder: (dialogContext, updateDialog) => AlertDialog(
-          title: const Text('Confirm order'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '${_cart.itemCount} kg · S/ ${_cart.total.toStringAsFixed(2)}',
-                ),
-                const SizedBox(height: 14),
-                TextField(
-                  onChanged: (value) {
-                    updateDialog(() => address = value);
-                  },
-                  decoration: const InputDecoration(
-                    labelText: 'Delivery address',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                OutlinedButton.icon(
-                  onPressed: () async {
-                    final now = DateTime.now();
-                    final picked = await showDatePicker(
-                      context: dialogContext,
-                      initialDate: chosenDate ??
-                          now.add(const Duration(days: 1)),
-                      firstDate: now,
-                      lastDate: now.add(const Duration(days: 365)),
-                    );
-
-                    if (!dialogContext.mounted || picked == null) {
-                      return;
-                    }
-
-                    updateDialog(() => chosenDate = picked);
-                  },
-                  icon: const Icon(Icons.calendar_month_outlined),
-                  label: Text(
-                    chosenDate == null
-                        ? 'Choose delivery date'
-                        : '${chosenDate!.day}/${chosenDate!.month}/${chosenDate!.year}',
-                  ),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Cancel'),
-            ),
-            FilledButton(
-              onPressed: chosenDate == null || address.trim().isEmpty
-                  ? null
-                  : () {
-                Navigator.of(dialogContext).pop((
-                address: address.trim(),
-                deliveryDate: chosenDate!,
-                ));
-              },
-              child: const Text('Save order'),
-            ),
-          ],
-        ),
+      isScrollControlled: true,
+      builder: (_) => _OrderReviewSheet(
+        quantity: _cart.itemCount,
+        total: _cart.total,
       ),
     );
-
-    final result = await Navigator.of(context).push(route);
-
-    // Wait until the dialog and its overlay are fully removed.
-    await route.completed;
-
     if (!mounted || result == null) return;
 
     InMemoryOrderRepository.instance.placeOrder(
@@ -125,72 +75,67 @@ class _CustomerCatalogPageState extends State<CustomerCatalogPage> {
     widget.onOrderCreated();
   }
 
-
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AnimatedBuilder(
       animation: _cart,
       builder: (context, _) {
-        final visible = _cart.products
-            .where((product) => _category == 'All' || product.category == _category)
-            .toList();
+        final visible = _cart.products.where(_filter.matches).toList();
         return Column(
           children: [
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.all(18),
+                padding: const EdgeInsets.fromLTRB(
+                  CosechaSpace.screenMargin,
+                  CosechaSpace.md,
+                  CosechaSpace.screenMargin,
+                  CosechaSpace.md,
+                ),
                 children: [
-                  const Text('Commercial catalog',
-                      style: TextStyle(
-                        fontSize: 27,
-                        fontWeight: FontWeight.bold,
-                        color: FruitLogixPalette.forest,
-                      )),
-                  const Text('Products and prices are DEMO data'),
-                  const SizedBox(height: 14),
-                  Wrap(spacing: 8, children: [
-                    for (final category in const ['All', 'Fruits', 'Vegetables'])
-                      ChoiceChip(
-                        label: Text(category),
-                        selected: _category == category,
-                        onSelected: (_) => setState(() => _category = category),
-                      ),
-                  ]),
-                  const SizedBox(height: 10),
+                  CosechaPageHeader(
+                    title: l10n.catalogTitle,
+                    subtitle: l10n.catalogSubtitle,
+                  ),
+                  const SizedBox(height: CosechaSpace.sm),
+                  Wrap(
+                    spacing: CosechaSpace.xs,
+                    runSpacing: CosechaSpace.xs,
+                    children: [
+                      for (final filter in _CatalogFilter.values)
+                        CosechaFilterChip(
+                          label: filter.label(l10n),
+                          selected: _filter == filter,
+                          onSelected: (_) => setState(() => _filter = filter),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: CosechaSpace.sm),
+                  if (visible.isEmpty)
+                    CosechaEmptyState(
+                      icon: Icons.inventory_2_outlined,
+                      title: l10n.catalogEmptyTitle,
+                      message: l10n.catalogEmptyMessage,
+                    ),
                   for (final product in visible) ...[
-                    _ProductTile(
+                    _ProductCard(
                       product: product,
                       quantity: _cart.quantityFor(product.id),
                       onAdd: () => _cart.add(product),
                       onRemove: () => _cart.remove(product),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: CosechaSpace.xs),
                   ],
                 ],
               ),
             ),
             if (_cart.itemCount > 0)
-              SafeArea(
-                top: false,
-                child: Container(
-                  color: FruitLogixPalette.forestSoft,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  child: Row(children: [
-                    Expanded(
-                      child: Text(
-                        '${_cart.itemCount} kg · S/ ${_cart.total.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    FilledButton(
-                      onPressed: _reviewOrder,
-                      child: const Text('Review order'),
-                    ),
-                  ]),
+              _CartPanel(
+                summary: l10n.cartSummary(
+                  _cart.itemCount,
+                  formatSoles(_cart.total),
                 ),
+                onReview: _reviewOrder,
               ),
           ],
         );
@@ -199,8 +144,8 @@ class _CustomerCatalogPageState extends State<CustomerCatalogPage> {
   }
 }
 
-class _ProductTile extends StatelessWidget {
-  const _ProductTile({
+class _ProductCard extends StatelessWidget {
+  const _ProductCard({
     required this.product,
     required this.quantity,
     required this.onAdd,
@@ -213,48 +158,307 @@ class _ProductTile extends StatelessWidget {
   final VoidCallback onRemove;
 
   @override
-  Widget build(BuildContext context) => Card(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    final data = CosechaDataText.of(context);
+    return CosechaCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(children: [
-                const Icon(Icons.eco_outlined, color: FruitLogixPalette.lime),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(product.name,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      )),
+              const CosechaIconBox(icon: Icons.eco_outlined),
+              const SizedBox(width: CosechaSpace.inner),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      product.name,
+                      style: textTheme.titleMedium
+                          ?.copyWith(color: context.cosechaContent),
+                    ),
+                    Text(
+                      product.description,
+                      style: textTheme.bodyMedium
+                          ?.copyWith(color: context.cosechaContentSecondary),
+                    ),
+                  ],
                 ),
-                Text('S/ ${product.price.toStringAsFixed(2)}/${product.unit}',
-                    style: const TextStyle(color: FruitLogixPalette.lime)),
-              ]),
-              const SizedBox(height: 8),
-              Text(product.description,
-                  style: const TextStyle(color: FruitLogixPalette.muted)),
-              const SizedBox(height: 5),
-              Text('Stock: ${product.stock} ${product.unit}',
-                  style: const TextStyle(color: FruitLogixPalette.muted)),
-              const SizedBox(height: 12),
-              Row(children: [
-                if (quantity > 0) ...[
-                  IconButton.filledTonal(
-                      tooltip: 'Remove ${product.name}',
-                      onPressed: onRemove,
-                      icon: const Icon(Icons.remove)),
-                  Text('$quantity', style: const TextStyle(color: Colors.white)),
-                ],
-                IconButton.filledTonal(
-                    tooltip: 'Add ${product.name}',
-                    onPressed: quantity < product.stock ? onAdd : null,
-                    icon: const Icon(Icons.add)),
-              ]),
+              ),
+            ],
+          ),
+          const SizedBox(height: CosechaSpace.inner),
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${formatSoles(product.price)} / ${product.unit}',
+                      style: data.dataMono.copyWith(
+                        color: context.cosechaContent,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
+                      l10n.productStock(product.stock, product.unit),
+                      style: data.dataMonoSmall
+                          .copyWith(color: context.cosechaContentSecondary),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: CosechaSpace.xs),
+              _QuantityStepper(
+                quantity: quantity,
+                unit: product.unit,
+                canAdd: quantity < product.stock,
+                addTooltip: l10n.productAddTooltip(product.name),
+                removeTooltip: l10n.productRemoveTooltip(product.name),
+                onAdd: onAdd,
+                onRemove: onRemove,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// − quantity + with 48 touch targets (mint tonal buttons).
+class _QuantityStepper extends StatelessWidget {
+  const _QuantityStepper({
+    required this.quantity,
+    required this.unit,
+    required this.canAdd,
+    required this.addTooltip,
+    required this.removeTooltip,
+    required this.onAdd,
+    required this.onRemove,
+  });
+
+  final int quantity;
+  final String unit;
+  final bool canAdd;
+  final String addTooltip;
+  final String removeTooltip;
+  final VoidCallback onAdd;
+  final VoidCallback onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton.filledTonal(
+          tooltip: removeTooltip,
+          onPressed: quantity > 0 ? onRemove : null,
+          icon: const Icon(Icons.remove),
+        ),
+        Semantics(
+          liveRegion: true,
+          label: l10n.productInCart(quantity, unit),
+          excludeSemantics: true,
+          child: SizedBox(
+            width: 40,
+            child: Text(
+              '$quantity',
+              textAlign: TextAlign.center,
+              style: CosechaDataText.of(context)
+                  .dataMono
+                  .copyWith(color: context.cosechaContent),
+            ),
+          ),
+        ),
+        IconButton.filledTonal(
+          tooltip: addTooltip,
+          onPressed: canAdd ? onAdd : null,
+          icon: const Icon(Icons.add),
+        ),
+      ],
+    );
+  }
+}
+
+/// Sticky summary of the current order with the screen's primary action.
+class _CartPanel extends StatelessWidget {
+  const _CartPanel({required this.summary, required this.onReview});
+
+  final String summary;
+  final VoidCallback onReview;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    return Material(
+      color: scheme.surfaceContainerLowest,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          border: Border(top: BorderSide(color: scheme.outlineVariant)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: CosechaSpace.screenMargin,
+            vertical: CosechaSpace.inner,
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CosechaOverline(l10n.cartOverline),
+                    Text(
+                      summary,
+                      style: CosechaDataText.of(context)
+                          .dataMono
+                          .copyWith(color: scheme.onSurface),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: CosechaSpace.sm),
+              CosechaPrimaryButton(
+                label: l10n.reviewOrder,
+                onPressed: onReview,
+                expand: false,
+              ),
             ],
           ),
         ),
-      );
+      ),
+    );
+  }
+}
+
+typedef _OrderReviewResult = ({String address, DateTime deliveryDate});
+
+/// Bottom sheet to confirm the order: address and delivery date, validated
+/// when tapping Save (Cosecha rule 11).
+class _OrderReviewSheet extends StatefulWidget {
+  const _OrderReviewSheet({required this.quantity, required this.total});
+
+  final int quantity;
+  final double total;
+
+  @override
+  State<_OrderReviewSheet> createState() => _OrderReviewSheetState();
+}
+
+class _OrderReviewSheetState extends State<_OrderReviewSheet> {
+  final _formKey = GlobalKey<FormState>();
+  final _address = TextEditingController();
+  DateTime? _deliveryDate;
+
+  @override
+  void dispose() {
+    _address.dispose();
+    super.dispose();
+  }
+
+  void _save() {
+    if (!_formKey.currentState!.validate()) return;
+    Navigator.of(context).pop<_OrderReviewResult>((
+      address: _address.text.trim(),
+      deliveryDate: _deliveryDate!,
+    ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    final scheme = Theme.of(context).colorScheme;
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.viewInsetsOf(context).bottom,
+      ),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(
+          CosechaSpace.md,
+          0,
+          CosechaSpace.md,
+          CosechaSpace.lg,
+        ),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Semantics(
+                header: true,
+                child: Text(l10n.orderReviewTitle, style: textTheme.titleLarge),
+              ),
+              const SizedBox(height: CosechaSpace.sm),
+              CosechaCard(
+                tone: CosechaCardTone.light,
+                padding: const EdgeInsets.all(CosechaSpace.inner),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        l10n.orderReviewTotal,
+                        style: textTheme.titleSmall,
+                      ),
+                    ),
+                    Text(
+                      l10n.cartSummary(
+                        widget.quantity,
+                        formatSoles(widget.total),
+                      ),
+                      style: CosechaDataText.of(context)
+                          .dataMono
+                          .copyWith(color: scheme.onSurface),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: CosechaSpace.md),
+              CosechaTextField(
+                label: l10n.deliveryAddressLabel,
+                hint: l10n.deliveryAddressHint,
+                controller: _address,
+                keyboardType: TextInputType.streetAddress,
+                textInputAction: TextInputAction.done,
+                validator: (value) => (value ?? '').trim().isEmpty
+                    ? l10n.deliveryAddressRequired
+                    : null,
+              ),
+              const SizedBox(height: CosechaSpace.sm),
+              CosechaDateField(
+                label: l10n.deliveryDateLabel,
+                hint: l10n.deliveryDateHint,
+                firstDate: today,
+                lastDate: today.add(const Duration(days: 365)),
+                onChanged: (date) => _deliveryDate = date,
+                validator: (date) =>
+                    date == null ? l10n.deliveryDateRequired : null,
+              ),
+              const SizedBox(height: CosechaSpace.md),
+              CosechaPrimaryButton(label: l10n.saveOrder, onPressed: _save),
+              const SizedBox(height: CosechaSpace.xs),
+              Center(
+                child: CosechaTextButton(
+                  label: l10n.cancel,
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
