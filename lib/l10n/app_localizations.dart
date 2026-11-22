@@ -176,6 +176,30 @@ abstract class AppLocalizations {
   /// **'Business and contact details'**
   String get profileDetail;
 
+  /// No description provided for @profileLegalSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal information'**
+  String get profileLegalSection;
+
+  /// No description provided for @profileLegalTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms and Conditions'**
+  String get profileLegalTerms;
+
+  /// No description provided for @profileLegalPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get profileLegalPrivacy;
+
+  /// No description provided for @profileLegalOpenError.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to open the document'**
+  String get profileLegalOpenError;
+
   /// No description provided for @dashboardOverline.
   ///
   /// In en, this message translates to:

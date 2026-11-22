@@ -16,6 +16,10 @@
   "paymentsDetail": "Facturas y saldo pendiente",
   "profileTitle": "Perfil",
   "profileDetail": "Datos del negocio y de contacto",
+  "profileLegalSection": "Información legal",
+  "profileLegalTerms": "Términos y Condiciones",
+  "profileLegalPrivacy": "Política de Privacidad",
+  "profileLegalOpenError": "No se pudo abrir el documento",
 
   "dashboardOverline": "Tu panel",
   "dashboardWelcome": "Hola, {name}",

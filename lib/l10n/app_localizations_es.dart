@@ -49,6 +49,18 @@ class AppLocalizationsEs extends AppLocalizations {
   String get profileDetail => 'Datos del negocio y de contacto';
 
   @override
+  String get profileLegalSection => 'Información legal';
+
+  @override
+  String get profileLegalTerms => 'Términos y Condiciones';
+
+  @override
+  String get profileLegalPrivacy => 'Política de Privacidad';
+
+  @override
+  String get profileLegalOpenError => 'No se pudo abrir el documento';
+
+  @override
   String get dashboardOverline => 'Tu panel';
 
   @override
