@@ -6,6 +6,7 @@ import '../../../shared/ui/formatters/initials.dart';
 import '../../../shared/ui/theme/theme.dart';
 import '../domain/commercial_client_profile.dart';
 import '../domain/commercial_client_profile_repository.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// Read/edit commercial client information with local demo persistence.
 /// Production profile verification and backend persistence are out of scope.
@@ -54,6 +55,39 @@ class _CustomerProfilePageState extends State<CustomerProfilePage> {
     _phone.dispose();
     _taxId.dispose();
     super.dispose();
+  }
+
+  Future<void> _openLegalDocument(String document) async {
+    final language = Localizations.localeOf(context).languageCode == 'es'
+        ? 'es'
+        : 'en';
+
+    final uri = Uri.https(
+      'upc-rebootech.github.io',
+      '/Fruitlogix-website-v2/$document',
+      {'lang': language},
+    );
+
+    try {
+      final opened = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+
+      if (opened) return;
+    } catch (_) {
+      // El error se comunica al usuario.
+    }
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          AppLocalizations.of(context).profileLegalOpenError,
+        ),
+      ),
+    );
   }
 
   void _cancel() {
@@ -240,6 +274,23 @@ class _CustomerProfilePageState extends State<CustomerProfilePage> {
             onPressed: () => setState(() => _editing = true),
           ),
         ],
+        const SizedBox(height: CosechaSpace.lg),
+        CosechaOverline(l10n.profileLegalSection),
+        const SizedBox(height: CosechaSpace.xs),
+
+        CosechaActionRow(
+          icon: Icons.description_outlined,
+          title: l10n.profileLegalTerms,
+          onTap: () => _openLegalDocument('terminos.html'),
+        ),
+
+        const SizedBox(height: CosechaSpace.xs),
+
+        CosechaActionRow(
+          icon: Icons.privacy_tip_outlined,
+          title: l10n.profileLegalPrivacy,
+          onTap: () => _openLegalDocument('privacidad.html'),
+        ),
       ],
     );
   }

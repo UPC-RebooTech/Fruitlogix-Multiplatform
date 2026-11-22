@@ -49,6 +49,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileDetail => 'Business and contact details';
 
   @override
+  String get profileLegalSection => 'Legal information';
+
+  @override
+  String get profileLegalTerms => 'Terms and Conditions';
+
+  @override
+  String get profileLegalPrivacy => 'Privacy Policy';
+
+  @override
+  String get profileLegalOpenError => 'Unable to open the document';
+
+  @override
   String get dashboardOverline => 'Your dashboard';
 
   @override

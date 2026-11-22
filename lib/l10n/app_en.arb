@@ -17,6 +17,10 @@
   "paymentsDetail": "Invoices and pending balance",
   "profileTitle": "Profile",
   "profileDetail": "Business and contact details",
+  "profileLegalSection": "Legal information",
+  "profileLegalTerms": "Terms and Conditions",
+  "profileLegalPrivacy": "Privacy Policy",
+  "profileLegalOpenError": "Unable to open the document",
 
   "dashboardOverline": "Your dashboard",
   "dashboardWelcome": "Welcome, {name}",
