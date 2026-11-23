@@ -218,16 +218,20 @@
   "profileFullName": "Full name",
   "profileBusinessName": "Business name",
   "profileEmail": "Email",
-  "profilePhone": "Contact phone",
+  "profilePhone": "Contact mobile",
   "profileTaxId": "RUC",
   "profileFullNameError": "Enter your full name",
   "profileBusinessNameError": "Enter your business name",
   "profileEmailError": "Enter a valid email",
-  "profilePhoneError": "Enter a valid phone number",
+  "profilePhoneError": "Enter a valid 9-digit Peruvian mobile number",
   "profileTaxIdError": "The RUC must have 11 digits",
   "profileEdit": "Edit profile",
   "profileSave": "Save changes",
-  "profileSaved": "Profile updated for this session (demo)",
+  "profileSaved": "Profile updated successfully",
+  "profileStoredOnDevice": "Profile information is stored on this device only.",
+  "profileSaveFailed": "Could not save your profile. Please try again.",
+  "profileLoadFailed": "Could not load your local profile.",
+  "profileRetry": "Try again",
 
   "featurePending": "Implementation pending"
 }

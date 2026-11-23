@@ -490,7 +490,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get profileEmail => 'Correo electrónico';
 
   @override
-  String get profilePhone => 'Teléfono de contacto';
+  String get profilePhone => 'Celular de contacto';
 
   @override
   String get profileTaxId => 'RUC';
@@ -505,7 +505,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get profileEmailError => 'Ingresa un correo válido';
 
   @override
-  String get profilePhoneError => 'Ingresa un teléfono válido';
+  String get profilePhoneError =>
+      'Ingresa un celular peruano válido de 9 dígitos';
 
   @override
   String get profileTaxIdError => 'El RUC debe tener 11 dígitos';
@@ -517,7 +518,21 @@ class AppLocalizationsEs extends AppLocalizations {
   String get profileSave => 'Guardar cambios';
 
   @override
-  String get profileSaved => 'Perfil actualizado para esta sesión (demo)';
+  String get profileSaved => 'Perfil actualizado correctamente';
+
+  @override
+  String get profileStoredOnDevice =>
+      'Los datos del perfil se guardan únicamente en este dispositivo.';
+
+  @override
+  String get profileSaveFailed =>
+      'No se pudo guardar el perfil. Inténtalo nuevamente.';
+
+  @override
+  String get profileLoadFailed => 'No se pudo cargar tu perfil local.';
+
+  @override
+  String get profileRetry => 'Reintentar';
 
   @override
   String get featurePending => 'Implementación pendiente';

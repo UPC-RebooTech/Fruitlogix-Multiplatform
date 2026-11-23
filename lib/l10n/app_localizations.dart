@@ -983,7 +983,7 @@ abstract class AppLocalizations {
   /// No description provided for @profilePhone.
   ///
   /// In en, this message translates to:
-  /// **'Contact phone'**
+  /// **'Contact mobile'**
   String get profilePhone;
 
   /// No description provided for @profileTaxId.
@@ -1013,7 +1013,7 @@ abstract class AppLocalizations {
   /// No description provided for @profilePhoneError.
   ///
   /// In en, this message translates to:
-  /// **'Enter a valid phone number'**
+  /// **'Enter a valid 9-digit Peruvian mobile number'**
   String get profilePhoneError;
 
   /// No description provided for @profileTaxIdError.
@@ -1037,8 +1037,32 @@ abstract class AppLocalizations {
   /// No description provided for @profileSaved.
   ///
   /// In en, this message translates to:
-  /// **'Profile updated for this session (demo)'**
+  /// **'Profile updated successfully'**
   String get profileSaved;
+
+  /// No description provided for @profileStoredOnDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile information is stored on this device only.'**
+  String get profileStoredOnDevice;
+
+  /// No description provided for @profileSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save your profile. Please try again.'**
+  String get profileSaveFailed;
+
+  /// No description provided for @profileLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load your local profile.'**
+  String get profileLoadFailed;
+
+  /// No description provided for @profileRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get profileRetry;
 
   /// No description provided for @featurePending.
   ///

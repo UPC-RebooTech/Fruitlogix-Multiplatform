@@ -162,16 +162,20 @@
   "profileFullName": "Nombre completo",
   "profileBusinessName": "Razón social",
   "profileEmail": "Correo electrónico",
-  "profilePhone": "Teléfono de contacto",
+  "profilePhone": "Celular de contacto",
   "profileTaxId": "RUC",
   "profileFullNameError": "Ingresa tu nombre completo",
   "profileBusinessNameError": "Ingresa la razón social",
   "profileEmailError": "Ingresa un correo válido",
-  "profilePhoneError": "Ingresa un teléfono válido",
+  "profilePhoneError": "Ingresa un celular peruano válido de 9 dígitos",
   "profileTaxIdError": "El RUC debe tener 11 dígitos",
   "profileEdit": "Editar perfil",
   "profileSave": "Guardar cambios",
-  "profileSaved": "Perfil actualizado para esta sesión (demo)",
+  "profileSaved": "Perfil actualizado correctamente",
+  "profileStoredOnDevice": "Los datos del perfil se guardan únicamente en este dispositivo.",
+  "profileSaveFailed": "No se pudo guardar el perfil. Inténtalo nuevamente.",
+  "profileLoadFailed": "No se pudo cargar tu perfil local.",
+  "profileRetry": "Reintentar",
 
   "featurePending": "Implementación pendiente"
 }
