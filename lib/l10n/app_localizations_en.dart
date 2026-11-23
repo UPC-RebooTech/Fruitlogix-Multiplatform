@@ -49,6 +49,98 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileDetail => 'Business and contact details';
 
   @override
+  String get authLoginTitle => 'Sign in';
+
+  @override
+  String get authRegisterTitle => 'Create your account';
+
+  @override
+  String get authWelcome => 'FruitLogix for commercial clients';
+
+  @override
+  String get authUsername => 'Username';
+
+  @override
+  String get authPassword => 'Password';
+
+  @override
+  String get authConfirmPassword => 'Confirm password';
+
+  @override
+  String get authSignIn => 'Sign in';
+
+  @override
+  String get authCreateAccount => 'Create account';
+
+  @override
+  String get authRememberMe => 'Keep me signed in';
+
+  @override
+  String get authAcceptance =>
+      'I accept the Terms of Service and Privacy Policy';
+
+  @override
+  String get authMustAccept =>
+      'You must accept the terms and privacy policy to register.';
+
+  @override
+  String get authSwitchToLogin => 'Already have an account? Sign in';
+
+  @override
+  String get authSwitchToRegister => 'New here? Create an account';
+
+  @override
+  String get authUsernameRequired => 'Enter your username';
+
+  @override
+  String get authInvalidUsername =>
+      'Use 4–20 lowercase letters, digits, dots or underscores.';
+
+  @override
+  String get authRequiredPassword => 'Enter your password';
+
+  @override
+  String get authInvalidPassword =>
+      'Use at least 8 characters, including a letter and a number.';
+
+  @override
+  String get authPasswordMismatch => 'Passwords do not match';
+
+  @override
+  String get authInvalidCredentials => 'Invalid username or password';
+
+  @override
+  String get authUsernameUnavailable => 'Username unavailable or invalid';
+
+  @override
+  String get authNetworkError => 'Could not connect to the server. Try again.';
+
+  @override
+  String get authServerError => 'Server error. Please try again later.';
+
+  @override
+  String get authUnexpectedResponse => 'Unexpected response. Please try again.';
+
+  @override
+  String get authSignOut => 'Sign out';
+
+  @override
+  String get authLocalProfileNote =>
+      'Business and contact details are managed in Profile.';
+
+  @override
+  String get profileLegalSection => 'Legal information';
+
+  @override
+  String get profileLegalTerms => 'Terms and Conditions';
+
+  @override
+  String get profileLegalPrivacy => 'Privacy Policy';
+
+  @override
+  String get profileLegalOpenError => 'Unable to open the document';
+
+  @override
   String get dashboardOverline => 'Your dashboard';
 
   @override
@@ -395,7 +487,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileEmail => 'Email';
 
   @override
-  String get profilePhone => 'Contact phone';
+  String get profilePhone => 'Contact mobile';
 
   @override
   String get profileTaxId => 'RUC';
@@ -410,7 +502,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileEmailError => 'Enter a valid email';
 
   @override
-  String get profilePhoneError => 'Enter a valid phone number';
+  String get profilePhoneError =>
+      'Enter a valid 9-digit Peruvian mobile number';
 
   @override
   String get profileTaxIdError => 'The RUC must have 11 digits';
@@ -422,7 +515,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileSave => 'Save changes';
 
   @override
-  String get profileSaved => 'Profile updated for this session (demo)';
+  String get profileSaved => 'Profile updated successfully';
+
+  @override
+  String get profileStoredOnDevice =>
+      'Profile information is stored on this device only.';
+
+  @override
+  String get profileSaveFailed =>
+      'Could not save your profile. Please try again.';
+
+  @override
+  String get profileLoadFailed => 'Could not load your local profile.';
+
+  @override
+  String get profileRetry => 'Try again';
 
   @override
   String get featurePending => 'Implementation pending';

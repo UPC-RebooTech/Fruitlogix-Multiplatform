@@ -18,6 +18,7 @@ class CosechaTextField extends StatelessWidget {
     this.keyboardType,
     this.textInputAction,
     this.readOnly = false,
+    this.obscureText = false,
     this.enabled = true,
     this.maxLines = 1,
     this.onChanged,
@@ -32,6 +33,7 @@ class CosechaTextField extends StatelessWidget {
   final TextInputType? keyboardType;
   final TextInputAction? textInputAction;
   final bool readOnly;
+  final bool obscureText;
   final bool enabled;
   final int maxLines;
   final ValueChanged<String>? onChanged;
@@ -62,6 +64,7 @@ class CosechaTextField extends StatelessWidget {
             TextField(
               controller: controller,
               readOnly: readOnly,
+              obscureText: obscureText,
               enabled: enabled,
               maxLines: maxLines,
               keyboardType: keyboardType,

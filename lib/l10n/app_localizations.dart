@@ -176,6 +176,180 @@ abstract class AppLocalizations {
   /// **'Business and contact details'**
   String get profileDetail;
 
+  /// No description provided for @authLoginTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get authLoginTitle;
+
+  /// No description provided for @authRegisterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your account'**
+  String get authRegisterTitle;
+
+  /// No description provided for @authWelcome.
+  ///
+  /// In en, this message translates to:
+  /// **'FruitLogix for commercial clients'**
+  String get authWelcome;
+
+  /// No description provided for @authUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Username'**
+  String get authUsername;
+
+  /// No description provided for @authPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get authPassword;
+
+  /// No description provided for @authConfirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm password'**
+  String get authConfirmPassword;
+
+  /// No description provided for @authSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get authSignIn;
+
+  /// No description provided for @authCreateAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create account'**
+  String get authCreateAccount;
+
+  /// No description provided for @authRememberMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep me signed in'**
+  String get authRememberMe;
+
+  /// No description provided for @authAcceptance.
+  ///
+  /// In en, this message translates to:
+  /// **'I accept the Terms of Service and Privacy Policy'**
+  String get authAcceptance;
+
+  /// No description provided for @authMustAccept.
+  ///
+  /// In en, this message translates to:
+  /// **'You must accept the terms and privacy policy to register.'**
+  String get authMustAccept;
+
+  /// No description provided for @authSwitchToLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account? Sign in'**
+  String get authSwitchToLogin;
+
+  /// No description provided for @authSwitchToRegister.
+  ///
+  /// In en, this message translates to:
+  /// **'New here? Create an account'**
+  String get authSwitchToRegister;
+
+  /// No description provided for @authUsernameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your username'**
+  String get authUsernameRequired;
+
+  /// No description provided for @authInvalidUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Use 4–20 lowercase letters, digits, dots or underscores.'**
+  String get authInvalidUsername;
+
+  /// No description provided for @authRequiredPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password'**
+  String get authRequiredPassword;
+
+  /// No description provided for @authInvalidPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Use at least 8 characters, including a letter and a number.'**
+  String get authInvalidPassword;
+
+  /// No description provided for @authPasswordMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get authPasswordMismatch;
+
+  /// No description provided for @authInvalidCredentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid username or password'**
+  String get authInvalidCredentials;
+
+  /// No description provided for @authUsernameUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Username unavailable or invalid'**
+  String get authUsernameUnavailable;
+
+  /// No description provided for @authNetworkError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not connect to the server. Try again.'**
+  String get authNetworkError;
+
+  /// No description provided for @authServerError.
+  ///
+  /// In en, this message translates to:
+  /// **'Server error. Please try again later.'**
+  String get authServerError;
+
+  /// No description provided for @authUnexpectedResponse.
+  ///
+  /// In en, this message translates to:
+  /// **'Unexpected response. Please try again.'**
+  String get authUnexpectedResponse;
+
+  /// No description provided for @authSignOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get authSignOut;
+
+  /// No description provided for @authLocalProfileNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Business and contact details are managed in Profile.'**
+  String get authLocalProfileNote;
+
+  /// No description provided for @profileLegalSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal information'**
+  String get profileLegalSection;
+
+  /// No description provided for @profileLegalTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms and Conditions'**
+  String get profileLegalTerms;
+
+  /// No description provided for @profileLegalPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get profileLegalPrivacy;
+
+  /// No description provided for @profileLegalOpenError.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to open the document'**
+  String get profileLegalOpenError;
+
   /// No description provided for @dashboardOverline.
   ///
   /// In en, this message translates to:
@@ -809,7 +983,7 @@ abstract class AppLocalizations {
   /// No description provided for @profilePhone.
   ///
   /// In en, this message translates to:
-  /// **'Contact phone'**
+  /// **'Contact mobile'**
   String get profilePhone;
 
   /// No description provided for @profileTaxId.
@@ -839,7 +1013,7 @@ abstract class AppLocalizations {
   /// No description provided for @profilePhoneError.
   ///
   /// In en, this message translates to:
-  /// **'Enter a valid phone number'**
+  /// **'Enter a valid 9-digit Peruvian mobile number'**
   String get profilePhoneError;
 
   /// No description provided for @profileTaxIdError.
@@ -863,8 +1037,32 @@ abstract class AppLocalizations {
   /// No description provided for @profileSaved.
   ///
   /// In en, this message translates to:
-  /// **'Profile updated for this session (demo)'**
+  /// **'Profile updated successfully'**
   String get profileSaved;
+
+  /// No description provided for @profileStoredOnDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile information is stored on this device only.'**
+  String get profileStoredOnDevice;
+
+  /// No description provided for @profileSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save your profile. Please try again.'**
+  String get profileSaveFailed;
+
+  /// No description provided for @profileLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load your local profile.'**
+  String get profileLoadFailed;
+
+  /// No description provided for @profileRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get profileRetry;
 
   /// No description provided for @featurePending.
   ///

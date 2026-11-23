@@ -6,6 +6,7 @@ import '../../../shared/ui/formatters/initials.dart';
 import '../../../shared/ui/theme/theme.dart';
 import '../domain/commercial_client_profile.dart';
 import '../domain/commercial_client_profile_repository.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// Read/edit commercial client information with local demo persistence.
 /// Production profile verification and backend persistence are out of scope.
@@ -16,11 +17,13 @@ class CustomerProfilePage extends StatefulWidget {
   const CustomerProfilePage({
     required this.repository,
     required this.onSaved,
+    this.onSignOut,
     super.key,
   });
 
   final CommercialClientProfileRepository repository;
   final VoidCallback onSaved;
+  final VoidCallback? onSignOut;
 
   @override
   State<CustomerProfilePage> createState() => _CustomerProfilePageState();
@@ -34,6 +37,7 @@ class _CustomerProfilePageState extends State<CustomerProfilePage> {
   late final TextEditingController _phone;
   late final TextEditingController _taxId;
   bool _editing = false;
+  bool _saving = false;
 
   @override
   void initState() {
@@ -56,6 +60,39 @@ class _CustomerProfilePageState extends State<CustomerProfilePage> {
     super.dispose();
   }
 
+  Future<void> _openLegalDocument(String document) async {
+    final language = Localizations.localeOf(context).languageCode == 'es'
+        ? 'es'
+        : 'en';
+
+    final uri = Uri.https(
+      'upc-rebootech.github.io',
+      '/Fruitlogix-website-v2/$document',
+      {'lang': language},
+    );
+
+    try {
+      final opened = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+
+      if (opened) return;
+    } catch (_) {
+      // El error se comunica al usuario.
+    }
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          AppLocalizations.of(context).profileLegalOpenError,
+        ),
+      ),
+    );
+  }
+
   void _cancel() {
     final profile = widget.repository.current;
     _fullName.text = profile.fullName;
@@ -66,9 +103,11 @@ class _CustomerProfilePageState extends State<CustomerProfilePage> {
     setState(() => _editing = false);
   }
 
-  void _save() {
-    if (!_formKey.currentState!.validate()) return;
+  Future<void> _save() async {
+    if (_saving || !_formKey.currentState!.validate()) return;
+
     final previous = widget.repository.current;
+
     final updated = CommercialClientProfile(
       id: previous.id,
       fullName: _fullName.text.trim(),
@@ -77,12 +116,33 @@ class _CustomerProfilePageState extends State<CustomerProfilePage> {
       phone: _phone.text.trim(),
       taxId: _taxId.text.trim(),
     );
-    widget.repository.save(updated);
-    setState(() => _editing = false);
-    widget.onSaved();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(AppLocalizations.of(context).profileSaved)),
-    );
+
+    setState(() => _saving = true);
+
+    try {
+      await widget.repository.save(updated);
+
+      if (!mounted) return;
+
+      setState(() => _editing = false);
+      widget.onSaved();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context).profileSaved),
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context).profileSaveFailed),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
   }
 
   /// Uses the domain rule and shows the localized message.
@@ -107,15 +167,20 @@ class _CustomerProfilePageState extends State<CustomerProfilePage> {
       ),
       children: [
         _AccountCard(
-          businessName: profile.businessName,
+          businessName: profile.businessName.trim().isEmpty
+              ? l10n.profileBusinessName
+              : profile.businessName,
           fullName: profile.fullName,
           role: l10n.roleCommercialClient,
         ),
         const SizedBox(height: CosechaSpace.xs),
         Text(
-          l10n.profileDemoNote,
-          style: textTheme.bodySmall
-              ?.copyWith(color: context.cosechaContentSecondary),
+          widget.repository.isPersistent
+              ? l10n.profileStoredOnDevice
+              : l10n.profileDemoNote,
+          style: textTheme.bodySmall?.copyWith(
+            color: context.cosechaContentSecondary,
+          ),
         ),
         const SizedBox(height: CosechaSpace.md),
         CosechaOverline(l10n.profileContactSection),
@@ -182,7 +247,7 @@ class _CustomerProfilePageState extends State<CustomerProfilePage> {
                 CosechaPrimaryButton(
                   label: l10n.profileSave,
                   icon: Icons.save_outlined,
-                  onPressed: _save,
+                  onPressed: _saving ? null : _save,
                 ),
                 const SizedBox(height: CosechaSpace.xs),
                 Center(
@@ -238,6 +303,31 @@ class _CustomerProfilePageState extends State<CustomerProfilePage> {
             label: l10n.profileEdit,
             icon: Icons.edit_outlined,
             onPressed: () => setState(() => _editing = true),
+          ),
+        ],
+        const SizedBox(height: CosechaSpace.lg),
+        CosechaOverline(l10n.profileLegalSection),
+        const SizedBox(height: CosechaSpace.xs),
+
+        CosechaActionRow(
+          icon: Icons.description_outlined,
+          title: l10n.profileLegalTerms,
+          onTap: () => _openLegalDocument('terminos.html'),
+        ),
+
+        const SizedBox(height: CosechaSpace.xs),
+
+        CosechaActionRow(
+          icon: Icons.privacy_tip_outlined,
+          title: l10n.profileLegalPrivacy,
+          onTap: () => _openLegalDocument('privacidad.html'),
+        ),
+        if (widget.onSignOut != null) ...[
+          const SizedBox(height: CosechaSpace.lg),
+          CosechaActionRow(
+            icon: Icons.logout,
+            title: l10n.authSignOut,
+            onTap: widget.onSignOut,
           ),
         ],
       ],

@@ -40,9 +40,14 @@ class CommercialClientProfile {
 
   static String? validatePhone(String? value) {
     final digits = (value ?? '').replaceAll(RegExp(r'\D'), '');
-    return digits.length >= 7 && digits.length <= 15
+
+    final phone = digits.length == 11 && digits.startsWith('51')
+        ? digits.substring(2)
+        : digits;
+
+    return RegExp(r'^9\d{8}$').hasMatch(phone)
         ? null
-        : 'Enter a valid phone number';
+        : 'Enter a valid Peruvian mobile number';
   }
 
   /// Initial demo uses a Peruvian RUC (11 digits).

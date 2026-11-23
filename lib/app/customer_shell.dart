@@ -14,6 +14,7 @@ import '../l10n/app_localizations.dart';
 import '../shared/ui/components/components.dart';
 import '../shared/ui/formatters/initials.dart';
 import 'locale_controller.dart';
+import '../contexts/profiles_management/domain/commercial_client_profile_repository.dart';
 
 /// Sections reachable from the "More" speed dial. They open inside the
 /// shell, keeping both bars visible.
@@ -37,9 +38,16 @@ class _DetailPage {
 /// Tracking + "More" (Payments, Profile). Profile is also reachable from the
 /// avatar in the top bar.
 class CustomerShell extends StatefulWidget {
-  const CustomerShell({required this.localeController, super.key});
+  const CustomerShell({
+    required this.localeController,
+    this.onSignOut,
+    super.key,
+    this.profileRepository,
+  });
 
   final LocaleController localeController;
+  final VoidCallback? onSignOut;
+  final CommercialClientProfileRepository? profileRepository;
 
   @override
   State<CustomerShell> createState() => _CustomerShellState();
@@ -64,7 +72,9 @@ class _CustomerShellState extends State<CustomerShell> {
   /// Detail screens opened inside the current section, innermost last.
   final List<_DetailPage> _details = [];
 
-  final _profileRepository = InMemoryCommercialClientProfileRepository();
+  late final CommercialClientProfileRepository _profileRepository =
+      widget.profileRepository ??
+          InMemoryCommercialClientProfileRepository();
   final _shipmentRepository = InMemoryShipmentRepository();
 
   void _navigateTo(int index) {
@@ -138,6 +148,7 @@ class _CustomerShellState extends State<CustomerShell> {
         MoreSection.profile => CustomerProfilePage(
             repository: _profileRepository,
             onSaved: () => setState(() {}),
+            onSignOut: widget.onSignOut,
           ),
       };
 
@@ -167,7 +178,9 @@ class _CustomerShellState extends State<CustomerShell> {
     final String title;
     final Widget body;
     if (section == null) {
-      title = profile.businessName;
+      title = profile.businessName.trim().isEmpty
+          ? profile.fullName
+          : profile.businessName;
       body = _tabBody(_selected);
     } else if (detail == null) {
       title = _sectionTitle(l10n, section);
