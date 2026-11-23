@@ -49,6 +49,86 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileDetail => 'Business and contact details';
 
   @override
+  String get authLoginTitle => 'Sign in';
+
+  @override
+  String get authRegisterTitle => 'Create your account';
+
+  @override
+  String get authWelcome => 'FruitLogix for commercial clients';
+
+  @override
+  String get authUsername => 'Username';
+
+  @override
+  String get authPassword => 'Password';
+
+  @override
+  String get authConfirmPassword => 'Confirm password';
+
+  @override
+  String get authSignIn => 'Sign in';
+
+  @override
+  String get authCreateAccount => 'Create account';
+
+  @override
+  String get authRememberMe => 'Keep me signed in';
+
+  @override
+  String get authAcceptance =>
+      'I accept the Terms of Service and Privacy Policy';
+
+  @override
+  String get authMustAccept =>
+      'You must accept the terms and privacy policy to register.';
+
+  @override
+  String get authSwitchToLogin => 'Already have an account? Sign in';
+
+  @override
+  String get authSwitchToRegister => 'New here? Create an account';
+
+  @override
+  String get authUsernameRequired => 'Enter your username';
+
+  @override
+  String get authInvalidUsername =>
+      'Use 4–20 lowercase letters, digits, dots or underscores.';
+
+  @override
+  String get authRequiredPassword => 'Enter your password';
+
+  @override
+  String get authInvalidPassword =>
+      'Use at least 8 characters, including a letter and a number.';
+
+  @override
+  String get authPasswordMismatch => 'Passwords do not match';
+
+  @override
+  String get authInvalidCredentials => 'Invalid username or password';
+
+  @override
+  String get authUsernameUnavailable => 'Username unavailable or invalid';
+
+  @override
+  String get authNetworkError => 'Could not connect to the server. Try again.';
+
+  @override
+  String get authServerError => 'Server error. Please try again later.';
+
+  @override
+  String get authUnexpectedResponse => 'Unexpected response. Please try again.';
+
+  @override
+  String get authSignOut => 'Sign out';
+
+  @override
+  String get authLocalProfileNote =>
+      'Business and contact details are managed in Profile.';
+
+  @override
   String get profileLegalSection => 'Legal information';
 
   @override

@@ -17,11 +17,13 @@ class CustomerProfilePage extends StatefulWidget {
   const CustomerProfilePage({
     required this.repository,
     required this.onSaved,
+    this.onSignOut,
     super.key,
   });
 
   final CommercialClientProfileRepository repository;
   final VoidCallback onSaved;
+  final VoidCallback? onSignOut;
 
   @override
   State<CustomerProfilePage> createState() => _CustomerProfilePageState();
@@ -291,6 +293,14 @@ class _CustomerProfilePageState extends State<CustomerProfilePage> {
           title: l10n.profileLegalPrivacy,
           onTap: () => _openLegalDocument('privacidad.html'),
         ),
+        if (widget.onSignOut != null) ...[
+          const SizedBox(height: CosechaSpace.lg),
+          CosechaActionRow(
+            icon: Icons.logout,
+            title: l10n.authSignOut,
+            onTap: widget.onSignOut,
+          ),
+        ],
       ],
     );
   }

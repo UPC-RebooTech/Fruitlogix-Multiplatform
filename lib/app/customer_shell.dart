@@ -37,9 +37,14 @@ class _DetailPage {
 /// Tracking + "More" (Payments, Profile). Profile is also reachable from the
 /// avatar in the top bar.
 class CustomerShell extends StatefulWidget {
-  const CustomerShell({required this.localeController, super.key});
+  const CustomerShell({
+    required this.localeController,
+    this.onSignOut,
+    super.key,
+  });
 
   final LocaleController localeController;
+  final VoidCallback? onSignOut;
 
   @override
   State<CustomerShell> createState() => _CustomerShellState();
@@ -138,6 +143,7 @@ class _CustomerShellState extends State<CustomerShell> {
         MoreSection.profile => CustomerProfilePage(
             repository: _profileRepository,
             onSaved: () => setState(() {}),
+            onSignOut: widget.onSignOut,
           ),
       };
 
