@@ -1,23 +1,34 @@
 import 'package:flutter/material.dart';
 
+import '../../contexts/payment_management/application/financial_overview_controller.dart';
+import '../../contexts/payment_management/application/invoice_reminder_service.dart';
+import '../../contexts/payment_management/presentation/financial_balance_card.dart';
+import '../../contexts/payment_management/presentation/invoice_reminders_card.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/ui/components/components.dart';
-import '../../shared/ui/formatters/money_format.dart';
 import '../../shared/ui/theme/theme.dart';
 
 /// Home of the Commercial Client.
 ///
-/// Cosecha hierarchy: priority information first (dark KPI cards, including
-/// the pending balance required by US36), then quick actions and active
-/// orders in white cards.
+/// Cosecha hierarchy: priority information first (dark KPI cards and the
+/// financial balance of US36, loaded from the API), then quick actions and
+/// active orders in white cards.
 class CustomerDashboardPage extends StatelessWidget {
   const CustomerDashboardPage({
     required this.customerName,
     required this.onNewOrder,
     required this.onTrack,
     required this.onPayments,
+    required this.balance,
+    required this.reminders,
     super.key,
   });
+
+  /// US36: balance read from the Payment Management BC.
+  final FinancialOverviewController balance;
+
+  /// US70: invoices due soon.
+  final InvoiceReminderService reminders;
 
   final String customerName;
   final VoidCallback onNewOrder;
@@ -27,7 +38,6 @@ class CustomerDashboardPage extends StatelessWidget {
   // Demo data until the dashboard reads from the bounded contexts.
   static const int _activeOrders = 3;
   static const int _inTransit = 2;
-  static const double _pendingBalance = 1450.00;
 
   @override
   Widget build(BuildContext context) {
@@ -70,14 +80,15 @@ class CustomerDashboardPage extends StatelessWidget {
                 ),
               ],
             ),
-            CosechaKpiCard(
-              label: l10n.kpiPendingBalance,
-              value: formatSoles(_pendingBalance),
-              icon: Icons.payments_outlined,
+            FinancialBalanceCard(
+              controller: balance,
+              onOpenPayments: onPayments,
             ),
           ],
         ),
-        const SizedBox(height: CosechaSpace.md),
+        const SizedBox(height: CosechaSpace.xs),
+        UpcomingRemindersBanner(service: reminders, onTap: onPayments),
+        const SizedBox(height: CosechaSpace.sm),
 
         _Section(
           title: l10n.dashboardQuickActionsSection,

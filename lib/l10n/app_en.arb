@@ -233,5 +233,76 @@
   "profileLoadFailed": "Could not load your local profile.",
   "profileRetry": "Try again",
 
-  "featurePending": "Implementation pending"
+  "featurePending": "Implementation pending",
+
+  "balanceOverline": "Financial balance",
+  "balanceDebt": "Accumulated debt",
+  "balanceTotal": "Total billed",
+  "balanceOverdue": "Overdue",
+  "balancePaid": "Paid",
+  "balanceLoading": "Loading your balance…",
+  "balanceError": "We couldn't load your balance.",
+  "balanceUpToDate": "You're up to date",
+  "paymentsLoadError": "We couldn't load your invoices.",
+  "paymentsSessionExpired": "Your session expired. Sign in again to see your invoices.",
+  "paymentsRetry": "Retry",
+  "balancePendingInvoices": "{count, plural, =1{1 pending invoice} other{{count} pending invoices}}",
+  "@balancePendingInvoices": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "paymentStatusFailed": "Failed",
+  "paymentStatusRefunded": "Refunded",
+  "invoiceIssued": "Issued",
+  "invoicePaidAt": "Paid on",
+  "remindersTitle": "Invoice reminders",
+  "remindersEnabled": "Notify me before the due date",
+  "remindersLeadDays": "{days, plural, =1{1 day before} other{{days} days before}}",
+  "@remindersLeadDays": {
+    "placeholders": { "days": { "type": "int" } }
+  },
+  "remindersPermissionDenied": "Notifications are off for FruitLogix. Turn them on in your phone settings to get reminders.",
+  "remindersUpcoming": "{count, plural, =1{1 invoice is due soon} other{{count} invoices are due soon}}",
+  "@remindersUpcoming": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "remindersUpcomingDetail": "Pay on time to avoid surcharges or credit holds",
+  "reminderNotificationTitle": "Invoice {invoice} is due soon",
+  "@reminderNotificationTitle": {
+    "placeholders": { "invoice": { "type": "String", "example": "INV-1042" } }
+  },
+  "reminderNotificationBody": "{amount} · due {date}. Pay on time to avoid surcharges.",
+  "@reminderNotificationBody": {
+    "placeholders": { "amount": { "type": "String", "example": "S/ 600.00" }, "date": { "type": "String", "example": "30/11/2026" } }
+  },
+  "invoiceReminder": "Reminder",
+  "invoiceReminderNone": "No reminder · invoice already paid",
+  "invoiceReminderOff": "Reminders are turned off",
+  "invoiceReminderOverdue": "Past due · pay as soon as possible",
+  "proTitle": "Pro plan",
+  "proBadge": "Pro member",
+  "proOverline": "FruitLogix Pro",
+  "proHeadline": "Become a Pro member",
+  "proPrice": "{price} / month",
+  "@proPrice": {
+    "placeholders": { "price": { "type": "String", "example": "US$ 29.00" } }
+  },
+  "proBenefitPriority": "Priority attention for your orders",
+  "proBenefitReports": "Advanced purchase and payment reports",
+  "proBenefitAlerts": "Real-time cold-chain alerts",
+  "proUpgrade": "Upgrade to Pro",
+  "proUpsellDetail": "Upgrade without leaving the app",
+  "proSecureNote": "Secure payment with Stripe. Your card details never pass through FruitLogix.",
+  "proPreparing": "Preparing secure payment…",
+  "proConfirming": "Confirming your payment with Stripe…",
+  "proSuccess": "Welcome to Pro! Your plan is active.",
+  "proPending": "Payment received. We're still waiting for Stripe's confirmation.",
+  "proCheckAgain": "Check again",
+  "proCanceled": "Payment canceled. You were not charged.",
+  "proFailed": "The payment could not be completed.",
+  "proUnavailable": "Payments with Stripe are not available on this device.",
+  "proActive": "You're a Pro member",
+  "proActiveSince": "Active since {date}",
+  "@proActiveSince": {
+    "placeholders": { "date": { "type": "String", "example": "22 November 2026" } }
+  }
 }

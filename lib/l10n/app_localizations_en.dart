@@ -533,4 +533,189 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get featurePending => 'Implementation pending';
+
+  @override
+  String get balanceOverline => 'Financial balance';
+
+  @override
+  String get balanceDebt => 'Accumulated debt';
+
+  @override
+  String get balanceTotal => 'Total billed';
+
+  @override
+  String get balanceOverdue => 'Overdue';
+
+  @override
+  String get balancePaid => 'Paid';
+
+  @override
+  String get balanceLoading => 'Loading your balance…';
+
+  @override
+  String get balanceError => 'We couldn\'t load your balance.';
+
+  @override
+  String get balanceUpToDate => 'You\'re up to date';
+
+  @override
+  String get paymentsLoadError => 'We couldn\'t load your invoices.';
+
+  @override
+  String get paymentsSessionExpired =>
+      'Your session expired. Sign in again to see your invoices.';
+
+  @override
+  String get paymentsRetry => 'Retry';
+
+  @override
+  String balancePendingInvoices(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pending invoices',
+      one: '1 pending invoice',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get paymentStatusFailed => 'Failed';
+
+  @override
+  String get paymentStatusRefunded => 'Refunded';
+
+  @override
+  String get invoiceIssued => 'Issued';
+
+  @override
+  String get invoicePaidAt => 'Paid on';
+
+  @override
+  String get remindersTitle => 'Invoice reminders';
+
+  @override
+  String get remindersEnabled => 'Notify me before the due date';
+
+  @override
+  String remindersLeadDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days days before',
+      one: '1 day before',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get remindersPermissionDenied =>
+      'Notifications are off for FruitLogix. Turn them on in your phone settings to get reminders.';
+
+  @override
+  String remindersUpcoming(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count invoices are due soon',
+      one: '1 invoice is due soon',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get remindersUpcomingDetail =>
+      'Pay on time to avoid surcharges or credit holds';
+
+  @override
+  String reminderNotificationTitle(String invoice) {
+    return 'Invoice $invoice is due soon';
+  }
+
+  @override
+  String reminderNotificationBody(String amount, String date) {
+    return '$amount · due $date. Pay on time to avoid surcharges.';
+  }
+
+  @override
+  String get invoiceReminder => 'Reminder';
+
+  @override
+  String get invoiceReminderNone => 'No reminder · invoice already paid';
+
+  @override
+  String get invoiceReminderOff => 'Reminders are turned off';
+
+  @override
+  String get invoiceReminderOverdue => 'Past due · pay as soon as possible';
+
+  @override
+  String get proTitle => 'Pro plan';
+
+  @override
+  String get proBadge => 'Pro member';
+
+  @override
+  String get proOverline => 'FruitLogix Pro';
+
+  @override
+  String get proHeadline => 'Become a Pro member';
+
+  @override
+  String proPrice(String price) {
+    return '$price / month';
+  }
+
+  @override
+  String get proBenefitPriority => 'Priority attention for your orders';
+
+  @override
+  String get proBenefitReports => 'Advanced purchase and payment reports';
+
+  @override
+  String get proBenefitAlerts => 'Real-time cold-chain alerts';
+
+  @override
+  String get proUpgrade => 'Upgrade to Pro';
+
+  @override
+  String get proUpsellDetail => 'Upgrade without leaving the app';
+
+  @override
+  String get proSecureNote =>
+      'Secure payment with Stripe. Your card details never pass through FruitLogix.';
+
+  @override
+  String get proPreparing => 'Preparing secure payment…';
+
+  @override
+  String get proConfirming => 'Confirming your payment with Stripe…';
+
+  @override
+  String get proSuccess => 'Welcome to Pro! Your plan is active.';
+
+  @override
+  String get proPending =>
+      'Payment received. We\'re still waiting for Stripe\'s confirmation.';
+
+  @override
+  String get proCheckAgain => 'Check again';
+
+  @override
+  String get proCanceled => 'Payment canceled. You were not charged.';
+
+  @override
+  String get proFailed => 'The payment could not be completed.';
+
+  @override
+  String get proUnavailable =>
+      'Payments with Stripe are not available on this device.';
+
+  @override
+  String get proActive => 'You\'re a Pro member';
+
+  @override
+  String proActiveSince(String date) {
+    return 'Active since $date';
+  }
 }

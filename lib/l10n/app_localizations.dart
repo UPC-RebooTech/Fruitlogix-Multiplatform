@@ -1069,6 +1069,300 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Implementation pending'**
   String get featurePending;
+
+  /// No description provided for @balanceOverline.
+  ///
+  /// In en, this message translates to:
+  /// **'Financial balance'**
+  String get balanceOverline;
+
+  /// No description provided for @balanceDebt.
+  ///
+  /// In en, this message translates to:
+  /// **'Accumulated debt'**
+  String get balanceDebt;
+
+  /// No description provided for @balanceTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total billed'**
+  String get balanceTotal;
+
+  /// No description provided for @balanceOverdue.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue'**
+  String get balanceOverdue;
+
+  /// No description provided for @balancePaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get balancePaid;
+
+  /// No description provided for @balanceLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading your balance…'**
+  String get balanceLoading;
+
+  /// No description provided for @balanceError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load your balance.'**
+  String get balanceError;
+
+  /// No description provided for @balanceUpToDate.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re up to date'**
+  String get balanceUpToDate;
+
+  /// No description provided for @paymentsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load your invoices.'**
+  String get paymentsLoadError;
+
+  /// No description provided for @paymentsSessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session expired. Sign in again to see your invoices.'**
+  String get paymentsSessionExpired;
+
+  /// No description provided for @paymentsRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get paymentsRetry;
+
+  /// No description provided for @balancePendingInvoices.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 pending invoice} other{{count} pending invoices}}'**
+  String balancePendingInvoices(int count);
+
+  /// No description provided for @paymentStatusFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get paymentStatusFailed;
+
+  /// No description provided for @paymentStatusRefunded.
+  ///
+  /// In en, this message translates to:
+  /// **'Refunded'**
+  String get paymentStatusRefunded;
+
+  /// No description provided for @invoiceIssued.
+  ///
+  /// In en, this message translates to:
+  /// **'Issued'**
+  String get invoiceIssued;
+
+  /// No description provided for @invoicePaidAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid on'**
+  String get invoicePaidAt;
+
+  /// No description provided for @remindersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice reminders'**
+  String get remindersTitle;
+
+  /// No description provided for @remindersEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Notify me before the due date'**
+  String get remindersEnabled;
+
+  /// No description provided for @remindersLeadDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{days, plural, =1{1 day before} other{{days} days before}}'**
+  String remindersLeadDays(int days);
+
+  /// No description provided for @remindersPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are off for FruitLogix. Turn them on in your phone settings to get reminders.'**
+  String get remindersPermissionDenied;
+
+  /// No description provided for @remindersUpcoming.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 invoice is due soon} other{{count} invoices are due soon}}'**
+  String remindersUpcoming(int count);
+
+  /// No description provided for @remindersUpcomingDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay on time to avoid surcharges or credit holds'**
+  String get remindersUpcomingDetail;
+
+  /// No description provided for @reminderNotificationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice {invoice} is due soon'**
+  String reminderNotificationTitle(String invoice);
+
+  /// No description provided for @reminderNotificationBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} · due {date}. Pay on time to avoid surcharges.'**
+  String reminderNotificationBody(String amount, String date);
+
+  /// No description provided for @invoiceReminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder'**
+  String get invoiceReminder;
+
+  /// No description provided for @invoiceReminderNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No reminder · invoice already paid'**
+  String get invoiceReminderNone;
+
+  /// No description provided for @invoiceReminderOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminders are turned off'**
+  String get invoiceReminderOff;
+
+  /// No description provided for @invoiceReminderOverdue.
+  ///
+  /// In en, this message translates to:
+  /// **'Past due · pay as soon as possible'**
+  String get invoiceReminderOverdue;
+
+  /// No description provided for @proTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pro plan'**
+  String get proTitle;
+
+  /// No description provided for @proBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Pro member'**
+  String get proBadge;
+
+  /// No description provided for @proOverline.
+  ///
+  /// In en, this message translates to:
+  /// **'FruitLogix Pro'**
+  String get proOverline;
+
+  /// No description provided for @proHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Become a Pro member'**
+  String get proHeadline;
+
+  /// No description provided for @proPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'{price} / month'**
+  String proPrice(String price);
+
+  /// No description provided for @proBenefitPriority.
+  ///
+  /// In en, this message translates to:
+  /// **'Priority attention for your orders'**
+  String get proBenefitPriority;
+
+  /// No description provided for @proBenefitReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced purchase and payment reports'**
+  String get proBenefitReports;
+
+  /// No description provided for @proBenefitAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Real-time cold-chain alerts'**
+  String get proBenefitAlerts;
+
+  /// No description provided for @proUpgrade.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to Pro'**
+  String get proUpgrade;
+
+  /// No description provided for @proUpsellDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade without leaving the app'**
+  String get proUpsellDetail;
+
+  /// No description provided for @proSecureNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure payment with Stripe. Your card details never pass through FruitLogix.'**
+  String get proSecureNote;
+
+  /// No description provided for @proPreparing.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing secure payment…'**
+  String get proPreparing;
+
+  /// No description provided for @proConfirming.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirming your payment with Stripe…'**
+  String get proConfirming;
+
+  /// No description provided for @proSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Pro! Your plan is active.'**
+  String get proSuccess;
+
+  /// No description provided for @proPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment received. We\'re still waiting for Stripe\'s confirmation.'**
+  String get proPending;
+
+  /// No description provided for @proCheckAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Check again'**
+  String get proCheckAgain;
+
+  /// No description provided for @proCanceled.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment canceled. You were not charged.'**
+  String get proCanceled;
+
+  /// No description provided for @proFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The payment could not be completed.'**
+  String get proFailed;
+
+  /// No description provided for @proUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments with Stripe are not available on this device.'**
+  String get proUnavailable;
+
+  /// No description provided for @proActive.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re a Pro member'**
+  String get proActive;
+
+  /// No description provided for @proActiveSince.
+  ///
+  /// In en, this message translates to:
+  /// **'Active since {date}'**
+  String proActiveSince(String date);
 }
 
 class _AppLocalizationsDelegate

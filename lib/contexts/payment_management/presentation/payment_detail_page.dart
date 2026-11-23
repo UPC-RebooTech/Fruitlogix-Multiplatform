@@ -2,24 +2,37 @@ import 'package:flutter/material.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/ui/components/components.dart';
+import '../../../shared/ui/formatters/date_format.dart';
 import '../../../shared/ui/formatters/money_format.dart';
 import '../../../shared/ui/theme/theme.dart';
-import '../domain/payment.dart';
+import '../application/invoice_reminder_service.dart';
+import '../domain/invoice.dart';
 import 'payment_status_view.dart';
 
 /// Invoice detail, shown inside the shell (both bars visible). The top bar
 /// shows the invoice title and the back button.
 class PaymentDetailPage extends StatelessWidget {
-  const PaymentDetailPage({required this.payment, super.key});
+  const PaymentDetailPage({
+    required this.invoice,
+    required this.reminders,
+    super.key,
+  });
 
-  final Payment payment;
+  final Invoice invoice;
+  final InvoiceReminderService reminders;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final data = CosechaDataText.of(context);
     final colors = CosechaStatusColors.of(context);
-    final status = paymentStatusView(payment.status, l10n);
+    final status = paymentStatusView(invoice.status, l10n);
+    final amount = formatMoney(invoice.amount, invoice.currency);
+
+    Widget divider() => const Padding(
+          padding: EdgeInsets.symmetric(vertical: CosechaSpace.inner),
+          child: Divider(),
+        );
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(
@@ -43,18 +56,18 @@ class PaymentDetailPage extends StatelessWidget {
               ),
               const SizedBox(height: CosechaSpace.xs),
               Text(
-                payment.id,
+                invoice.code,
                 style: data.dataMono.copyWith(color: colors.onDarkSecondary),
               ),
               const SizedBox(height: CosechaSpace.xxs),
               Semantics(
-                label: '${l10n.invoiceAmount}: ${formatSoles(payment.amount)}',
+                label: '${l10n.invoiceAmount}: $amount',
                 excludeSemantics: true,
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   alignment: AlignmentDirectional.centerStart,
                   child: Text(
-                    formatSoles(payment.amount),
+                    amount,
                     style: data.kpiNumber.copyWith(color: colors.onDarkPrimary),
                   ),
                 ),
@@ -67,47 +80,56 @@ class PaymentDetailPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              CosechaInfoRow(
-                icon: Icons.receipt_long_outlined,
-                label: l10n.invoiceOrder,
-                value: payment.orderId,
-                mono: true,
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: CosechaSpace.inner),
-                child: Divider(),
-              ),
+              if (invoice.orderCode != null) ...[
+                CosechaInfoRow(
+                  icon: Icons.receipt_long_outlined,
+                  label: l10n.invoiceOrder,
+                  value: invoice.orderCode!,
+                  mono: true,
+                ),
+                divider(),
+              ],
               CosechaInfoRow(
                 icon: Icons.event_outlined,
                 label: l10n.invoiceDueDate,
-                value: payment.dueDate,
+                value: formatLongDate(context, invoice.dueDate),
               ),
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: CosechaSpace.inner),
-                child: Divider(),
-              ),
-              CosechaInfoRow(
-                icon: Icons.account_balance_outlined,
-                label: l10n.invoiceMethod,
-                value: payment.method,
+              if (invoice.issuedAt != null) ...[
+                divider(),
+                CosechaInfoRow(
+                  icon: Icons.description_outlined,
+                  label: l10n.invoiceIssued,
+                  value: formatLongDate(context, invoice.issuedAt!),
+                ),
+              ],
+              if (invoice.paidAt != null) ...[
+                divider(),
+                CosechaInfoRow(
+                  icon: Icons.check_circle_outline,
+                  label: l10n.invoicePaidAt,
+                  value: formatLongDate(context, invoice.paidAt!),
+                ),
+              ],
+              divider(),
+              ListenableBuilder(
+                listenable: reminders,
+                builder: (context, _) => CosechaInfoRow(
+                  icon: Icons.notifications_outlined,
+                  label: l10n.invoiceReminder,
+                  value: _reminderText(l10n),
+                ),
               ),
             ],
           ),
         ),
-        const SizedBox(height: CosechaSpace.md),
-        // Demo-only action, kept as a secondary text button.
-        Center(
-          child: CosechaTextButton(
-            label: l10n.invoiceSimulate,
-            icon: Icons.science_outlined,
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(l10n.invoiceSimulated)),
-              );
-            },
-          ),
-        ),
       ],
     );
+  }
+
+  String _reminderText(AppLocalizations l10n) {
+    if (!invoice.isOutstanding) return l10n.invoiceReminderNone;
+    if (invoice.status == InvoiceStatus.overdue) return l10n.invoiceReminderOverdue;
+    if (!reminders.enabled) return l10n.invoiceReminderOff;
+    return l10n.remindersLeadDays(reminders.leadDays);
   }
 }

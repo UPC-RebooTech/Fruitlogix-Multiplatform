@@ -4,24 +4,31 @@ import '../contexts/logistics_and_monitoring/infrastructure/in_memory_shipment_r
 import '../contexts/logistics_and_monitoring/presentation/delivery_tracking_page.dart';
 import '../contexts/order_management/presentation/customer_catalog_page.dart';
 import '../contexts/order_management/presentation/customer_orders_page.dart';
-import '../contexts/payment_management/domain/payment.dart';
+import '../contexts/iam/domain/auth_session.dart';
+import '../contexts/payment_management/application/membership_controller.dart';
+import '../contexts/payment_management/domain/invoice.dart';
+import '../contexts/payment_management/payment_management_module.dart';
 import '../contexts/payment_management/presentation/payment_detail_page.dart';
 import '../contexts/payment_management/presentation/payments_page.dart';
+import '../contexts/payment_management/presentation/pro_badge.dart';
+import '../contexts/payment_management/presentation/pro_membership_page.dart';
 import '../contexts/profiles_management/infrastructure/in_memory_commercial_client_profile_repository.dart';
 import '../contexts/profiles_management/presentation/customer_profile_page.dart';
 import '../dashboard/presentation/customer_dashboard_page.dart';
 import '../l10n/app_localizations.dart';
 import '../shared/ui/components/components.dart';
+import '../shared/ui/formatters/date_format.dart';
 import '../shared/ui/formatters/initials.dart';
+import '../shared/ui/formatters/money_format.dart';
 import 'locale_controller.dart';
 import '../contexts/profiles_management/domain/commercial_client_profile_repository.dart';
 
 /// Sections reachable from the "More" speed dial. They open inside the
 /// shell, keeping both bars visible.
 ///
-/// Reserved for later sprints: incident history, messages, Pro plan
-/// (Stripe) and biometric sign-in settings.
-enum MoreSection { payments, profile }
+/// Reserved for later sprints: incident history, messages and biometric
+/// sign-in settings.
+enum MoreSection { payments, proPlan, profile }
 
 /// A detail screen opened inside a section (e.g. an invoice). Detail screens
 /// also keep both bars; the top bar back button goes back one level.
@@ -41,6 +48,8 @@ class CustomerShell extends StatefulWidget {
   const CustomerShell({
     required this.localeController,
     this.onSignOut,
+    this.session,
+    this.paymentModule,
     super.key,
     this.profileRepository,
   });
@@ -49,11 +58,18 @@ class CustomerShell extends StatefulWidget {
   final VoidCallback? onSignOut;
   final CommercialClientProfileRepository? profileRepository;
 
+  /// Signed-in user. Without it (tests, previews) payments use demo data.
+  final AuthSession? session;
+
+  /// Overrides the Payment Management wiring (tests).
+  final PaymentManagementModule? paymentModule;
+
   @override
   State<CustomerShell> createState() => _CustomerShellState();
 }
 
-class _CustomerShellState extends State<CustomerShell> {
+class _CustomerShellState extends State<CustomerShell>
+    with WidgetsBindingObserver {
   static const int _homeTab = 0;
   static const int _catalogTab = 1;
   static const int _ordersTab = 2;
@@ -77,6 +93,75 @@ class _CustomerShellState extends State<CustomerShell> {
           InMemoryCommercialClientProfileRepository();
   final _shipmentRepository = InMemoryShipmentRepository();
 
+  late final PaymentManagementModule _payments = widget.paymentModule ??
+      (widget.session == null
+          ? PaymentManagementModule.demo()
+          : PaymentManagementModule.remote(widget.session!));
+  bool _paymentsStarted = false;
+  ProCheckoutStage _lastProStage = ProCheckoutStage.idle;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _payments.membership.addListener(_onMembershipChanged);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Reminder texts follow the UI language.
+    final l10n = AppLocalizations.of(context);
+    _payments.reminders.textBuilder = (invoice) => (
+          title: l10n.reminderNotificationTitle(invoice.code),
+          body: l10n.reminderNotificationBody(
+            formatMoney(invoice.amount, invoice.currency),
+            formatNumericDate(invoice.dueDate),
+          ),
+        );
+    if (!_paymentsStarted) {
+      _paymentsStarted = true;
+      // Not awaited: the dashboard renders at once (US36).
+      _payments.start();
+    }
+  }
+
+  /// Back in the app: refresh balances and re-evaluate reminders (US70).
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _payments.overview.load();
+  }
+
+  /// US30: once the backend confirms the plan, celebrate and show the badge.
+  void _onMembershipChanged() {
+    if (!mounted) return;
+    final stage = _payments.membership.stage;
+    final upgraded = stage == ProCheckoutStage.success &&
+        _lastProStage != ProCheckoutStage.success;
+    _lastProStage = stage;
+    setState(() {}); // Top bar badge.
+    if (upgraded) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context).proSuccess)),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _payments.membership.removeListener(_onMembershipChanged);
+    if (widget.paymentModule == null) _payments.dispose();
+    super.dispose();
+  }
+
+  /// Email sent to Stripe: the IAM username when it is an email, otherwise
+  /// the profile email.
+  String get _billingEmail {
+    final username = widget.session?.username ?? '';
+    return username.contains('@') ? username : _profileRepository.current.email;
+  }
+
   void _navigateTo(int index) {
     setState(() {
       _section = null;
@@ -86,6 +171,8 @@ class _CustomerShellState extends State<CustomerShell> {
   }
 
   void _openSection(MoreSection section) {
+    // A previous "canceled"/"failed" notice should not greet a new visit.
+    if (section == MoreSection.proPlan) _payments.membership.acknowledge();
     setState(() {
       _section = section;
       _details.clear();
@@ -107,10 +194,13 @@ class _CustomerShellState extends State<CustomerShell> {
     });
   }
 
-  void _openPayment(Payment payment) {
+  void _openInvoice(Invoice invoice) {
     _openDetail(_DetailPage(
-      title: (l10n) => l10n.invoiceTitle(payment.id),
-      builder: (_) => PaymentDetailPage(payment: payment),
+      title: (l10n) => l10n.invoiceTitle(invoice.code),
+      builder: (_) => PaymentDetailPage(
+        invoice: invoice,
+        reminders: _payments.reminders,
+      ),
     ));
   }
 
@@ -127,6 +217,11 @@ class _CustomerShellState extends State<CustomerShell> {
           label: l10n.paymentsTitle,
         ),
         CosechaSpeedDialItem(
+          value: MoreSection.proPlan,
+          icon: Icons.workspace_premium_outlined,
+          label: l10n.proTitle,
+        ),
+        CosechaSpeedDialItem(
           value: MoreSection.profile,
           icon: Icons.storefront_outlined,
           label: l10n.profileTitle,
@@ -140,11 +235,23 @@ class _CustomerShellState extends State<CustomerShell> {
   String _sectionTitle(AppLocalizations l10n, MoreSection section) =>
       switch (section) {
         MoreSection.payments => l10n.paymentsTitle,
+        MoreSection.proPlan => l10n.proTitle,
         MoreSection.profile => l10n.profileTitle,
       };
 
   Widget _sectionBody(MoreSection section) => switch (section) {
-        MoreSection.payments => PaymentsPage(onOpenPayment: _openPayment),
+        MoreSection.payments => PaymentsPage(
+            overview: _payments.overview,
+            reminders: _payments.reminders,
+            membership: _payments.membership,
+            onOpenInvoice: _openInvoice,
+            onOpenPro: () => _openSection(MoreSection.proPlan),
+          ),
+        MoreSection.proPlan => ProMembershipPage(
+            controller: _payments.membership,
+            email: _billingEmail,
+            name: _profileRepository.current.fullName,
+          ),
         MoreSection.profile => CustomerProfilePage(
             repository: _profileRepository,
             onSaved: () => setState(() {}),
@@ -165,6 +272,8 @@ class _CustomerShellState extends State<CustomerShell> {
             onNewOrder: () => _navigateTo(_catalogTab),
             onTrack: () => _navigateTo(_trackingTab),
             onPayments: () => _openSection(MoreSection.payments),
+            balance: _payments.overview,
+            reminders: _payments.reminders,
           ),
       };
 
@@ -205,6 +314,7 @@ class _CustomerShellState extends State<CustomerShell> {
           onAvatarTap: () => _openSection(MoreSection.profile),
           avatarTooltip: l10n.openProfileTooltip,
           onBack: section == null ? null : _goBack,
+          badge: _payments.membership.isPro ? const ProBadge(compact: true) : null,
           actions: [
             CosechaLanguageButton(
               current: Localizations.localeOf(context),

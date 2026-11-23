@@ -93,6 +93,8 @@ class _AuthenticatedCustomerHomeState extends State<AuthenticatedCustomerHome> {
           localeController: widget.localeController,
           onSignOut: widget.onSignOut,
           profileRepository: snapshot.requireData,
+          // Payment Management (US36/US70/US30) calls the API with this JWT.
+          session: widget.session,
         );
       },
     );

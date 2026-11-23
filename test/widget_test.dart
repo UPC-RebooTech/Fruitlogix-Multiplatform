@@ -30,4 +30,25 @@ void main() {
 
     expect(find.text('Commercial catalog'), findsOneWidget);
   });
+
+  testWidgets('US36: dashboard replaces the loader with the balance in soles',
+      (tester) async {
+    await tester.pumpWidget(MaterialApp(
+      theme: CosechaTheme.light,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: CustomerShell(localeController: LocaleController()),
+    ));
+    // First frame: navigation is usable while the balance loads.
+    expect(find.text('Loading your balance…'), findsOneWidget);
+    expect(find.text('Welcome, Carlos'), findsOneWidget);
+
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+
+    // Demo data: S/ 600 pending + S/ 850 already due.
+    expect(find.text('Loading your balance…'), findsNothing);
+    expect(find.text('S/ 1,450.00'), findsOneWidget);
+    expect(find.text('2 pending invoices'), findsOneWidget);
+  });
 }

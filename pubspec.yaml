@@ -41,6 +41,10 @@ dependencies:
   url_launcher: ^6.3.3
   http: ^1.6.0
   flutter_secure_storage: ^11.2.0
+  # Payment Management BC
+  flutter_stripe: ^14.2.0 # US30 / TS17: native Payment Sheet
+  flutter_local_notifications: ^23.0.3 # US70: invoice reminders
+  timezone: any # US70: scheduled reminders (version pinned by the plugin)
 
 dev_dependencies:
   flutter_test:
