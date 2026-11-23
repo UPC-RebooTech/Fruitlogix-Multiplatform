@@ -487,7 +487,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileEmail => 'Email';
 
   @override
-  String get profilePhone => 'Contact phone';
+  String get profilePhone => 'Contact mobile';
 
   @override
   String get profileTaxId => 'RUC';
@@ -502,7 +502,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileEmailError => 'Enter a valid email';
 
   @override
-  String get profilePhoneError => 'Enter a valid phone number';
+  String get profilePhoneError =>
+      'Enter a valid 9-digit Peruvian mobile number';
 
   @override
   String get profileTaxIdError => 'The RUC must have 11 digits';
@@ -514,7 +515,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileSave => 'Save changes';
 
   @override
-  String get profileSaved => 'Profile updated for this session (demo)';
+  String get profileSaved => 'Profile updated successfully';
+
+  @override
+  String get profileStoredOnDevice =>
+      'Profile information is stored on this device only.';
+
+  @override
+  String get profileSaveFailed =>
+      'Could not save your profile. Please try again.';
+
+  @override
+  String get profileLoadFailed => 'Could not load your local profile.';
+
+  @override
+  String get profileRetry => 'Try again';
 
   @override
   String get featurePending => 'Implementation pending';

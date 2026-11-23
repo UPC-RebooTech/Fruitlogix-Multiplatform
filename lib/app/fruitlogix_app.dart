@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 import '../shared/ui/theme/theme.dart';
-import 'customer_shell.dart';
+import 'authenticated_customer_home.dart';
 import 'locale_controller.dart';
 import '../contexts/iam/infrastructure/auth_session_controller.dart';
 import '../contexts/iam/presentation/auth_access_page.dart';
@@ -49,12 +49,14 @@ class _FruitLogixAppState extends State<FruitLogixApp> {
                 controller: _authController,
                 localeController: _localeController,
               )
-            : CustomerShell(
-                localeController: _localeController,
-                onSignOut: () {
-                  _authController.signOut();
-                },
-              ),
+            : AuthenticatedCustomerHome(
+          key: ValueKey(_authController.session!.userId),
+          session: _authController.session!,
+          localeController: _localeController,
+          onSignOut: () {
+            _authController.signOut();
+          },
+        ),
       ),
     );
   }

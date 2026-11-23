@@ -37,6 +37,7 @@ class _CustomerProfilePageState extends State<CustomerProfilePage> {
   late final TextEditingController _phone;
   late final TextEditingController _taxId;
   bool _editing = false;
+  bool _saving = false;
 
   @override
   void initState() {
@@ -102,9 +103,11 @@ class _CustomerProfilePageState extends State<CustomerProfilePage> {
     setState(() => _editing = false);
   }
 
-  void _save() {
-    if (!_formKey.currentState!.validate()) return;
+  Future<void> _save() async {
+    if (_saving || !_formKey.currentState!.validate()) return;
+
     final previous = widget.repository.current;
+
     final updated = CommercialClientProfile(
       id: previous.id,
       fullName: _fullName.text.trim(),
@@ -113,12 +116,33 @@ class _CustomerProfilePageState extends State<CustomerProfilePage> {
       phone: _phone.text.trim(),
       taxId: _taxId.text.trim(),
     );
-    widget.repository.save(updated);
-    setState(() => _editing = false);
-    widget.onSaved();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(AppLocalizations.of(context).profileSaved)),
-    );
+
+    setState(() => _saving = true);
+
+    try {
+      await widget.repository.save(updated);
+
+      if (!mounted) return;
+
+      setState(() => _editing = false);
+      widget.onSaved();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context).profileSaved),
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context).profileSaveFailed),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
   }
 
   /// Uses the domain rule and shows the localized message.
@@ -143,15 +167,20 @@ class _CustomerProfilePageState extends State<CustomerProfilePage> {
       ),
       children: [
         _AccountCard(
-          businessName: profile.businessName,
+          businessName: profile.businessName.trim().isEmpty
+              ? l10n.profileBusinessName
+              : profile.businessName,
           fullName: profile.fullName,
           role: l10n.roleCommercialClient,
         ),
         const SizedBox(height: CosechaSpace.xs),
         Text(
-          l10n.profileDemoNote,
-          style: textTheme.bodySmall
-              ?.copyWith(color: context.cosechaContentSecondary),
+          widget.repository.isPersistent
+              ? l10n.profileStoredOnDevice
+              : l10n.profileDemoNote,
+          style: textTheme.bodySmall?.copyWith(
+            color: context.cosechaContentSecondary,
+          ),
         ),
         const SizedBox(height: CosechaSpace.md),
         CosechaOverline(l10n.profileContactSection),
@@ -218,7 +247,7 @@ class _CustomerProfilePageState extends State<CustomerProfilePage> {
                 CosechaPrimaryButton(
                   label: l10n.profileSave,
                   icon: Icons.save_outlined,
-                  onPressed: _save,
+                  onPressed: _saving ? null : _save,
                 ),
                 const SizedBox(height: CosechaSpace.xs),
                 Center(

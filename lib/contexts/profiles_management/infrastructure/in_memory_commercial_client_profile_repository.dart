@@ -17,13 +17,19 @@ class InMemoryCommercialClientProfileRepository
   CommercialClientProfile get current => _current;
 
   @override
-  void save(CommercialClientProfile profile) {
+  Future<void> save(CommercialClientProfile profile) {
     if (!profile.isValid) {
       throw ArgumentError('Invalid commercial client profile');
     }
+
     if (profile.id != _current.id) {
       throw ArgumentError('Cannot change profile identity');
     }
+
     _current = profile;
+    return Future<void>.value();
   }
+
+  @override
+  bool get isPersistent => false;
 }
