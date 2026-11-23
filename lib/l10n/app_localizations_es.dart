@@ -49,6 +49,89 @@ class AppLocalizationsEs extends AppLocalizations {
   String get profileDetail => 'Datos del negocio y de contacto';
 
   @override
+  String get authLoginTitle => 'Iniciar sesión';
+
+  @override
+  String get authRegisterTitle => 'Crear tu cuenta';
+
+  @override
+  String get authWelcome => 'FruitLogix para clientes comerciales';
+
+  @override
+  String get authUsername => 'Usuario';
+
+  @override
+  String get authPassword => 'Contraseña';
+
+  @override
+  String get authConfirmPassword => 'Confirmar contraseña';
+
+  @override
+  String get authSignIn => 'Iniciar sesión';
+
+  @override
+  String get authCreateAccount => 'Crear cuenta';
+
+  @override
+  String get authRememberMe => 'Mantener mi sesión iniciada';
+
+  @override
+  String get authAcceptance =>
+      'Acepto los Términos del servicio y la Política de privacidad';
+
+  @override
+  String get authMustAccept =>
+      'Debes aceptar los términos y la política de privacidad para registrarte.';
+
+  @override
+  String get authSwitchToLogin => '¿Ya tienes cuenta? Inicia sesión';
+
+  @override
+  String get authSwitchToRegister => '¿No tienes cuenta? Regístrate';
+
+  @override
+  String get authUsernameRequired => 'Ingresa tu usuario';
+
+  @override
+  String get authInvalidUsername =>
+      'Usa entre 4 y 20 letras minúsculas, números, puntos o guiones bajos.';
+
+  @override
+  String get authRequiredPassword => 'Ingresa tu contraseña';
+
+  @override
+  String get authInvalidPassword =>
+      'Usa al menos 8 caracteres, incluyendo una letra y un número.';
+
+  @override
+  String get authPasswordMismatch => 'Las contraseñas no coinciden';
+
+  @override
+  String get authInvalidCredentials => 'Usuario o contraseña incorrectos';
+
+  @override
+  String get authUsernameUnavailable =>
+      'El usuario no está disponible o es inválido';
+
+  @override
+  String get authNetworkError =>
+      'No se pudo conectar con el servidor. Intenta de nuevo.';
+
+  @override
+  String get authServerError => 'Error del servidor. Intenta más tarde.';
+
+  @override
+  String get authUnexpectedResponse =>
+      'Respuesta inesperada. Intenta otra vez.';
+
+  @override
+  String get authSignOut => 'Cerrar sesión';
+
+  @override
+  String get authLocalProfileNote =>
+      'Los datos del negocio y de contacto se gestionan en Perfil.';
+
+  @override
   String get profileLegalSection => 'Información legal';
 
   @override

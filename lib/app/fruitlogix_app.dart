@@ -4,13 +4,16 @@ import '../l10n/app_localizations.dart';
 import '../shared/ui/theme/theme.dart';
 import 'customer_shell.dart';
 import 'locale_controller.dart';
+import '../contexts/iam/infrastructure/auth_session_controller.dart';
+import '../contexts/iam/presentation/auth_access_page.dart';
 
 class FruitLogixApp extends StatefulWidget {
-  const FruitLogixApp({this.localeController, super.key});
+  const FruitLogixApp({this.localeController, this.authController, super.key});
 
   /// Saved UI language. When null (e.g. in widget tests) an in-memory
   /// controller is used.
   final LocaleController? localeController;
+  final AuthSessionController? authController;
 
   @override
   State<FruitLogixApp> createState() => _FruitLogixAppState();
@@ -19,11 +22,19 @@ class FruitLogixApp extends StatefulWidget {
 class _FruitLogixAppState extends State<FruitLogixApp> {
   late final LocaleController _localeController =
       widget.localeController ?? LocaleController();
+  late final AuthSessionController _authController =
+      widget.authController ?? AuthSessionController();
+
+  @override
+  void dispose() {
+    if (widget.authController == null) _authController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: _localeController,
+      listenable: Listenable.merge([_localeController, _authController]),
       builder: (context, _) => MaterialApp(
         onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
         debugShowCheckedModeBanner: false,
@@ -33,7 +44,17 @@ class _FruitLogixAppState extends State<FruitLogixApp> {
         locale: _localeController.locale,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: CustomerShell(localeController: _localeController),
+        home: _authController.session == null
+            ? AuthAccessPage(
+                controller: _authController,
+                localeController: _localeController,
+              )
+            : CustomerShell(
+                localeController: _localeController,
+                onSignOut: () {
+                  _authController.signOut();
+                },
+              ),
       ),
     );
   }
