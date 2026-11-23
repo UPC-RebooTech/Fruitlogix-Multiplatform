@@ -9,9 +9,16 @@ import '../infrastructure/in_memory_order_repository.dart';
 import 'order_status_view.dart';
 
 class CustomerOrdersPage extends StatelessWidget {
-  const CustomerOrdersPage({required this.onNewOrder, super.key});
+  const CustomerOrdersPage({
+    required this.onNewOrder,
+    this.onReportIncident,
+    super.key,
+  });
 
   final VoidCallback onNewOrder;
+
+  /// Opens the incident report (Quality Management) for an order code.
+  final ValueChanged<String>? onReportIncident;
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +61,12 @@ class CustomerOrdersPage extends StatelessWidget {
               ),
               const SizedBox(height: CosechaSpace.md),
               for (final order in orders) ...[
-                _OrderCard(order: order),
+                _OrderCard(
+                  order: order,
+                  onReportIncident: onReportIncident == null
+                      ? null
+                      : () => onReportIncident!(order.id),
+                ),
                 const SizedBox(height: CosechaSpace.xs),
               ],
             ],
@@ -66,9 +78,10 @@ class CustomerOrdersPage extends StatelessWidget {
 }
 
 class _OrderCard extends StatelessWidget {
-  const _OrderCard({required this.order});
+  const _OrderCard({required this.order, this.onReportIncident});
 
   final CommercialOrder order;
+  final VoidCallback? onReportIncident;
 
   @override
   Widget build(BuildContext context) {
@@ -153,6 +166,17 @@ class _OrderCard extends StatelessWidget {
             label: l10n.deliveryAddressLabel,
             value: order.deliveryAddress,
           ),
+          if (onReportIncident != null) ...[
+            const SizedBox(height: CosechaSpace.xs),
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: CosechaTextButton(
+                label: l10n.qmReportIncident,
+                icon: Icons.report_problem_outlined,
+                onPressed: onReportIncident,
+              ),
+            ),
+          ],
         ],
       ),
     );

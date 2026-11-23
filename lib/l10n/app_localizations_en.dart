@@ -718,4 +718,155 @@ class AppLocalizationsEn extends AppLocalizations {
   String proActiveSince(String date) {
     return 'Active since $date';
   }
+
+  @override
+  String get qmIncidentsTitle => 'Incidents';
+
+  @override
+  String get qmKpiOpen => 'Open';
+
+  @override
+  String get qmKpiInReview => 'In review';
+
+  @override
+  String get qmKpiClosed => 'Closed';
+
+  @override
+  String get qmReportIncident => 'Report an incident';
+
+  @override
+  String get qmNewIncidentTitle => 'New incident';
+
+  @override
+  String get qmYourIncidents => 'Your incidents';
+
+  @override
+  String get qmFilterAll => 'All';
+
+  @override
+  String get qmStatusOpen => 'Open';
+
+  @override
+  String get qmStatusInReview => 'In review';
+
+  @override
+  String get qmStatusResolved => 'Resolved';
+
+  @override
+  String get qmStatusRejected => 'Rejected';
+
+  @override
+  String get qmEmptyTitle => 'No incidents';
+
+  @override
+  String get qmEmptyMessage =>
+      'If an order arrives with a problem, report it here with photos.';
+
+  @override
+  String get qmEmptyFilter => 'No incidents with this status';
+
+  @override
+  String get qmLoadError => 'We couldn\'t load your incidents';
+
+  @override
+  String get qmRetry => 'Try again';
+
+  @override
+  String get qmSessionExpired => 'Your session expired. Sign in again.';
+
+  @override
+  String qmIncidentTitle(String code) {
+    return 'Incident $code';
+  }
+
+  @override
+  String get qmOrder => 'Order';
+
+  @override
+  String get qmLot => 'Lot';
+
+  @override
+  String get qmReportedAt => 'Reported';
+
+  @override
+  String get qmDescription => 'Description';
+
+  @override
+  String get qmPhotos => 'Photos';
+
+  @override
+  String qmPhotoCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count photos',
+      one: '1 photo',
+      zero: 'No photos',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String qmPhotoLabel(int number) {
+    return 'Photo $number';
+  }
+
+  @override
+  String get qmPhotosLocalNote => 'Photos are saved on this phone.';
+
+  @override
+  String get qmTargetLabel => 'Order';
+
+  @override
+  String get qmTargetRequired => 'Choose the order with the problem';
+
+  @override
+  String qmTargetValue(String order, String lot) {
+    return '$order · Lot $lot';
+  }
+
+  @override
+  String get qmDescriptionLabel => 'What happened?';
+
+  @override
+  String get qmDescriptionHint => 'Damaged fruit, wrong product, temperature…';
+
+  @override
+  String get qmDescriptionHelper =>
+      'Tell us what you saw and how many boxes are affected.';
+
+  @override
+  String get qmDescriptionError =>
+      'Describe the problem (at least 10 characters)';
+
+  @override
+  String qmPhotosLabel(int max) {
+    return 'Photos (optional, up to $max)';
+  }
+
+  @override
+  String get qmAddPhoto => 'Add photo';
+
+  @override
+  String get qmTakePhoto => 'Take a photo';
+
+  @override
+  String get qmChooseGallery => 'Choose from gallery';
+
+  @override
+  String qmRemovePhoto(int number) {
+    return 'Remove photo $number';
+  }
+
+  @override
+  String get qmPhotoError => 'We couldn\'t get the photo';
+
+  @override
+  String get qmSend => 'Send report';
+
+  @override
+  String get qmSent => 'Incident reported';
+
+  @override
+  String get qmSendError => 'We couldn\'t send the report. Try again.';
 }

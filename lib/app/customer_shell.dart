@@ -12,6 +12,13 @@ import '../contexts/payment_management/presentation/payment_detail_page.dart';
 import '../contexts/payment_management/presentation/payments_page.dart';
 import '../contexts/payment_management/presentation/pro_badge.dart';
 import '../contexts/payment_management/presentation/pro_membership_page.dart';
+import '../contexts/order_management/infrastructure/in_memory_order_repository.dart';
+import '../contexts/quality_management/domain/incident.dart';
+import '../contexts/quality_management/infrastructure/demo_quality_repositories.dart';
+import '../contexts/quality_management/presentation/incident_detail_page.dart';
+import '../contexts/quality_management/presentation/incidents_page.dart';
+import '../contexts/quality_management/presentation/report_incident_page.dart';
+import '../contexts/quality_management/quality_management_module.dart';
 import '../contexts/profiles_management/infrastructure/in_memory_commercial_client_profile_repository.dart';
 import '../contexts/profiles_management/presentation/customer_profile_page.dart';
 import '../dashboard/presentation/customer_dashboard_page.dart';
@@ -26,9 +33,8 @@ import '../contexts/profiles_management/domain/commercial_client_profile_reposit
 /// Sections reachable from the "More" speed dial. They open inside the
 /// shell, keeping both bars visible.
 ///
-/// Reserved for later sprints: incident history, messages and biometric
-/// sign-in settings.
-enum MoreSection { payments, proPlan, profile }
+/// Reserved for later sprints: messages and biometric sign-in settings.
+enum MoreSection { payments, incidents, proPlan, profile }
 
 /// A detail screen opened inside a section (e.g. an invoice). Detail screens
 /// also keep both bars; the top bar back button goes back one level.
@@ -50,6 +56,7 @@ class CustomerShell extends StatefulWidget {
     this.onSignOut,
     this.session,
     this.paymentModule,
+    this.qualityModule,
     super.key,
     this.profileRepository,
   });
@@ -63,6 +70,9 @@ class CustomerShell extends StatefulWidget {
 
   /// Overrides the Payment Management wiring (tests).
   final PaymentManagementModule? paymentModule;
+
+  /// Overrides the Quality Management wiring (tests).
+  final QualityManagementModule? qualityModule;
 
   @override
   State<CustomerShell> createState() => _CustomerShellState();
@@ -100,6 +110,26 @@ class _CustomerShellState extends State<CustomerShell>
   bool _paymentsStarted = false;
   ProCheckoutStage _lastProStage = ProCheckoutStage.idle;
 
+  /// Quality Management (EP02 · US11). Demo lots until Order Management
+  /// reads real orders; see `qualityRemoteEnabled`.
+  late final QualityManagementModule _quality = widget.qualityModule ??
+      (qualityRemoteEnabled && widget.session != null
+          ? QualityManagementModule.remote(widget.session!, targets: _incidentTargets)
+          : QualityManagementModule.demo(targets: _incidentTargets));
+
+  /// Orders the client can report about: the ones created in this session
+  /// (catalog) plus the demo history.
+  static final DemoIncidentTargets _incidentTargets = DemoIncidentTargets(
+    extraOrders: () => [
+      for (final order in InMemoryOrderRepository.instance.orders)
+        IncidentTarget(
+          orderCode: order.id,
+          batchId: DemoIncidentTargets.demoBatchFor(order.id),
+          productSummary: order.lines.map((line) => line.product.name).join(' · '),
+        ),
+    ],
+  );
+
   @override
   void initState() {
     super.initState();
@@ -123,6 +153,7 @@ class _CustomerShellState extends State<CustomerShell>
       _paymentsStarted = true;
       // Not awaited: the dashboard renders at once (US36).
       _payments.start();
+      _quality.start();
     }
   }
 
@@ -152,6 +183,7 @@ class _CustomerShellState extends State<CustomerShell>
     WidgetsBinding.instance.removeObserver(this);
     _payments.membership.removeListener(_onMembershipChanged);
     if (widget.paymentModule == null) _payments.dispose();
+    if (widget.qualityModule == null) _quality.dispose();
     super.dispose();
   }
 
@@ -204,6 +236,42 @@ class _CustomerShellState extends State<CustomerShell>
     ));
   }
 
+  void _openIncident(Incident incident) {
+    _openDetail(_incidentDetailPage(incident));
+  }
+
+  _DetailPage _incidentDetailPage(Incident incident) => _DetailPage(
+        title: (l10n) => l10n.qmIncidentTitle(incident.code),
+        builder: (_) => IncidentDetailPage(incident: incident),
+      );
+
+  /// US11 — Report form inside "More → Incidents" (both bars visible).
+  /// [orderCode] fixes the order (from reception or an order card).
+  void _openIncidentReport({String? orderCode}) {
+    final target =
+        orderCode == null ? null : _quality.targetForOrder(orderCode);
+    setState(() {
+      _section = MoreSection.incidents;
+      _details
+        ..clear()
+        ..add(_DetailPage(
+          title: (l10n) => l10n.qmNewIncidentTitle,
+          builder: (_) => ReportIncidentPage(
+            controller: _quality.incidents,
+            targets: _quality.targets,
+            picker: _quality.picker,
+            initialTarget: target,
+            // Back from the new incident returns to the history.
+            onSubmitted: (incident) => setState(() {
+              _details
+                ..clear()
+                ..add(_incidentDetailPage(incident));
+            }),
+          ),
+        ));
+    });
+  }
+
   Future<void> _openMore(Rect anchor) async {
     final l10n = AppLocalizations.of(context);
     final section = await showCosechaSpeedDial<MoreSection>(
@@ -215,6 +283,11 @@ class _CustomerShellState extends State<CustomerShell>
           value: MoreSection.payments,
           icon: Icons.account_balance_wallet_outlined,
           label: l10n.paymentsTitle,
+        ),
+        CosechaSpeedDialItem(
+          value: MoreSection.incidents,
+          icon: Icons.report_problem_outlined,
+          label: l10n.qmIncidentsTitle,
         ),
         CosechaSpeedDialItem(
           value: MoreSection.proPlan,
@@ -235,6 +308,7 @@ class _CustomerShellState extends State<CustomerShell>
   String _sectionTitle(AppLocalizations l10n, MoreSection section) =>
       switch (section) {
         MoreSection.payments => l10n.paymentsTitle,
+        MoreSection.incidents => l10n.qmIncidentsTitle,
         MoreSection.proPlan => l10n.proTitle,
         MoreSection.profile => l10n.profileTitle,
       };
@@ -246,6 +320,11 @@ class _CustomerShellState extends State<CustomerShell>
             membership: _payments.membership,
             onOpenInvoice: _openInvoice,
             onOpenPro: () => _openSection(MoreSection.proPlan),
+          ),
+        MoreSection.incidents => IncidentsPage(
+            controller: _quality.incidents,
+            onOpenIncident: _openIncident,
+            onReport: _openIncidentReport,
           ),
         MoreSection.proPlan => ProMembershipPage(
             controller: _payments.membership,
@@ -265,8 +344,14 @@ class _CustomerShellState extends State<CustomerShell>
           ),
         _ordersTab => CustomerOrdersPage(
             onNewOrder: () => _navigateTo(_catalogTab),
+            onReportIncident: (orderCode) =>
+                _openIncidentReport(orderCode: orderCode),
           ),
-        _trackingTab => DeliveryTrackingPage(repository: _shipmentRepository),
+        _trackingTab => DeliveryTrackingPage(
+            repository: _shipmentRepository,
+            onReportIncident: (orderCode) =>
+                _openIncidentReport(orderCode: orderCode),
+          ),
         _ => CustomerDashboardPage(
             customerName: _profileRepository.current.firstName,
             onNewOrder: () => _navigateTo(_catalogTab),

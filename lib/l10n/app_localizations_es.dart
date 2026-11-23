@@ -721,4 +721,156 @@ class AppLocalizationsEs extends AppLocalizations {
   String proActiveSince(String date) {
     return 'Activo desde $date';
   }
+
+  @override
+  String get qmIncidentsTitle => 'Incidencias';
+
+  @override
+  String get qmKpiOpen => 'Abiertas';
+
+  @override
+  String get qmKpiInReview => 'En revisión';
+
+  @override
+  String get qmKpiClosed => 'Cerradas';
+
+  @override
+  String get qmReportIncident => 'Reportar una incidencia';
+
+  @override
+  String get qmNewIncidentTitle => 'Nueva incidencia';
+
+  @override
+  String get qmYourIncidents => 'Tus incidencias';
+
+  @override
+  String get qmFilterAll => 'Todas';
+
+  @override
+  String get qmStatusOpen => 'Abierta';
+
+  @override
+  String get qmStatusInReview => 'En revisión';
+
+  @override
+  String get qmStatusResolved => 'Resuelta';
+
+  @override
+  String get qmStatusRejected => 'Rechazada';
+
+  @override
+  String get qmEmptyTitle => 'No tienes incidencias';
+
+  @override
+  String get qmEmptyMessage =>
+      'Si un pedido llega con problemas, repórtalo aquí con fotos.';
+
+  @override
+  String get qmEmptyFilter => 'No hay incidencias con este estado';
+
+  @override
+  String get qmLoadError => 'No pudimos cargar tus incidencias';
+
+  @override
+  String get qmRetry => 'Reintentar';
+
+  @override
+  String get qmSessionExpired => 'Tu sesión venció. Vuelve a iniciar sesión.';
+
+  @override
+  String qmIncidentTitle(String code) {
+    return 'Incidencia $code';
+  }
+
+  @override
+  String get qmOrder => 'Pedido';
+
+  @override
+  String get qmLot => 'Lote';
+
+  @override
+  String get qmReportedAt => 'Reportada';
+
+  @override
+  String get qmDescription => 'Descripción';
+
+  @override
+  String get qmPhotos => 'Fotos';
+
+  @override
+  String qmPhotoCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count fotos',
+      one: '1 foto',
+      zero: 'Sin fotos',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String qmPhotoLabel(int number) {
+    return 'Foto $number';
+  }
+
+  @override
+  String get qmPhotosLocalNote => 'Las fotos se guardan en este teléfono.';
+
+  @override
+  String get qmTargetLabel => 'Pedido';
+
+  @override
+  String get qmTargetRequired => 'Elige el pedido con el problema';
+
+  @override
+  String qmTargetValue(String order, String lot) {
+    return '$order · Lote $lot';
+  }
+
+  @override
+  String get qmDescriptionLabel => '¿Qué pasó?';
+
+  @override
+  String get qmDescriptionHint =>
+      'Fruta dañada, producto equivocado, temperatura…';
+
+  @override
+  String get qmDescriptionHelper =>
+      'Cuéntanos qué viste y cuántas cajas están afectadas.';
+
+  @override
+  String get qmDescriptionError =>
+      'Describe el problema (mínimo 10 caracteres)';
+
+  @override
+  String qmPhotosLabel(int max) {
+    return 'Fotos (opcional, hasta $max)';
+  }
+
+  @override
+  String get qmAddPhoto => 'Agregar foto';
+
+  @override
+  String get qmTakePhoto => 'Tomar foto';
+
+  @override
+  String get qmChooseGallery => 'Elegir de la galería';
+
+  @override
+  String qmRemovePhoto(int number) {
+    return 'Quitar foto $number';
+  }
+
+  @override
+  String get qmPhotoError => 'No pudimos obtener la foto';
+
+  @override
+  String get qmSend => 'Enviar reporte';
+
+  @override
+  String get qmSent => 'Incidencia reportada';
+
+  @override
+  String get qmSendError => 'No pudimos enviar el reporte. Inténtalo de nuevo.';
 }

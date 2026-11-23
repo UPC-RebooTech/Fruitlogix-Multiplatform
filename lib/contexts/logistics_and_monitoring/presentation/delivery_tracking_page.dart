@@ -10,9 +10,17 @@ import 'confirm_reception_page.dart';
 /// Tracking of the active shipment: overview (dark highlight), cold chain
 /// readings (Glaciar, reserved for cold chain) and route checkpoints.
 class DeliveryTrackingPage extends StatefulWidget {
-  const DeliveryTrackingPage({required this.repository, super.key});
+  const DeliveryTrackingPage({
+    required this.repository,
+    this.onReportIncident,
+    super.key,
+  });
 
   final InMemoryShipmentRepository repository;
+
+  /// Opens the incident report (Quality Management) for an order code when
+  /// the reception inspection flags an incident.
+  final ValueChanged<String>? onReportIncident;
 
   @override
   State<DeliveryTrackingPage> createState() => _DeliveryTrackingPageState();
@@ -20,10 +28,12 @@ class DeliveryTrackingPage extends StatefulWidget {
 
 class _DeliveryTrackingPageState extends State<DeliveryTrackingPage> {
   Future<void> _confirmReception(DeliveryShipment shipment) async {
+    var hasIncidents = false;
     await Navigator.of(context).push(MaterialPageRoute<void>(
       builder: (_) => ConfirmReceptionPage(
         shipment: shipment,
         onConfirmed: (notes, incidents) {
+          hasIncidents = incidents;
           setState(() {
             widget.repository.markAsReceived(
               shipment.trackingNumber,
@@ -34,6 +44,9 @@ class _DeliveryTrackingPageState extends State<DeliveryTrackingPage> {
         },
       ),
     ));
+    // US11: an incident flagged at the dock goes straight to the report.
+    if (!mounted || !hasIncidents) return;
+    widget.onReportIncident?.call(shipment.orderId);
   }
 
   @override

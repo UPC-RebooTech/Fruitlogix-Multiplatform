@@ -1363,6 +1363,264 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Active since {date}'**
   String proActiveSince(String date);
+
+  /// No description provided for @qmIncidentsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Incidents'**
+  String get qmIncidentsTitle;
+
+  /// No description provided for @qmKpiOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get qmKpiOpen;
+
+  /// No description provided for @qmKpiInReview.
+  ///
+  /// In en, this message translates to:
+  /// **'In review'**
+  String get qmKpiInReview;
+
+  /// No description provided for @qmKpiClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get qmKpiClosed;
+
+  /// No description provided for @qmReportIncident.
+  ///
+  /// In en, this message translates to:
+  /// **'Report an incident'**
+  String get qmReportIncident;
+
+  /// No description provided for @qmNewIncidentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New incident'**
+  String get qmNewIncidentTitle;
+
+  /// No description provided for @qmYourIncidents.
+  ///
+  /// In en, this message translates to:
+  /// **'Your incidents'**
+  String get qmYourIncidents;
+
+  /// No description provided for @qmFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get qmFilterAll;
+
+  /// No description provided for @qmStatusOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get qmStatusOpen;
+
+  /// No description provided for @qmStatusInReview.
+  ///
+  /// In en, this message translates to:
+  /// **'In review'**
+  String get qmStatusInReview;
+
+  /// No description provided for @qmStatusResolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get qmStatusResolved;
+
+  /// No description provided for @qmStatusRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get qmStatusRejected;
+
+  /// No description provided for @qmEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No incidents'**
+  String get qmEmptyTitle;
+
+  /// No description provided for @qmEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'If an order arrives with a problem, report it here with photos.'**
+  String get qmEmptyMessage;
+
+  /// No description provided for @qmEmptyFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'No incidents with this status'**
+  String get qmEmptyFilter;
+
+  /// No description provided for @qmLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load your incidents'**
+  String get qmLoadError;
+
+  /// No description provided for @qmRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get qmRetry;
+
+  /// No description provided for @qmSessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session expired. Sign in again.'**
+  String get qmSessionExpired;
+
+  /// No description provided for @qmIncidentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Incident {code}'**
+  String qmIncidentTitle(String code);
+
+  /// No description provided for @qmOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Order'**
+  String get qmOrder;
+
+  /// No description provided for @qmLot.
+  ///
+  /// In en, this message translates to:
+  /// **'Lot'**
+  String get qmLot;
+
+  /// No description provided for @qmReportedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Reported'**
+  String get qmReportedAt;
+
+  /// No description provided for @qmDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get qmDescription;
+
+  /// No description provided for @qmPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos'**
+  String get qmPhotos;
+
+  /// No description provided for @qmPhotoCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No photos} =1{1 photo} other{{count} photos}}'**
+  String qmPhotoCount(int count);
+
+  /// No description provided for @qmPhotoLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo {number}'**
+  String qmPhotoLabel(int number);
+
+  /// No description provided for @qmPhotosLocalNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos are saved on this phone.'**
+  String get qmPhotosLocalNote;
+
+  /// No description provided for @qmTargetLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Order'**
+  String get qmTargetLabel;
+
+  /// No description provided for @qmTargetRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the order with the problem'**
+  String get qmTargetRequired;
+
+  /// No description provided for @qmTargetValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{order} · Lot {lot}'**
+  String qmTargetValue(String order, String lot);
+
+  /// No description provided for @qmDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'What happened?'**
+  String get qmDescriptionLabel;
+
+  /// No description provided for @qmDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Damaged fruit, wrong product, temperature…'**
+  String get qmDescriptionHint;
+
+  /// No description provided for @qmDescriptionHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us what you saw and how many boxes are affected.'**
+  String get qmDescriptionHelper;
+
+  /// No description provided for @qmDescriptionError.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe the problem (at least 10 characters)'**
+  String get qmDescriptionError;
+
+  /// No description provided for @qmPhotosLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos (optional, up to {max})'**
+  String qmPhotosLabel(int max);
+
+  /// No description provided for @qmAddPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Add photo'**
+  String get qmAddPhoto;
+
+  /// No description provided for @qmTakePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a photo'**
+  String get qmTakePhoto;
+
+  /// No description provided for @qmChooseGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from gallery'**
+  String get qmChooseGallery;
+
+  /// No description provided for @qmRemovePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove photo {number}'**
+  String qmRemovePhoto(int number);
+
+  /// No description provided for @qmPhotoError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t get the photo'**
+  String get qmPhotoError;
+
+  /// No description provided for @qmSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send report'**
+  String get qmSend;
+
+  /// No description provided for @qmSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Incident reported'**
+  String get qmSent;
+
+  /// No description provided for @qmSendError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t send the report. Try again.'**
+  String get qmSendError;
 }
 
 class _AppLocalizationsDelegate

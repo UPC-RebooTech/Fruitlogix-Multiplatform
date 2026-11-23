@@ -304,5 +304,70 @@
   "proActiveSince": "Active since {date}",
   "@proActiveSince": {
     "placeholders": { "date": { "type": "String", "example": "22 November 2026" } }
-  }
+  },
+
+  "qmIncidentsTitle": "Incidents",
+  "qmKpiOpen": "Open",
+  "qmKpiInReview": "In review",
+  "qmKpiClosed": "Closed",
+  "qmReportIncident": "Report an incident",
+  "qmNewIncidentTitle": "New incident",
+  "qmYourIncidents": "Your incidents",
+  "qmFilterAll": "All",
+  "qmStatusOpen": "Open",
+  "qmStatusInReview": "In review",
+  "qmStatusResolved": "Resolved",
+  "qmStatusRejected": "Rejected",
+  "qmEmptyTitle": "No incidents",
+  "qmEmptyMessage": "If an order arrives with a problem, report it here with photos.",
+  "qmEmptyFilter": "No incidents with this status",
+  "qmLoadError": "We couldn't load your incidents",
+  "qmRetry": "Try again",
+  "qmSessionExpired": "Your session expired. Sign in again.",
+  "qmIncidentTitle": "Incident {code}",
+  "@qmIncidentTitle": {
+    "placeholders": { "code": { "type": "String", "example": "INC-0007" } }
+  },
+  "qmOrder": "Order",
+  "qmLot": "Lot",
+  "qmReportedAt": "Reported",
+  "qmDescription": "Description",
+  "qmPhotos": "Photos",
+  "qmPhotoCount": "{count, plural, =0{No photos} =1{1 photo} other{{count} photos}}",
+  "@qmPhotoCount": {
+    "placeholders": { "count": { "type": "int", "example": "2" } }
+  },
+  "qmPhotoLabel": "Photo {number}",
+  "@qmPhotoLabel": {
+    "placeholders": { "number": { "type": "int", "example": "1" } }
+  },
+  "qmPhotosLocalNote": "Photos are saved on this phone.",
+  "qmTargetLabel": "Order",
+  "qmTargetRequired": "Choose the order with the problem",
+  "qmTargetValue": "{order} · Lot {lot}",
+  "@qmTargetValue": {
+    "placeholders": {
+      "order": { "type": "String", "example": "ORD-1042" },
+      "lot": { "type": "String", "example": "LOT-2391" }
+    }
+  },
+  "qmDescriptionLabel": "What happened?",
+  "qmDescriptionHint": "Damaged fruit, wrong product, temperature…",
+  "qmDescriptionHelper": "Tell us what you saw and how many boxes are affected.",
+  "qmDescriptionError": "Describe the problem (at least 10 characters)",
+  "qmPhotosLabel": "Photos (optional, up to {max})",
+  "@qmPhotosLabel": {
+    "placeholders": { "max": { "type": "int", "example": "4" } }
+  },
+  "qmAddPhoto": "Add photo",
+  "qmTakePhoto": "Take a photo",
+  "qmChooseGallery": "Choose from gallery",
+  "qmRemovePhoto": "Remove photo {number}",
+  "@qmRemovePhoto": {
+    "placeholders": { "number": { "type": "int", "example": "1" } }
+  },
+  "qmPhotoError": "We couldn't get the photo",
+  "qmSend": "Send report",
+  "qmSent": "Incident reported",
+  "qmSendError": "We couldn't send the report. Try again."
 }

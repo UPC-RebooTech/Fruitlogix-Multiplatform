@@ -45,6 +45,8 @@ dependencies:
   flutter_stripe: ^14.2.0 # US30 / TS17: native Payment Sheet
   flutter_local_notifications: ^23.0.3 # US70: invoice reminders
   timezone: any # US70: scheduled reminders (version pinned by the plugin)
+  image_picker: ^1.2.4
+  path_provider: ^2.1.6
 
 dev_dependencies:
   flutter_test:
