@@ -14,6 +14,17 @@ class InMemoryShipmentRepository {
         humidityPercent: 86.0,
         reeferUnitStatus: 'Active & Stable',
       ),
+      certificate: const ColdChainCertificate(
+        certificateId: 'CERT-CC-2026-0941',
+        optimalRangeLabel: '1.0 °C – 6.0 °C (Palta & Mango)',
+        averageTempC: 4.1,
+        maxTempRecordedC: 5.3,
+        minTempRecordedC: 3.8,
+        compliancePercentage: 99.2,
+        totalTripHours: 9.5,
+        digitalSignatureHash: 'a7f3c4e912b590df88210e4a77bc89d13f9901ae',
+        issuedAt: '2026-11-21 14:30 UTC-5',
+      ),
       events: const [
         TrackingEventItem(
           time: '06:00 AM',
