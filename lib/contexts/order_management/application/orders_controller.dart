@@ -36,6 +36,15 @@ class OrdersController extends ChangeNotifier {
   List<CommercialOrder> get activeOrders =>
       _orders.where((order) => order.status.isActive).toList(growable: false);
 
+  /// US07 — finished orders (delivered, cancelled, rejected), newest first.
+  List<CommercialOrder> get history =>
+      _orders.where((order) => !order.status.isActive).toList(growable: false);
+
+  Map<int, String> _producerNames = const {};
+
+  /// Producer id → name (empty if the API could not provide them).
+  Map<int, String> get producerNames => _producerNames;
+
   int get activeCount => activeOrders.length;
   int get inTransitCount =>
       _orders.where((order) => order.status == OrderStatus.inTransit).length;
@@ -49,16 +58,28 @@ class OrdersController extends ChangeNotifier {
     _error = null;
     _notify();
     try {
+      final names = _loadProducerNames();
       final List<CommercialOrder> fetched = [
         ...await _repository.fetchMyOrders(),
       ]..sort(_newestFirst);
       _orders = List<CommercialOrder>.unmodifiable(fetched);
+      _producerNames = await names;
       _status = OrdersStatus.ready;
     } catch (error) {
       _error = error;
       _status = OrdersStatus.failure;
     }
     _notify();
+  }
+
+  /// Producer names are a nice-to-have: without them the filter shows
+  /// "Producer #id", so a failure here never breaks the orders.
+  Future<Map<int, String>> _loadProducerNames() async {
+    try {
+      return await _repository.fetchProducerNames();
+    } catch (_) {
+      return _producerNames;
+    }
   }
 
   /// Places [order]; on success it is added at the top of the list.

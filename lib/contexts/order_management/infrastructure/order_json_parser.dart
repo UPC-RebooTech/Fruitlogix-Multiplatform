@@ -85,8 +85,36 @@ abstract final class OrderJsonParser {
         json['status'] ?? json['orderStatus'] ?? json['currentStatus'],
       ),
       notes: notes.isEmpty ? null : notes,
+      producerId: _int(json['producerId']),
       totalAmount: _double(json['totalAmount'] ?? json['total']),
     );
+  }
+
+  /// `GET /api/v1/producers` → id → display name (`legalName`, then
+  /// `fullName`). Malformed entries are skipped.
+  static Map<int, String> parseProducerNames(Object? body) {
+    final list = switch (body) {
+      List() => body,
+      Map() => body['data'] ?? body['items'],
+      _ => null,
+    };
+    if (list is! List) return const {};
+    final names = <int, String>{};
+    for (final item in list) {
+      if (item is! Map) continue;
+      final id = _int(item['id']);
+      final name = _producerName(item);
+      if (id != null && name != null) names[id] = name;
+    }
+    return names;
+  }
+
+  static String? _producerName(Map<dynamic, dynamic> json) {
+    for (final key in ['legalName', 'fullName', 'name']) {
+      final value = (json[key] ?? '').toString().trim();
+      if (value.isNotEmpty) return value;
+    }
+    return null;
   }
 
   static OrderLine _line(Map<dynamic, dynamic> json) {

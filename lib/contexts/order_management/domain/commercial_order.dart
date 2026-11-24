@@ -47,8 +47,12 @@ class CommercialOrder {
     required this.status,
     this.notes,
     this.createdAt,
+    this.producerId,
     double? totalAmount,
   }) : _totalAmount = totalAmount;
+
+  /// Producer assigned by the distributor; null while unassigned.
+  final int? producerId;
 
   /// Platform id (`57`) or demo id (`1042`).
   final String id;

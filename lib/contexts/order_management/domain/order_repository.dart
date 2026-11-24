@@ -7,4 +7,7 @@ abstract interface class OrderRepository {
 
   /// Registers [order]. Throws [ArgumentError] when it is not valid.
   Future<CommercialOrder> placeOrder(NewOrder order);
+
+  /// Producer id → display name, for the history filter (US08).
+  Future<Map<int, String>> fetchProducerNames();
 }

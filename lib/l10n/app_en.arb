@@ -158,6 +158,38 @@
   "ordersSubtitle": "Your orders and their status",
   "ordersEmptyTitle": "No orders yet",
   "ordersEmptyMessage": "Add products in the catalog to create your first order.",
+  "ordersTabActive": "Active ({count})",
+  "@ordersTabActive": { "placeholders": { "count": { "type": "int", "example": "2" } } },
+  "ordersTabHistory": "History ({count})",
+  "@ordersTabHistory": { "placeholders": { "count": { "type": "int", "example": "3" } } },
+  "ordersHistoryEmptyTitle": "No orders in your history yet",
+  "ordersHistoryEmptyMessage": "Delivered, cancelled or rejected orders will appear here.",
+  "ordersSearchHint": "Search by order code or product",
+  "ordersSearchClear": "Clear search",
+  "ordersFilterStatus": "Status",
+  "ordersFilterAll": "All",
+  "ordersFiltersToggle": "Filters",
+  "ordersFiltersToggleActive": "Filters ({count})",
+  "@ordersFiltersToggleActive": { "placeholders": { "count": { "type": "int", "example": "2" } } },
+  "ordersFilterDates": "Delivery date",
+  "ordersFilterProducer": "Producer",
+  "ordersAnyDate": "Any date",
+  "ordersDateRange": "{from} – {to}",
+  "@ordersDateRange": {
+    "placeholders": {
+      "from": { "type": "String", "example": "11/1/2026" },
+      "to": { "type": "String", "example": "11/15/2026" }
+    }
+  },
+  "ordersClearDates": "Remove dates",
+  "ordersResultsCount": "{count, plural, =0{No orders} =1{1 order} other{{count} orders}}",
+  "@ordersResultsCount": { "placeholders": { "count": { "type": "int", "example": "3" } } },
+  "ordersClearFilters": "Clear filters",
+  "ordersNoResultsTitle": "No orders match these filters",
+  "ordersNoResultsMessage": "Try another search or remove some filters.",
+  "ordersProducer": "Producer",
+  "ordersProducerFallback": "Producer #{id}",
+  "@ordersProducerFallback": { "placeholders": { "id": { "type": "int", "example": "1" } } },
   "orderDeliveryDate": "Delivery: {date}",
   "@orderDeliveryDate": {
     "placeholders": { "date": { "type": "String", "example": "Nov 14, 2026" } }

@@ -52,6 +52,10 @@ class HttpOrderRepository implements OrderRepository {
     return orders.first;
   }
 
+  @override
+  Future<Map<int, String>> fetchProducerNames() async =>
+      OrderJsonParser.parseProducerNames(await api.getProducers());
+
   List<CommercialOrder> _mine(Object? body) {
     try {
       final raw = switch (body) {

@@ -59,6 +59,11 @@ class FruitLogixOrdersApi {
     ),
   );
 
+  /// `GET /api/v1/producers` — names for the history producer filter.
+  Future<Object?> getProducers() => _send(
+    () => _client.get(_baseUri.resolve('/api/v1/producers'), headers: _headers),
+  );
+
   /// `POST /api/v1/orders` — `CreateOrderResource`.
   Future<Object?> createOrder(Map<String, Object?> body) => _send(
     () => _client.post(

@@ -12,6 +12,7 @@ class DemoOrderRepository implements OrderRepository {
     final products = const DemoCatalogRepository().getProducts();
     final mango = products.firstWhere((p) => p.id == 1);
     final avocado = products.firstWhere((p) => p.id == 3);
+    final grapes = products.firstWhere((p) => p.id == 5);
     final now = _clock();
     DateTime day(int offset) => DateTime(now.year, now.month, now.day + offset);
     // Same orders as the demo shipment (ORD-1042) and invoices (ORD-1040).
@@ -34,9 +35,50 @@ class DemoOrderRepository implements OrderRepository {
         deliveryDate: day(2),
         createdAt: day(-1),
         status: OrderStatus.preparing,
+        producerId: 1,
+      ),
+      // History (US07): finished orders.
+      CommercialOrder(
+        id: '1036',
+        lines: [OrderLine(product: avocado, quantity: 150)],
+        deliveryAddress: 'Av. Nicolás Arriola 500, La Victoria',
+        deliveryDate: day(-9),
+        createdAt: day(-14),
+        status: OrderStatus.delivered,
+        producerId: 1,
+      ),
+      CommercialOrder(
+        id: '1031',
+        lines: [OrderLine(product: grapes, quantity: 40)],
+        deliveryAddress: 'Av. Nicolás Arriola 500, La Victoria',
+        deliveryDate: day(-20),
+        createdAt: day(-24),
+        status: OrderStatus.cancelled,
+        notes: 'Cancelled: duplicated order',
+      ),
+      CommercialOrder(
+        id: '1027',
+        lines: [
+          OrderLine(product: mango, quantity: 200),
+          OrderLine(product: grapes, quantity: 30),
+        ],
+        deliveryAddress: 'Jr. Ucayali 120, Cercado de Lima',
+        deliveryDate: day(-38),
+        createdAt: day(-42),
+        status: OrderStatus.delivered,
+        producerId: 2,
       ),
     ]);
   }
+
+  /// Demo producers (same ids as above).
+  static const Map<int, String> producerNames = {
+    1: 'Agrícola San José',
+    2: 'Fundo El Mango',
+  };
+
+  @override
+  Future<Map<int, String>> fetchProducerNames() async => producerNames;
 
   final DateTime Function() _clock;
   final Duration latency;

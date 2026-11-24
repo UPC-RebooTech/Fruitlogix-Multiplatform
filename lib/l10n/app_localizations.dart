@@ -734,6 +734,132 @@ abstract class AppLocalizations {
   /// **'Add products in the catalog to create your first order.'**
   String get ordersEmptyMessage;
 
+  /// No description provided for @ordersTabActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active ({count})'**
+  String ordersTabActive(int count);
+
+  /// No description provided for @ordersTabHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'History ({count})'**
+  String ordersTabHistory(int count);
+
+  /// No description provided for @ordersHistoryEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No orders in your history yet'**
+  String get ordersHistoryEmptyTitle;
+
+  /// No description provided for @ordersHistoryEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered, cancelled or rejected orders will appear here.'**
+  String get ordersHistoryEmptyMessage;
+
+  /// No description provided for @ordersSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by order code or product'**
+  String get ordersSearchHint;
+
+  /// No description provided for @ordersSearchClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear search'**
+  String get ordersSearchClear;
+
+  /// No description provided for @ordersFilterStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get ordersFilterStatus;
+
+  /// No description provided for @ordersFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get ordersFilterAll;
+
+  /// No description provided for @ordersFiltersToggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get ordersFiltersToggle;
+
+  /// No description provided for @ordersFiltersToggleActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters ({count})'**
+  String ordersFiltersToggleActive(int count);
+
+  /// No description provided for @ordersFilterDates.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery date'**
+  String get ordersFilterDates;
+
+  /// No description provided for @ordersFilterProducer.
+  ///
+  /// In en, this message translates to:
+  /// **'Producer'**
+  String get ordersFilterProducer;
+
+  /// No description provided for @ordersAnyDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Any date'**
+  String get ordersAnyDate;
+
+  /// No description provided for @ordersDateRange.
+  ///
+  /// In en, this message translates to:
+  /// **'{from} – {to}'**
+  String ordersDateRange(String from, String to);
+
+  /// No description provided for @ordersClearDates.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove dates'**
+  String get ordersClearDates;
+
+  /// No description provided for @ordersResultsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No orders} =1{1 order} other{{count} orders}}'**
+  String ordersResultsCount(int count);
+
+  /// No description provided for @ordersClearFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear filters'**
+  String get ordersClearFilters;
+
+  /// No description provided for @ordersNoResultsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No orders match these filters'**
+  String get ordersNoResultsTitle;
+
+  /// No description provided for @ordersNoResultsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Try another search or remove some filters.'**
+  String get ordersNoResultsMessage;
+
+  /// No description provided for @ordersProducer.
+  ///
+  /// In en, this message translates to:
+  /// **'Producer'**
+  String get ordersProducer;
+
+  /// No description provided for @ordersProducerFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Producer #{id}'**
+  String ordersProducerFallback(int id);
+
   /// No description provided for @orderDeliveryDate.
   ///
   /// In en, this message translates to:

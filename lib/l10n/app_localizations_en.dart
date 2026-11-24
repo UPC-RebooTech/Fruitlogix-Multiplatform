@@ -353,6 +353,90 @@ class AppLocalizationsEn extends AppLocalizations {
       'Add products in the catalog to create your first order.';
 
   @override
+  String ordersTabActive(int count) {
+    return 'Active ($count)';
+  }
+
+  @override
+  String ordersTabHistory(int count) {
+    return 'History ($count)';
+  }
+
+  @override
+  String get ordersHistoryEmptyTitle => 'No orders in your history yet';
+
+  @override
+  String get ordersHistoryEmptyMessage =>
+      'Delivered, cancelled or rejected orders will appear here.';
+
+  @override
+  String get ordersSearchHint => 'Search by order code or product';
+
+  @override
+  String get ordersSearchClear => 'Clear search';
+
+  @override
+  String get ordersFilterStatus => 'Status';
+
+  @override
+  String get ordersFilterAll => 'All';
+
+  @override
+  String get ordersFiltersToggle => 'Filters';
+
+  @override
+  String ordersFiltersToggleActive(int count) {
+    return 'Filters ($count)';
+  }
+
+  @override
+  String get ordersFilterDates => 'Delivery date';
+
+  @override
+  String get ordersFilterProducer => 'Producer';
+
+  @override
+  String get ordersAnyDate => 'Any date';
+
+  @override
+  String ordersDateRange(String from, String to) {
+    return '$from – $to';
+  }
+
+  @override
+  String get ordersClearDates => 'Remove dates';
+
+  @override
+  String ordersResultsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count orders',
+      one: '1 order',
+      zero: 'No orders',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ordersClearFilters => 'Clear filters';
+
+  @override
+  String get ordersNoResultsTitle => 'No orders match these filters';
+
+  @override
+  String get ordersNoResultsMessage =>
+      'Try another search or remove some filters.';
+
+  @override
+  String get ordersProducer => 'Producer';
+
+  @override
+  String ordersProducerFallback(int id) {
+    return 'Producer #$id';
+  }
+
+  @override
   String orderDeliveryDate(String date) {
     return 'Delivery: $date';
   }

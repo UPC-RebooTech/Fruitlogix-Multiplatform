@@ -357,6 +357,90 @@ class AppLocalizationsEs extends AppLocalizations {
       'Agrega productos en el catálogo para crear tu primer pedido.';
 
   @override
+  String ordersTabActive(int count) {
+    return 'Activos ($count)';
+  }
+
+  @override
+  String ordersTabHistory(int count) {
+    return 'Historial ($count)';
+  }
+
+  @override
+  String get ordersHistoryEmptyTitle => 'Aún no hay pedidos en tu historial';
+
+  @override
+  String get ordersHistoryEmptyMessage =>
+      'Aquí aparecerán los pedidos entregados, cancelados o rechazados.';
+
+  @override
+  String get ordersSearchHint => 'Buscar por código o producto';
+
+  @override
+  String get ordersSearchClear => 'Borrar búsqueda';
+
+  @override
+  String get ordersFilterStatus => 'Estado';
+
+  @override
+  String get ordersFilterAll => 'Todos';
+
+  @override
+  String get ordersFiltersToggle => 'Filtros';
+
+  @override
+  String ordersFiltersToggleActive(int count) {
+    return 'Filtros ($count)';
+  }
+
+  @override
+  String get ordersFilterDates => 'Fecha de entrega';
+
+  @override
+  String get ordersFilterProducer => 'Productor';
+
+  @override
+  String get ordersAnyDate => 'Cualquier fecha';
+
+  @override
+  String ordersDateRange(String from, String to) {
+    return '$from – $to';
+  }
+
+  @override
+  String get ordersClearDates => 'Quitar fechas';
+
+  @override
+  String ordersResultsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pedidos',
+      one: '1 pedido',
+      zero: 'Ningún pedido',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ordersClearFilters => 'Limpiar filtros';
+
+  @override
+  String get ordersNoResultsTitle => 'No encontramos pedidos con estos filtros';
+
+  @override
+  String get ordersNoResultsMessage =>
+      'Prueba con otra búsqueda o quita algunos filtros.';
+
+  @override
+  String get ordersProducer => 'Productor';
+
+  @override
+  String ordersProducerFallback(int id) {
+    return 'Productor #$id';
+  }
+
+  @override
   String orderDeliveryDate(String date) {
     return 'Entrega: $date';
   }
