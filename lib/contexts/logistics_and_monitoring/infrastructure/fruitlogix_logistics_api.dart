@@ -63,6 +63,17 @@ class FruitLogixLogisticsApi {
     ),
   );
 
+  /// `POST /api/v1/orders/{orderId}/reception` —
+  /// `ConfirmOrderReceptionResource { rating, comment, hasIncidence }`.
+  Future<Object?> confirmReception(int orderId, Map<String, Object?> body) =>
+      _send(
+        () => _client.post(
+          _baseUri.resolve('/api/v1/orders/$orderId/reception'),
+          headers: {..._headers, 'Content-Type': 'application/json'},
+          body: jsonEncode(body),
+        ),
+      );
+
   Future<Object?> _send(Future<http.Response> Function() request) async {
     final http.Response response;
     try {
@@ -92,6 +103,7 @@ class FruitLogixLogisticsApi {
         code >= 500
             ? LogisticsApiFailure.server
             : LogisticsApiFailure.unexpectedResponse,
+        _messageOf(response.body),
       );
     }
     if (response.body.trim().isEmpty) return null;
@@ -100,6 +112,26 @@ class FruitLogixLogisticsApi {
     } on FormatException {
       throw const LogisticsApiException(LogisticsApiFailure.unexpectedResponse);
     }
+  }
+
+  /// `message`, the first validation error, or ProblemDetails `detail`/`title`.
+  static String? _messageOf(String body) {
+    try {
+      final decoded = jsonDecode(body);
+      if (decoded is! Map) return null;
+      if (decoded['message'] is String) return decoded['message'] as String;
+      final errors = decoded['errors'];
+      if (errors is Map && errors.isNotEmpty) {
+        final first = errors.values.first;
+        if (first is List && first.isNotEmpty) return '${first.first}';
+      }
+      for (final key in ['detail', 'title']) {
+        if (decoded[key] is String) return decoded[key] as String;
+      }
+    } on FormatException {
+      return null;
+    }
+    return null;
   }
 
   void close() => _client.close();

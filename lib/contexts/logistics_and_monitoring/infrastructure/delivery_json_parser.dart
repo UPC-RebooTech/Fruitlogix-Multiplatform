@@ -27,12 +27,16 @@ abstract final class DeliveryJsonParser {
   }) {
     final id = _int(json['id']);
     if (id == null) throw const FormatException('Delivery without id');
+    final status = parseStatus(json['currentStatus'] ?? json['status']);
     return DeliveryShipment(
       id: '$id',
       trackingNumber: 'TRK-${id.toString().padLeft(4, '0')}',
       orderId: order.orderCode,
+      orderNumber: order.orderId,
       itemsSummary: order.itemsSummary,
-      status: parseStatus(json['currentStatus'] ?? json['status']),
+      status: status,
+      // After a restart: no second reception for a delivered order.
+      isReceived: order.isDelivered || status == ShipmentStatus.delivered,
       estimatedArrival: _date(json['estimatedTimeOfArrival']),
       driverName: _text(json['driverName']),
       driverPhone: _text(json['driverPhone']),

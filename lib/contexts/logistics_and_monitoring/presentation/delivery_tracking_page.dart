@@ -18,11 +18,15 @@ class DeliveryTrackingPage extends StatefulWidget {
     required this.controller,
     required this.dialer,
     this.onReportIncident,
+    this.onReceptionConfirmed,
     super.key,
   });
 
   final ShipmentsController controller;
   final PhoneDialer dialer;
+
+  /// The platform registered a reception (e.g. to refresh the orders).
+  final VoidCallback? onReceptionConfirmed;
 
   /// Opens the incident report (Quality Management) for an order code when
   /// the reception inspection flags an incident.
@@ -36,25 +40,20 @@ class _DeliveryTrackingPageState extends State<DeliveryTrackingPage> {
   String? _selectedId;
 
   Future<void> _confirmReception(DeliveryShipment shipment) async {
-    var hasIncidents = false;
-    await Navigator.of(context).push(
-      MaterialPageRoute<void>(
+    final report = await Navigator.of(context).push<ReceptionReport>(
+      MaterialPageRoute<ReceptionReport>(
         builder: (_) => ConfirmReceptionPage(
           shipment: shipment,
-          onConfirmed: (notes, incidents) {
-            hasIncidents = incidents;
-            widget.controller.markAsReceived(
-              shipment.id,
-              notes: notes,
-              incidents: incidents,
-            );
-          },
+          // US35: sent with the optional rating and comment.
+          onConfirm: (report) =>
+              widget.controller.confirmReception(shipment, report),
         ),
       ),
     );
+    if (!mounted || report == null) return;
+    widget.onReceptionConfirmed?.call();
     // US11: an incident flagged at the dock goes straight to the report.
-    if (!mounted || !hasIncidents) return;
-    widget.onReportIncident?.call(shipment.orderId);
+    if (report.hasIncidence) widget.onReportIncident?.call(shipment.orderId);
   }
 
   Future<void> _callDriver(DeliveryShipment shipment) async {
@@ -187,20 +186,29 @@ class _DeliveryTrackingPageState extends State<DeliveryTrackingPage> {
                 if (selected.isReceived)
                   CosechaCard(
                     tone: CosechaCardTone.tint,
-                    child: Row(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: Text(
-                            l10n.trackingReceptionDoneMessage,
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                l10n.trackingReceptionDoneMessage,
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                            ),
+                            const SizedBox(width: CosechaSpace.xs),
+                            CosechaStatusTag(
+                              label: l10n.trackingReceptionDone,
+                              status: CosechaStatus.success,
+                              icon: Icons.check,
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: CosechaSpace.xs),
-                        CosechaStatusTag(
-                          label: l10n.trackingReceptionDone,
-                          status: CosechaStatus.success,
-                          icon: Icons.check,
-                        ),
+                        if (selected.rating != null) ...[
+                          const SizedBox(height: CosechaSpace.xs),
+                          _GivenRating(rating: selected.rating!),
+                        ],
                       ],
                     ),
                   )
@@ -574,6 +582,42 @@ class _Reading extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Stars the client gave at reception (US35), read-only.
+class _GivenRating extends StatelessWidget {
+  const _GivenRating({required this.rating});
+
+  final int rating;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    return Semantics(
+      container: true,
+      label: l10n.receptionYourRating(
+        l10n.receptionStars(rating, ReceptionReport.maxRating),
+      ),
+      excludeSemantics: true,
+      child: Row(
+        children: [
+          Text(
+            l10n.receptionYourRatingLabel,
+            style: Theme.of(context).textTheme.bodySmall
+                ?.copyWith(color: context.cosechaContentSecondary),
+          ),
+          const SizedBox(width: CosechaSpace.xs),
+          for (var star = 1; star <= ReceptionReport.maxRating; star++)
+            Icon(
+              star <= rating ? Icons.star_rounded : Icons.star_outline_rounded,
+              size: CosechaSize.iconSm,
+              color: star <= rating ? scheme.primary : scheme.outline,
+            ),
+        ],
       ),
     );
   }

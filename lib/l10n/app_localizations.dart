@@ -1022,6 +1022,102 @@ abstract class AppLocalizations {
   /// **'Reception confirmed.'**
   String get receptionConfirmed;
 
+  /// No description provided for @receptionRateSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Service rating'**
+  String get receptionRateSection;
+
+  /// No description provided for @receptionRateQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'How was the delivery service?'**
+  String get receptionRateQuestion;
+
+  /// No description provided for @receptionRateOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional. Tap a star again to remove it.'**
+  String get receptionRateOptional;
+
+  /// No description provided for @receptionNotRated.
+  ///
+  /// In en, this message translates to:
+  /// **'Not rated'**
+  String get receptionNotRated;
+
+  /// No description provided for @receptionStars.
+  ///
+  /// In en, this message translates to:
+  /// **'{stars} of {max} stars'**
+  String receptionStars(int stars, int max);
+
+  /// No description provided for @receptionRating1.
+  ///
+  /// In en, this message translates to:
+  /// **'Very bad'**
+  String get receptionRating1;
+
+  /// No description provided for @receptionRating2.
+  ///
+  /// In en, this message translates to:
+  /// **'Bad'**
+  String get receptionRating2;
+
+  /// No description provided for @receptionRating3.
+  ///
+  /// In en, this message translates to:
+  /// **'Fair'**
+  String get receptionRating3;
+
+  /// No description provided for @receptionRating4.
+  ///
+  /// In en, this message translates to:
+  /// **'Good'**
+  String get receptionRating4;
+
+  /// No description provided for @receptionRating5.
+  ///
+  /// In en, this message translates to:
+  /// **'Excellent'**
+  String get receptionRating5;
+
+  /// No description provided for @receptionComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Comment (optional)'**
+  String get receptionComment;
+
+  /// No description provided for @receptionCommentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Punctuality, condition of the fruit, driver…'**
+  String get receptionCommentHint;
+
+  /// No description provided for @receptionSending.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending reception…'**
+  String get receptionSending;
+
+  /// No description provided for @receptionSendError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t register the reception. Try again.'**
+  String get receptionSendError;
+
+  /// No description provided for @receptionYourRatingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Your rating:'**
+  String get receptionYourRatingLabel;
+
+  /// No description provided for @receptionYourRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Your rating: {stars}'**
+  String receptionYourRating(String stars);
+
   /// No description provided for @paymentsInvoices.
   ///
   /// In en, this message translates to:

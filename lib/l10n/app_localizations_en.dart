@@ -512,6 +512,61 @@ class AppLocalizationsEn extends AppLocalizations {
   String get receptionConfirmed => 'Reception confirmed.';
 
   @override
+  String get receptionRateSection => 'Service rating';
+
+  @override
+  String get receptionRateQuestion => 'How was the delivery service?';
+
+  @override
+  String get receptionRateOptional =>
+      'Optional. Tap a star again to remove it.';
+
+  @override
+  String get receptionNotRated => 'Not rated';
+
+  @override
+  String receptionStars(int stars, int max) {
+    return '$stars of $max stars';
+  }
+
+  @override
+  String get receptionRating1 => 'Very bad';
+
+  @override
+  String get receptionRating2 => 'Bad';
+
+  @override
+  String get receptionRating3 => 'Fair';
+
+  @override
+  String get receptionRating4 => 'Good';
+
+  @override
+  String get receptionRating5 => 'Excellent';
+
+  @override
+  String get receptionComment => 'Comment (optional)';
+
+  @override
+  String get receptionCommentHint =>
+      'Punctuality, condition of the fruit, driver…';
+
+  @override
+  String get receptionSending => 'Sending reception…';
+
+  @override
+  String get receptionSendError =>
+      'We couldn\'t register the reception. Try again.';
+
+  @override
+  String get receptionYourRatingLabel => 'Your rating:';
+
+  @override
+  String receptionYourRating(String stars) {
+    return 'Your rating: $stars';
+  }
+
+  @override
   String get paymentsInvoices => 'Invoices';
 
   @override

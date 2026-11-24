@@ -229,6 +229,31 @@
   "receptionNotes": "Notes",
   "receptionNotesHint": "Write what you observed in the cargo",
   "receptionConfirmed": "Reception confirmed.",
+  "receptionRateSection": "Service rating",
+  "receptionRateQuestion": "How was the delivery service?",
+  "receptionRateOptional": "Optional. Tap a star again to remove it.",
+  "receptionNotRated": "Not rated",
+  "receptionStars": "{stars} of {max} stars",
+  "@receptionStars": {
+    "placeholders": {
+      "stars": { "type": "int", "example": "4" },
+      "max": { "type": "int", "example": "5" }
+    }
+  },
+  "receptionRating1": "Very bad",
+  "receptionRating2": "Bad",
+  "receptionRating3": "Fair",
+  "receptionRating4": "Good",
+  "receptionRating5": "Excellent",
+  "receptionComment": "Comment (optional)",
+  "receptionCommentHint": "Punctuality, condition of the fruit, driver…",
+  "receptionSending": "Sending reception…",
+  "receptionSendError": "We couldn't register the reception. Try again.",
+  "receptionYourRatingLabel": "Your rating:",
+  "receptionYourRating": "Your rating: {stars}",
+  "@receptionYourRating": {
+    "placeholders": { "stars": { "type": "String", "example": "4 of 5 stars" } }
+  },
 
   "paymentsInvoices": "Invoices",
   "paymentsEmpty": "No invoices yet",

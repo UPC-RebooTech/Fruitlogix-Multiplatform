@@ -13,6 +13,7 @@ import '../contexts/payment_management/presentation/payment_detail_page.dart';
 import '../contexts/payment_management/presentation/payments_page.dart';
 import '../contexts/payment_management/presentation/pro_badge.dart';
 import '../contexts/payment_management/presentation/pro_membership_page.dart';
+import '../contexts/order_management/domain/commercial_order.dart';
 import '../contexts/order_management/order_management_module.dart';
 import '../contexts/quality_management/domain/incident.dart';
 import '../contexts/quality_management/infrastructure/demo_quality_repositories.dart';
@@ -130,6 +131,7 @@ class _CustomerShellState extends State<CustomerShell>
             orderId: id,
             orderCode: order.code,
             itemsSummary: order.productSummary.isEmpty ? null : order.productSummary,
+            isDelivered: order.status == OrderStatus.delivered,
           ),
     ];
   }
@@ -395,6 +397,8 @@ class _CustomerShellState extends State<CustomerShell>
         _trackingTab => DeliveryTrackingPage(
             controller: _logistics.shipments,
             dialer: _logistics.dialer,
+            // The order changes status in the platform after reception.
+            onReceptionConfirmed: _orders.orders.load,
             onReportIncident: (orderCode) =>
                 _openIncidentReport(orderCode: orderCode),
           ),

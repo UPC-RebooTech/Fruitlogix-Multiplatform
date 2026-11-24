@@ -70,6 +70,7 @@ class ShipmentOrderRef {
     required this.orderId,
     required this.orderCode,
     this.itemsSummary,
+    this.isDelivered = false,
   });
 
   final int orderId;
@@ -77,6 +78,9 @@ class ShipmentOrderRef {
   /// Display code (`ORD-0007`), the same one Orders shows.
   final String orderCode;
   final String? itemsSummary;
+
+  /// The order is already delivered: its reception was confirmed.
+  final bool isDelivered;
 }
 
 /// The client's orders (provided by Order Management).
@@ -88,6 +92,7 @@ class DeliveryShipment {
     required this.trackingNumber,
     required this.orderId,
     required this.status,
+    this.orderNumber,
     this.estimatedArrival,
     this.driverName,
     this.driverPhone,
@@ -102,6 +107,7 @@ class DeliveryShipment {
     this.isReceived = false,
     this.inspectionNotes,
     this.hasIncidents = false,
+    this.rating,
   });
 
   /// Platform delivery id (`12`) or demo id.
@@ -112,6 +118,10 @@ class DeliveryShipment {
 
   /// Order display code (`ORD-0007`), as in Orders and Incidents.
   final String orderId;
+
+  /// Platform order id (`7`), used to confirm the reception (US35).
+  /// Null for demo deliveries.
+  final int? orderNumber;
   final ShipmentStatus status;
   final DateTime? estimatedArrival;
 
@@ -135,10 +145,37 @@ class DeliveryShipment {
   String? inspectionNotes;
   bool hasIncidents;
 
+  /// US35 — stars given at reception (1–5), null when not rated.
+  int? rating;
+
   double get shipmentProgress => isReceived ? 1 : status.progress;
 
   bool get hasDriver => (driverName ?? '').trim().isNotEmpty;
 
   bool get canCallDriver =>
       (driverPhone ?? '').replaceAll(RegExp(r'\D'), '').length >= 6;
+}
+
+/// What the client records when the goods arrive (US35).
+class ReceptionReport {
+  const ReceptionReport({
+    required this.hasIncidence,
+    required this.sealAndTemperatureOk,
+    this.rating,
+    this.comment,
+  });
+
+  static const int maxRating = 5;
+
+  /// 1–5 stars; null when the client chooses not to rate (allowed).
+  final int? rating;
+
+  /// Optional comment about the service.
+  final String? comment;
+  final bool hasIncidence;
+
+  /// Kept on the device: the platform API has no field for it yet.
+  final bool sealAndTemperatureOk;
+
+  bool get isValid => rating == null || (rating! >= 1 && rating! <= maxRating);
 }

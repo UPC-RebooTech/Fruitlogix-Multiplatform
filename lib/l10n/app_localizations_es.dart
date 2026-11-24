@@ -515,6 +515,61 @@ class AppLocalizationsEs extends AppLocalizations {
   String get receptionConfirmed => 'Recepción confirmada.';
 
   @override
+  String get receptionRateSection => 'Calificación del servicio';
+
+  @override
+  String get receptionRateQuestion => '¿Cómo fue el servicio de entrega?';
+
+  @override
+  String get receptionRateOptional =>
+      'Opcional. Toca otra vez una estrella para quitarla.';
+
+  @override
+  String get receptionNotRated => 'Sin calificar';
+
+  @override
+  String receptionStars(int stars, int max) {
+    return '$stars de $max estrellas';
+  }
+
+  @override
+  String get receptionRating1 => 'Muy malo';
+
+  @override
+  String get receptionRating2 => 'Malo';
+
+  @override
+  String get receptionRating3 => 'Regular';
+
+  @override
+  String get receptionRating4 => 'Bueno';
+
+  @override
+  String get receptionRating5 => 'Excelente';
+
+  @override
+  String get receptionComment => 'Comentario (opcional)';
+
+  @override
+  String get receptionCommentHint =>
+      'Puntualidad, estado de la fruta, conductor…';
+
+  @override
+  String get receptionSending => 'Enviando recepción…';
+
+  @override
+  String get receptionSendError =>
+      'No pudimos registrar la recepción. Inténtalo de nuevo.';
+
+  @override
+  String get receptionYourRatingLabel => 'Tu calificación:';
+
+  @override
+  String receptionYourRating(String stars) {
+    return 'Tu calificación: $stars';
+  }
+
+  @override
   String get paymentsInvoices => 'Facturas';
 
   @override

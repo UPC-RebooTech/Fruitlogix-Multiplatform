@@ -1,25 +1,35 @@
 import 'package:flutter/foundation.dart';
 
+import '../domain/reception_repository.dart';
 import '../domain/shipment.dart';
 import '../domain/shipment_repository.dart';
 
 enum ShipmentsStatus { idle, loading, ready, failure }
 
-/// Loads the deliveries of the client's orders for the Tracking tab.
+/// Loads the deliveries of the client's orders for the Tracking tab and
+/// confirms their reception with the client's rating (US35).
 class ShipmentsController extends ChangeNotifier {
-  ShipmentsController({required ShipmentRepository repository})
-    : _repository = repository;
+  ShipmentsController({
+    required ShipmentRepository repository,
+    required ReceptionRepository reception,
+  }) : _repository = repository,
+       _reception = reception;
 
   final ShipmentRepository _repository;
+  final ReceptionRepository _reception;
 
   ShipmentsStatus _status = ShipmentsStatus.idle;
   List<DeliveryShipment> _shipments = const [];
   Object? _error;
   Future<void>? _inFlight;
   bool _disposed = false;
+  bool _confirming = false;
 
   ShipmentsStatus get status => _status;
   Object? get error => _error;
+
+  /// A reception is being sent.
+  bool get confirming => _confirming;
 
   /// Active first (in transit and delayed before scheduled), by ETA.
   List<DeliveryShipment> get shipments => _shipments;
@@ -49,21 +59,27 @@ class ShipmentsController extends ChangeNotifier {
     _notify();
   }
 
-  /// Reception confirmed at the dock (kept on the device until US35 sends
-  /// it to the platform).
-  void markAsReceived(
-    String shipmentId, {
-    String? notes,
-    bool incidents = false,
-  }) {
-    for (final shipment in _shipments) {
-      if (shipment.id != shipmentId) continue;
+  /// US35 — Sends the reception (rating optional) and, once the platform
+  /// accepts it, marks the delivery as received. Rethrows errors so the
+  /// reception screen can show them and let the client retry.
+  Future<void> confirmReception(
+    DeliveryShipment shipment,
+    ReceptionReport report,
+  ) async {
+    if (!report.isValid) throw ArgumentError('Rating must be 1 to 5');
+    _confirming = true;
+    _notify();
+    try {
+      await _reception.confirm(shipment, report);
       shipment
         ..isReceived = true
-        ..inspectionNotes = notes
-        ..hasIncidents = incidents;
+        ..rating = report.rating
+        ..inspectionNotes = report.comment
+        ..hasIncidents = report.hasIncidence;
+    } finally {
+      _confirming = false;
+      _notify();
     }
-    _notify();
   }
 
   static int _rank(DeliveryShipment s) {

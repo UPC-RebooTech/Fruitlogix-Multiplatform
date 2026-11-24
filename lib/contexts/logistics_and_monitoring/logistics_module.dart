@@ -1,10 +1,12 @@
 import '../iam/domain/auth_session.dart';
 import 'application/shipments_controller.dart';
+import 'domain/reception_repository.dart';
 import 'domain/shipment.dart';
 import 'infrastructure/demo_shipment_repository.dart';
 import 'infrastructure/fruitlogix_logistics_api.dart';
 import 'infrastructure/http_shipment_repository.dart';
 import 'infrastructure/phone_dialer.dart';
+import 'infrastructure/reception_repositories.dart';
 
 /// Composition root of the Logistics & Monitoring bounded context
 /// (Tracking tab).
@@ -32,17 +34,20 @@ class LogisticsModule {
           api: api,
           clientOrders: clientOrders,
         ),
+        reception: HttpReceptionRepository(api: api),
       ),
     );
   }
 
   factory LogisticsModule.demo({
     PhoneDialer dialer = const UrlLauncherPhoneDialer(),
+    ReceptionRepository? reception,
     Duration latency = const Duration(milliseconds: 250),
   }) => LogisticsModule._(
     dialer: dialer,
     shipments: ShipmentsController(
       repository: DemoShipmentRepository(latency: latency),
+      reception: reception ?? DemoReceptionRepository(latency: latency),
     ),
   );
 
