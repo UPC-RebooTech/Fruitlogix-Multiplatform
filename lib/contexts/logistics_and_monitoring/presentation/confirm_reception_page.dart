@@ -87,7 +87,7 @@ class _ConfirmReceptionPageState extends State<ConfirmReceptionPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(shipment.itemsSummary, style: textTheme.bodyLarge),
+                Text(shipment.lots.map((l) => '${l.productName} (${l.quantityKg} kg)').join(' • ')),
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: CosechaSpace.inner),
                   child: Divider(),

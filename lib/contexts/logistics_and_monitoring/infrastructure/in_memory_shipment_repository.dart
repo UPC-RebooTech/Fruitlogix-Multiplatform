@@ -6,14 +6,58 @@ class InMemoryShipmentRepository {
       trackingNumber: 'TRK-2026-001',
       orderId: 'ORD-1042',
       shipmentProgress: 0.75,
-      estimatedArrival: 'Today, 03:45 PM',
+      estimatedArrival: 'Today, 04:30 PM',
       transportStatus: 'In Transit • Reefer Truck (Plate ABC-123)',
-      itemsSummary: 'Mango Kent (2,500 kg) • Palta Hass (1,200 kg)',
+      //Comentado para pruebas
+      /*
+      delay: const ShipmentDelayInfo(
+        delayMinutes: 45,
+        reason: 'Control Fitosanitario SENASA en Garita de Peaje',
+        originalEta: '03:45 PM',
+        updatedEta: '04:30 PM',
+        reportedAt: '02:30 PM',
+      ),
+      */
       telemetry: const TelemetryLog(
         temperatureC: 4.2,
         humidityPercent: 86.0,
         reeferUnitStatus: 'Active & Stable',
       ),
+      certificate: const ColdChainCertificate(
+        certificateId: 'CERT-CC-2026-0941',
+        optimalRangeLabel: '1.0 °C – 6.0 °C (Palta & Mango)',
+        averageTempC: 4.1,
+        maxTempRecordedC: 5.3,
+        minTempRecordedC: 3.8,
+        compliancePercentage: 99.2,
+        totalTripHours: 9.5,
+        digitalSignatureHash: 'a7f3c4e912b590df88210e4a77bc89d13f9901ae',
+        issuedAt: '2026-11-21 14:30 UTC-5',
+      ),
+      lots: const [
+        TraceableLotItem(
+          lotCode: 'LOT-2026-MK04',
+          productName: 'Mango',
+          variety: 'Kent',
+          quantityKg: 2500,
+          originFarm: 'Campos del Norte',
+          originRegion: 'Valle del Chira, Piura',
+          harvestDate: '18 Nov 2026',
+          certifications: ['GlobalG.A.P.', 'SENASA Certificado'],
+          qualityGrade: 'Exportación Extra (Calibre 8)',
+        ),
+        TraceableLotItem(
+          lotCode: 'LOT-2026-PH12',
+          productName: 'Palta',
+          variety: 'Hass',
+          quantityKg: 1200,
+          originFarm: 'Fundo Santa Rosa',
+          originRegion: 'Caraz, Áncash',
+          harvestDate: '19 Nov 2026',
+          certifications: ['GlobalG.A.P.', 'Rainforest Alliance'],
+          qualityGrade: 'Exportación Grado 1 (Materia Seca >23%)',
+        ),
+      ],
       events: const [
         TrackingEventItem(
           time: '06:00 AM',
@@ -26,12 +70,12 @@ class InMemoryShipmentRepository {
           isCompleted: true,
         ),
         TrackingEventItem(
-          time: '02:15 PM',
-          description: 'Approaching Destination Warehouse Lima',
+          time: '02:30 PM',
+          description: 'SENASA Inspection Point (Delayed +45 min)',
           isCompleted: true,
         ),
         TrackingEventItem(
-          time: '03:45 PM',
+          time: '04:30 PM',
           description: 'Final Delivery & Dock Inspection',
           isCompleted: false,
         ),

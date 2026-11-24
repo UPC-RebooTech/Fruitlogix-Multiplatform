@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/ui/components/components.dart';
 import '../../../shared/ui/theme/theme.dart';
 import '../domain/shipment.dart';
 import '../infrastructure/in_memory_shipment_repository.dart';
+import 'cold_chain_certificate_sheet.dart';
 import 'confirm_reception_page.dart';
+import 'delay_alert_banner.dart';
+import 'lot_traceability_card.dart';
 
 /// Tracking of the active shipment: overview (dark highlight), cold chain
 /// readings (Glaciar, reserved for cold chain) and route checkpoints.
@@ -63,9 +65,14 @@ class _DeliveryTrackingPageState extends State<DeliveryTrackingPage> {
         else ...[
           _ShipmentOverview(shipment: shipments.first),
           const SizedBox(height: CosechaSpace.md),
+          const CosechaOverline('Trazabilidad de Lotes y Fundo'),
+          const SizedBox(height: CosechaSpace.xs),
+          for (final lot in shipments.first.lots)
+            LotTraceabilityCard(lot: lot),
+          const SizedBox(height: CosechaSpace.md),
           CosechaOverline(l10n.trackingColdChain),
           const SizedBox(height: CosechaSpace.xs),
-          _ColdChain(telemetry: shipments.first.telemetry),
+          _ColdChain(shipment: shipments.first),
           const SizedBox(height: CosechaSpace.md),
           CosechaOverline(l10n.trackingEvents),
           const SizedBox(height: CosechaSpace.xs),
@@ -141,10 +148,10 @@ class _ShipmentOverview extends StatelessWidget {
               CosechaStatusTag(
                 label: shipment.isReceived
                     ? l10n.trackingStatusReceived
-                    : l10n.orderStatusInTransit,
+                    : (shipment.isDelayed ? 'Delayed' : l10n.orderStatusInTransit),
                 status: shipment.isReceived
                     ? CosechaStatus.success
-                    : CosechaStatus.info,
+                    : (shipment.isDelayed ? CosechaStatus.warning : CosechaStatus.info),
               ),
             ],
           ),
@@ -171,7 +178,9 @@ class _ShipmentOverview extends StatelessWidget {
           CosechaInfoRow(
             icon: Icons.schedule,
             label: l10n.trackingEta,
-            value: shipment.estimatedArrival,
+            value: shipment.isDelayed
+                ? '${shipment.delay!.updatedEta} (Delayed)'
+                : shipment.estimatedArrival,
           ),
           const SizedBox(height: CosechaSpace.xs),
           CosechaInfoRow(
@@ -179,21 +188,27 @@ class _ShipmentOverview extends StatelessWidget {
             label: l10n.trackingTransport,
             value: shipment.transportStatus,
           ),
+          if (shipment.delay != null) ...[
+            const SizedBox(height: CosechaSpace.sm),
+            DelayAlertBanner(delay: shipment.delay!),
+          ],
         ],
       ),
     );
   }
 }
 
-/// Cold chain readings on Glaciar (tertiary) containers.
+/// Cold chain readings on Glaciar (tertiary) containers with certificate modal.
 class _ColdChain extends StatelessWidget {
-  const _ColdChain({required this.telemetry});
+  const _ColdChain({required this.shipment});
 
-  final TelemetryLog telemetry;
+  final DeliveryShipment shipment;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final telemetry = shipment.telemetry;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -242,6 +257,21 @@ class _ColdChain extends StatelessWidget {
             ],
           ),
         ),
+        if (shipment.certificate != null) ...[
+          const SizedBox(height: CosechaSpace.xs),
+          CosechaSecondaryButton(
+            label: 'View Cold-Chain Certificate',
+            icon: Icons.verified_outlined,
+            onPressed: () {
+              ColdChainCertificateSheet.show(
+                context,
+                certificate: shipment.certificate!,
+                trackingNumber: shipment.trackingNumber,
+                orderId: shipment.orderId,
+              );
+            },
+          ),
+        ],
       ],
     );
   }
