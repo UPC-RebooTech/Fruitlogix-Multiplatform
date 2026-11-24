@@ -5,6 +5,7 @@ import '../../../shared/ui/components/components.dart';
 import '../../../shared/ui/theme/theme.dart';
 import '../domain/shipment.dart';
 import '../infrastructure/in_memory_shipment_repository.dart';
+import 'cold_chain_certificate_sheet.dart';
 import 'confirm_reception_page.dart';
 
 /// Tracking of the active shipment: overview (dark highlight), cold chain
@@ -65,7 +66,7 @@ class _DeliveryTrackingPageState extends State<DeliveryTrackingPage> {
           const SizedBox(height: CosechaSpace.md),
           CosechaOverline(l10n.trackingColdChain),
           const SizedBox(height: CosechaSpace.xs),
-          _ColdChain(telemetry: shipments.first.telemetry),
+          _ColdChain(shipment: shipments.first),
           const SizedBox(height: CosechaSpace.md),
           CosechaOverline(l10n.trackingEvents),
           const SizedBox(height: CosechaSpace.xs),
@@ -185,15 +186,17 @@ class _ShipmentOverview extends StatelessWidget {
   }
 }
 
-/// Cold chain readings on Glaciar (tertiary) containers.
+/// Cold chain readings on Glaciar (tertiary) containers with certificate modal.
 class _ColdChain extends StatelessWidget {
-  const _ColdChain({required this.telemetry});
+  const _ColdChain({required this.shipment});
 
-  final TelemetryLog telemetry;
+  final DeliveryShipment shipment;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final telemetry = shipment.telemetry;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -242,6 +245,21 @@ class _ColdChain extends StatelessWidget {
             ],
           ),
         ),
+        if (shipment.certificate != null) ...[
+          const SizedBox(height: CosechaSpace.xs),
+          CosechaSecondaryButton(
+            label: 'View Cold-Chain Certificate',
+            icon: Icons.verified_outlined,
+            onPressed: () {
+              ColdChainCertificateSheet.show(
+                context,
+                certificate: shipment.certificate!,
+                trackingNumber: shipment.trackingNumber,
+                orderId: shipment.orderId,
+              );
+            },
+          ),
+        ],
       ],
     );
   }
