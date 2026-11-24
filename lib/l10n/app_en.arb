@@ -188,6 +188,22 @@
   "ordersNoResultsTitle": "No orders match these filters",
   "ordersNoResultsMessage": "Try another search or remove some filters.",
   "ordersProducer": "Producer",
+  "performanceTitle": "Compliance by producer",
+  "performanceOnTime": "On time",
+  "performanceLate": "Late",
+  "performanceGood": "Meets",
+  "performanceFair": "Fair",
+  "performanceLow": "Low",
+  "performanceDetail": "{onTime} of {total} on time · {late} late",
+  "@performanceDetail": {
+    "placeholders": {
+      "onTime": { "type": "int", "example": "4" },
+      "total": { "type": "int", "example": "5" },
+      "late": { "type": "int", "example": "1" }
+    }
+  },
+  "performanceNote": "Delivered orders compared with their delivery date; active orders past their date count as late.",
+  "performanceNoData": "No compliance statistics yet. They appear when orders with an assigned producer are delivered.",
   "ordersProducerFallback": "Producer #{id}",
   "@ordersProducerFallback": { "placeholders": { "id": { "type": "int", "example": "1" } } },
   "orderDeliveryDate": "Delivery: {date}",

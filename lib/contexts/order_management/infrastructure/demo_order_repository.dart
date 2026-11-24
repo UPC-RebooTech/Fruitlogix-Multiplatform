@@ -46,6 +46,7 @@ class DemoOrderRepository implements OrderRepository {
         createdAt: day(-14),
         status: OrderStatus.delivered,
         producerId: 1,
+        completedAt: day(-9), // on time (US24)
       ),
       CommercialOrder(
         id: '1031',
@@ -67,6 +68,7 @@ class DemoOrderRepository implements OrderRepository {
         createdAt: day(-42),
         status: OrderStatus.delivered,
         producerId: 2,
+        completedAt: day(-36), // two days late (US24)
       ),
     ]);
   }

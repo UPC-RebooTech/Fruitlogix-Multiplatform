@@ -436,6 +436,37 @@ class AppLocalizationsEs extends AppLocalizations {
   String get ordersProducer => 'Productor';
 
   @override
+  String get performanceTitle => 'Cumplimiento por productor';
+
+  @override
+  String get performanceOnTime => 'A tiempo';
+
+  @override
+  String get performanceLate => 'Con retraso';
+
+  @override
+  String get performanceGood => 'Cumple';
+
+  @override
+  String get performanceFair => 'Regular';
+
+  @override
+  String get performanceLow => 'Bajo';
+
+  @override
+  String performanceDetail(int onTime, int total, int late) {
+    return '$onTime de $total a tiempo · $late con retraso';
+  }
+
+  @override
+  String get performanceNote =>
+      'Pedidos entregados comparados con su fecha de entrega; los activos que ya pasaron su fecha cuentan como retraso.';
+
+  @override
+  String get performanceNoData =>
+      'Aún no hay estadísticas de cumplimiento. Aparecerán cuando se entreguen pedidos con productor asignado.';
+
+  @override
   String ordersProducerFallback(int id) {
     return 'Productor #$id';
   }

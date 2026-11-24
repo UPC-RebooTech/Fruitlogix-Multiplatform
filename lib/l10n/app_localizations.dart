@@ -854,6 +854,60 @@ abstract class AppLocalizations {
   /// **'Producer'**
   String get ordersProducer;
 
+  /// No description provided for @performanceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Compliance by producer'**
+  String get performanceTitle;
+
+  /// No description provided for @performanceOnTime.
+  ///
+  /// In en, this message translates to:
+  /// **'On time'**
+  String get performanceOnTime;
+
+  /// No description provided for @performanceLate.
+  ///
+  /// In en, this message translates to:
+  /// **'Late'**
+  String get performanceLate;
+
+  /// No description provided for @performanceGood.
+  ///
+  /// In en, this message translates to:
+  /// **'Meets'**
+  String get performanceGood;
+
+  /// No description provided for @performanceFair.
+  ///
+  /// In en, this message translates to:
+  /// **'Fair'**
+  String get performanceFair;
+
+  /// No description provided for @performanceLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get performanceLow;
+
+  /// No description provided for @performanceDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'{onTime} of {total} on time · {late} late'**
+  String performanceDetail(int onTime, int total, int late);
+
+  /// No description provided for @performanceNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered orders compared with their delivery date; active orders past their date count as late.'**
+  String get performanceNote;
+
+  /// No description provided for @performanceNoData.
+  ///
+  /// In en, this message translates to:
+  /// **'No compliance statistics yet. They appear when orders with an assigned producer are delivered.'**
+  String get performanceNoData;
+
   /// No description provided for @ordersProducerFallback.
   ///
   /// In en, this message translates to:

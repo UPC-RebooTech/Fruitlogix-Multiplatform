@@ -69,6 +69,16 @@ abstract final class OrderJsonParser {
       throw const FormatException('Order without dates');
     }
     final notes = (json['notes'] ?? '').toString().trim();
+    final status = parseStatus(
+      json['status'] ?? json['orderStatus'] ?? json['currentStatus'],
+    );
+    // US24: the API has no delivery timestamp yet; a delivered order's last
+    // update is the closest value.
+    final completed =
+        _date(
+          json['deliveredAt'] ?? json['receivedAt'] ?? json['completedAt'],
+        ) ??
+        (status == OrderStatus.delivered ? _date(json['updatedAt']) : null);
     return CommercialOrder(
       id: '$id',
       lines: [
@@ -81,11 +91,10 @@ abstract final class OrderJsonParser {
           .trim(),
       deliveryDate: delivery ?? created!,
       createdAt: created,
-      status: parseStatus(
-        json['status'] ?? json['orderStatus'] ?? json['currentStatus'],
-      ),
+      status: status,
       notes: notes.isEmpty ? null : notes,
       producerId: _int(json['producerId']),
+      completedAt: completed,
       totalAmount: _double(json['totalAmount'] ?? json['total']),
     );
   }

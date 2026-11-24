@@ -5,6 +5,7 @@ import '../../../shared/ui/components/components.dart';
 import '../../../shared/ui/formatters/money_format.dart';
 import '../../../shared/ui/theme/theme.dart';
 import '../application/order_history_filter.dart';
+import '../application/supplier_performance.dart';
 import '../application/orders_controller.dart';
 import '../domain/commercial_order.dart';
 import 'order_status_view.dart';
@@ -192,13 +193,22 @@ class _CustomerOrdersPageState extends State<CustomerOrdersPage> {
     return [for (final order in active) ..._card(l10n, order)];
   }
 
-  /// US07 + US08.
+  /// US07 + US08, with the supplier compliance (US24) on top.
   List<Widget> _historyList(
     AppLocalizations l10n,
     List<CommercialOrder> history,
   ) {
+    final performance = _SupplierPerformanceSection(
+      report: measureSupplierPerformance(
+        widget.orders.orders,
+        today: DateTime.now(),
+      ),
+      producerName: (id) => _producerName(l10n, id),
+    );
     if (history.isEmpty) {
       return [
+        performance,
+        const SizedBox(height: CosechaSpace.md),
         CosechaEmptyState(
           icon: Icons.history,
           title: l10n.ordersHistoryEmptyTitle,
@@ -218,6 +228,8 @@ class _CustomerOrdersPageState extends State<CustomerOrdersPage> {
     final dateFormat = MaterialLocalizations.of(context);
 
     return [
+      performance,
+      const SizedBox(height: CosechaSpace.md),
       // Search: order code or product.
       TextField(
         controller: _search,
@@ -383,6 +395,174 @@ class _CustomerOrdersPageState extends State<CustomerOrdersPage> {
       ),
       const SizedBox(height: CosechaSpace.xs),
     ];
+  }
+}
+
+/// US24 — Compliance per supplier: overall KPIs and one row per producer.
+/// Scenario 2: a message when there is nothing to measure yet.
+class _SupplierPerformanceSection extends StatelessWidget {
+  const _SupplierPerformanceSection({
+    required this.report,
+    required this.producerName,
+  });
+
+  final SupplierPerformanceReport report;
+  final String Function(int producerId) producerName;
+
+  /// ≥ 90 % meets, ≥ 70 % fair, otherwise low.
+  static ({String label, CosechaStatus status}) _level(
+    SupplierPerformance supplier,
+    AppLocalizations l10n,
+  ) {
+    final percent = supplier.onTimePercent;
+    if (percent >= 90) {
+      return (label: l10n.performanceGood, status: CosechaStatus.success);
+    }
+    if (percent >= 70) {
+      return (label: l10n.performanceFair, status: CosechaStatus.warning);
+    }
+    return (label: l10n.performanceLow, status: CosechaStatus.critical);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    final data = CosechaDataText.of(context);
+
+    if (!report.hasData) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CosechaOverline(l10n.performanceTitle),
+          const SizedBox(height: CosechaSpace.xs),
+          CosechaCard(
+            tone: CosechaCardTone.light,
+            child: Row(
+              children: [
+                const CosechaIconBox(icon: Icons.insights_outlined),
+                const SizedBox(width: CosechaSpace.inner),
+                Expanded(
+                  child: Text(
+                    l10n.performanceNoData,
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: context.cosechaContentSecondary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+
+    final overall = report.overall;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        CosechaOverline(l10n.performanceTitle),
+        const SizedBox(height: CosechaSpace.xs),
+        Row(
+          children: [
+            Expanded(
+              child: CosechaKpiCard(
+                compact: true,
+                label: l10n.performanceOnTime,
+                value: '${overall.onTimePercent} %',
+              ),
+            ),
+            const SizedBox(width: CosechaSpace.xs),
+            Expanded(
+              child: CosechaKpiCard(
+                compact: true,
+                label: l10n.performanceLate,
+                value: '${overall.latePercent} %',
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: CosechaSpace.xs),
+        CosechaCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (var i = 0; i < report.suppliers.length; i++) ...[
+                if (i > 0)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: CosechaSpace.inner),
+                    child: Divider(),
+                  ),
+                Builder(
+                  builder: (context) {
+                    final supplier = report.suppliers[i];
+                    final level = _level(supplier, l10n);
+                    final name = producerName(supplier.producerId);
+                    final detail = l10n.performanceDetail(
+                      supplier.onTime,
+                      supplier.total,
+                      supplier.late,
+                    );
+                    return Semantics(
+                      container: true,
+                      label:
+                          '$name, ${supplier.onTimePercent} %, '
+                          '${level.label}, $detail',
+                      excludeSemantics: true,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  name,
+                                  style: textTheme.titleSmall?.copyWith(
+                                    color: context.cosechaContent,
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                '${supplier.onTimePercent} %',
+                                style: data.dataMono.copyWith(
+                                  color: context.cosechaContent,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(width: CosechaSpace.xs),
+                              CosechaStatusTag(
+                                label: level.label,
+                                status: level.status,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: CosechaSpace.xs),
+                          CosechaProgressBar(value: supplier.onTimeRate),
+                          const SizedBox(height: CosechaSpace.xxs),
+                          Text(
+                            detail,
+                            style: textTheme.bodySmall?.copyWith(
+                              color: context.cosechaContentSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ],
+              const SizedBox(height: CosechaSpace.inner),
+              Text(
+                l10n.performanceNote,
+                style: textTheme.bodySmall?.copyWith(
+                  color: context.cosechaContentSecondary,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }
 

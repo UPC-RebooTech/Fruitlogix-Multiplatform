@@ -48,11 +48,17 @@ class CommercialOrder {
     this.notes,
     this.createdAt,
     this.producerId,
+    this.completedAt,
     double? totalAmount,
   }) : _totalAmount = totalAmount;
 
   /// Producer assigned by the distributor; null while unassigned.
   final int? producerId;
+
+  /// When a delivered order was completed (US24). Approximate: the API
+  /// has no delivery timestamp, so it is the last update of a delivered
+  /// order.
+  final DateTime? completedAt;
 
   /// Platform id (`57`) or demo id (`1042`).
   final String id;

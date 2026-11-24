@@ -432,6 +432,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ordersProducer => 'Producer';
 
   @override
+  String get performanceTitle => 'Compliance by producer';
+
+  @override
+  String get performanceOnTime => 'On time';
+
+  @override
+  String get performanceLate => 'Late';
+
+  @override
+  String get performanceGood => 'Meets';
+
+  @override
+  String get performanceFair => 'Fair';
+
+  @override
+  String get performanceLow => 'Low';
+
+  @override
+  String performanceDetail(int onTime, int total, int late) {
+    return '$onTime of $total on time · $late late';
+  }
+
+  @override
+  String get performanceNote =>
+      'Delivered orders compared with their delivery date; active orders past their date count as late.';
+
+  @override
+  String get performanceNoData =>
+      'No compliance statistics yet. They appear when orders with an assigned producer are delivered.';
+
+  @override
   String ordersProducerFallback(int id) {
     return 'Producer #$id';
   }
