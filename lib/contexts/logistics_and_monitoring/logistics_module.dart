@@ -1,7 +1,9 @@
 import '../iam/domain/auth_session.dart';
 import 'application/shipments_controller.dart';
+import 'domain/lot_timeline.dart';
 import 'domain/reception_repository.dart';
 import 'domain/shipment.dart';
+import 'infrastructure/demo_lot_records.dart';
 import 'infrastructure/demo_shipment_repository.dart';
 import 'infrastructure/fruitlogix_logistics_api.dart';
 import 'infrastructure/http_shipment_repository.dart';
@@ -18,6 +20,7 @@ class LogisticsModule {
   LogisticsModule._({
     required this.shipments,
     required this.dialer,
+    required this.lots,
     FruitLogixLogisticsApi? api,
   }) : _api = api;
 
@@ -29,6 +32,8 @@ class LogisticsModule {
     return LogisticsModule._(
       api: api,
       dialer: const UrlLauncherPhoneDialer(),
+      // Orders are not linked to harvest lots in the platform yet (US72).
+      lots: const NoLotRecords(),
       shipments: ShipmentsController(
         repository: HttpShipmentRepository(
           api: api,
@@ -45,6 +50,7 @@ class LogisticsModule {
     Duration latency = const Duration(milliseconds: 250),
   }) => LogisticsModule._(
     dialer: dialer,
+    lots: DemoLotRecords(),
     shipments: ShipmentsController(
       repository: DemoShipmentRepository(latency: latency),
       reception: reception ?? DemoReceptionRepository(latency: latency),
@@ -53,6 +59,9 @@ class LogisticsModule {
 
   final ShipmentsController shipments;
   final PhoneDialer dialer;
+
+  /// Harvest and quality records of each order's lot (US72).
+  final LotRecordSource lots;
   final FruitLogixLogisticsApi? _api;
 
   Future<void> start() => shipments.load();

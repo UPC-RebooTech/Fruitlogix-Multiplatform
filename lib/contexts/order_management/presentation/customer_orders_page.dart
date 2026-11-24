@@ -19,6 +19,7 @@ class CustomerOrdersPage extends StatefulWidget {
     required this.orders,
     required this.onNewOrder,
     this.onReportIncident,
+    this.onOpenTraceability,
     super.key,
   });
 
@@ -27,6 +28,9 @@ class CustomerOrdersPage extends StatefulWidget {
 
   /// Opens the incident report (Quality Management) for an order code.
   final ValueChanged<String>? onReportIncident;
+
+  /// Opens the lot timeline of an order (US72).
+  final ValueChanged<CommercialOrder>? onOpenTraceability;
 
   @override
   State<CustomerOrdersPage> createState() => _CustomerOrdersPageState();
@@ -392,6 +396,10 @@ class _CustomerOrdersPageState extends State<CustomerOrdersPage> {
         onReportIncident: canReport
             ? () => widget.onReportIncident!(order.code)
             : null,
+        // US72: the lot timeline of orders that were not cancelled.
+        onOpenTraceability: canReport && widget.onOpenTraceability != null
+            ? () => widget.onOpenTraceability!(order)
+            : null,
       ),
       const SizedBox(height: CosechaSpace.xs),
     ];
@@ -571,11 +579,13 @@ class _OrderCard extends StatelessWidget {
     required this.order,
     this.producerName,
     this.onReportIncident,
+    this.onOpenTraceability,
   });
 
   final CommercialOrder order;
   final String? producerName;
   final VoidCallback? onReportIncident;
+  final VoidCallback? onOpenTraceability;
 
   @override
   Widget build(BuildContext context) {
@@ -679,15 +689,24 @@ class _OrderCard extends StatelessWidget {
               value: order.notes!,
             ),
           ],
-          if (onReportIncident != null) ...[
+          if (onOpenTraceability != null || onReportIncident != null) ...[
             const SizedBox(height: CosechaSpace.xs),
-            Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: CosechaTextButton(
-                label: l10n.qmReportIncident,
-                icon: Icons.report_problem_outlined,
-                onPressed: onReportIncident,
-              ),
+            Wrap(
+              spacing: CosechaSpace.xs,
+              children: [
+                if (onOpenTraceability != null)
+                  CosechaTextButton(
+                    label: l10n.traceOpen,
+                    icon: Icons.timeline,
+                    onPressed: onOpenTraceability,
+                  ),
+                if (onReportIncident != null)
+                  CosechaTextButton(
+                    label: l10n.qmReportIncident,
+                    icon: Icons.report_problem_outlined,
+                    onPressed: onReportIncident,
+                  ),
+              ],
             ),
           ],
         ],

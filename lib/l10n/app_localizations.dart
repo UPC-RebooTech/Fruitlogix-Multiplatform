@@ -854,6 +854,114 @@ abstract class AppLocalizations {
   /// **'Producer'**
   String get ordersProducer;
 
+  /// No description provided for @traceOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'View traceability'**
+  String get traceOpen;
+
+  /// No description provided for @traceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Traceability {code}'**
+  String traceTitle(String code);
+
+  /// No description provided for @traceStagesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Lot timeline'**
+  String get traceStagesTitle;
+
+  /// No description provided for @traceProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{done} of {total} stages'**
+  String traceProgress(int done, int total);
+
+  /// No description provided for @traceLotUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Not linked to a lot yet'**
+  String get traceLotUnknown;
+
+  /// No description provided for @traceHarvested.
+  ///
+  /// In en, this message translates to:
+  /// **'Harvested'**
+  String get traceHarvested;
+
+  /// No description provided for @traceInspected.
+  ///
+  /// In en, this message translates to:
+  /// **'Quality inspected'**
+  String get traceInspected;
+
+  /// No description provided for @traceLoaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Loaded and dispatched'**
+  String get traceLoaded;
+
+  /// No description provided for @traceReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'Received'**
+  String get traceReceived;
+
+  /// No description provided for @traceInvoiced.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoiced'**
+  String get traceInvoiced;
+
+  /// No description provided for @tracePending.
+  ///
+  /// In en, this message translates to:
+  /// **'To do'**
+  String get tracePending;
+
+  /// No description provided for @traceNoRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'No record'**
+  String get traceNoRecord;
+
+  /// No description provided for @traceNoDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date not recorded'**
+  String get traceNoDate;
+
+  /// No description provided for @traceResponsible.
+  ///
+  /// In en, this message translates to:
+  /// **'Responsible: {name}'**
+  String traceResponsible(String name);
+
+  /// No description provided for @traceInspectionApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get traceInspectionApproved;
+
+  /// No description provided for @traceInspectionRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get traceInspectionRejected;
+
+  /// No description provided for @traceInvoiceIssuer.
+  ///
+  /// In en, this message translates to:
+  /// **'Distributor'**
+  String get traceInvoiceIssuer;
+
+  /// No description provided for @traceNoRecordNote.
+  ///
+  /// In en, this message translates to:
+  /// **'\"No record\": the stage already happened, but the platform has no data for it yet.'**
+  String get traceNoRecordNote;
+
   /// No description provided for @performanceTitle.
   ///
   /// In en, this message translates to:

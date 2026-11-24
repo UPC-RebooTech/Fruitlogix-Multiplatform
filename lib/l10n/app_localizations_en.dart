@@ -432,6 +432,67 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ordersProducer => 'Producer';
 
   @override
+  String get traceOpen => 'View traceability';
+
+  @override
+  String traceTitle(String code) {
+    return 'Traceability $code';
+  }
+
+  @override
+  String get traceStagesTitle => 'Lot timeline';
+
+  @override
+  String traceProgress(int done, int total) {
+    return '$done of $total stages';
+  }
+
+  @override
+  String get traceLotUnknown => 'Not linked to a lot yet';
+
+  @override
+  String get traceHarvested => 'Harvested';
+
+  @override
+  String get traceInspected => 'Quality inspected';
+
+  @override
+  String get traceLoaded => 'Loaded and dispatched';
+
+  @override
+  String get traceReceived => 'Received';
+
+  @override
+  String get traceInvoiced => 'Invoiced';
+
+  @override
+  String get tracePending => 'To do';
+
+  @override
+  String get traceNoRecord => 'No record';
+
+  @override
+  String get traceNoDate => 'Date not recorded';
+
+  @override
+  String traceResponsible(String name) {
+    return 'Responsible: $name';
+  }
+
+  @override
+  String get traceInspectionApproved => 'Approved';
+
+  @override
+  String get traceInspectionRejected => 'Rejected';
+
+  @override
+  String get traceInvoiceIssuer => 'Distributor';
+
+  @override
+  String get traceNoRecordNote =>
+      '\"No record\": the stage already happened, but the platform has no data for it yet.';
+
+  @override
   String get performanceTitle => 'Compliance by producer';
 
   @override

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../contexts/logistics_and_monitoring/domain/shipment.dart';
+import '../contexts/logistics_and_monitoring/domain/lot_timeline.dart';
 import '../contexts/logistics_and_monitoring/logistics_module.dart';
+import '../contexts/logistics_and_monitoring/presentation/lot_timeline_page.dart';
 import '../contexts/logistics_and_monitoring/presentation/delivery_tracking_page.dart';
 import '../contexts/order_management/presentation/customer_catalog_page.dart';
 import '../contexts/order_management/presentation/customer_orders_page.dart';
@@ -270,6 +272,47 @@ class _CustomerShellState extends State<CustomerShell>
     });
   }
 
+  /// US72 — Lot timeline of an order, assembled from Orders, Tracking,
+  /// Payments and the lot records.
+  void _openTraceability(CommercialOrder order) {
+    final l10n = AppLocalizations.of(context);
+    final shipment = _logistics.shipments.shipments
+        .where((s) => s.orderId == order.code)
+        .firstOrNull;
+    final orderNumber = int.tryParse(order.id);
+    final invoice = orderNumber == null
+        ? null
+        : _payments.overview.invoices
+            .where((i) => i.orderId == orderNumber)
+            .firstOrNull;
+    final profile = _profileRepository.current;
+    final driver = shipment == null || !shipment.hasDriver
+        ? null
+        : [shipment.driverName!, ?shipment.vehiclePlate].join(' · ');
+
+    final timeline = buildLotTimeline(TraceInputs(
+      orderCode: order.code,
+      productSummary: order.productSummary.isEmpty ? null : order.productSummary,
+      lot: _logistics.lots.forOrder(order.code),
+      loaded: order.status == OrderStatus.inTransit ||
+          order.status == OrderStatus.delivered ||
+          (shipment != null && shipment.status != ShipmentStatus.scheduled),
+      loadedBy: driver,
+      received: order.status == OrderStatus.delivered ||
+          (shipment?.isReceived ?? false),
+      receivedAt: order.completedAt,
+      receivedBy: profile.businessName.trim().isEmpty
+          ? profile.fullName
+          : profile.businessName,
+      invoiced: invoice != null,
+      invoicedAt: invoice?.issuedAt,
+      invoicedBy: invoice == null ? null : l10n.traceInvoiceIssuer,
+    ));
+    Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => LotTimelinePage(timeline: timeline),
+    ));
+  }
+
   void _openInvoice(Invoice invoice) {
     _openDetail(_DetailPage(
       title: (l10n) => l10n.invoiceTitle(invoice.code),
@@ -391,6 +434,7 @@ class _CustomerShellState extends State<CustomerShell>
         _ordersTab => CustomerOrdersPage(
             orders: _orders.orders,
             onNewOrder: () => _navigateTo(_catalogTab),
+            onOpenTraceability: _openTraceability,
             onReportIncident: (orderCode) =>
                 _openIncidentReport(orderCode: orderCode),
           ),
