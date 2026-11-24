@@ -404,6 +404,64 @@ class AppLocalizationsEs extends AppLocalizations {
   String get trackingTransport => 'Transporte';
 
   @override
+  String get trackingYourDeliveries => 'Tus entregas';
+
+  @override
+  String get trackingLoadError => 'No pudimos cargar tus entregas';
+
+  @override
+  String get trackingEtaUnknown => 'Por confirmar';
+
+  @override
+  String get trackingRoute => 'Ruta';
+
+  @override
+  String trackingRouteValue(String origin, String destination) {
+    return '$origin a $destination';
+  }
+
+  @override
+  String get trackingStatusScheduled => 'Programado';
+
+  @override
+  String get trackingStatusDispatched => 'Despachado';
+
+  @override
+  String get trackingStatusDelayed => 'Retrasado';
+
+  @override
+  String get trackingDriverSection => 'Conductor y vehículo';
+
+  @override
+  String get trackingDriverPending => 'Aún no se asigna un conductor';
+
+  @override
+  String get trackingVehicle => 'Vehículo';
+
+  @override
+  String get trackingPlate => 'Placa';
+
+  @override
+  String get trackingCallDriver => 'Llamar al conductor';
+
+  @override
+  String trackingCallDriverHint(String name) {
+    return 'Abre el teléfono para llamar a $name';
+  }
+
+  @override
+  String get trackingCallError => 'No pudimos abrir el teléfono';
+
+  @override
+  String get trackingNoReadings =>
+      'La unidad de frío aún no envía lecturas de temperatura.';
+
+  @override
+  String trackingLastReading(String time) {
+    return 'Última lectura: $time';
+  }
+
+  @override
   String get trackingEvents => 'Puntos de control';
 
   @override

@@ -45,8 +45,10 @@ class _ConfirmReceptionPageState extends State<ConfirmReceptionPage> {
     final l10n = AppLocalizations.of(context);
     final textTheme = Theme.of(context).textTheme;
     final shipment = widget.shipment;
-    final temperature =
-        '${shipment.telemetry.temperatureC.toStringAsFixed(1)} °C';
+    final telemetry = shipment.telemetry;
+    final temperature = telemetry == null
+        ? null
+        : '${telemetry.temperatureC.toStringAsFixed(1)} °C';
 
     return CosechaSubpageScaffold(
       title: l10n.trackingConfirmReception,
@@ -66,9 +68,9 @@ class _ConfirmReceptionPageState extends State<ConfirmReceptionPage> {
                   child: Text(
                     shipment.trackingNumber,
                     style: CosechaDataText.of(context).dataMono.copyWith(
-                          color: context.cosechaContent,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      color: context.cosechaContent,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
                 CosechaStatusTag(
@@ -87,11 +89,13 @@ class _ConfirmReceptionPageState extends State<ConfirmReceptionPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(shipment.itemsSummary, style: textTheme.bodyLarge),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: CosechaSpace.inner),
-                  child: Divider(),
-                ),
+                if (shipment.itemsSummary != null) ...[
+                  Text(shipment.itemsSummary!, style: textTheme.bodyLarge),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: CosechaSpace.inner),
+                    child: Divider(),
+                  ),
+                ],
                 CosechaInfoRow(
                   label: l10n.receptionOrderRef,
                   value: shipment.orderId,
@@ -112,7 +116,9 @@ class _ConfirmReceptionPageState extends State<ConfirmReceptionPage> {
                   value: _inspectionAccepted,
                   onChanged: (v) => setState(() => _inspectionAccepted = v),
                   title: Text(l10n.receptionCompliant),
-                  subtitle: Text(l10n.receptionArrivalTemp(temperature)),
+                  subtitle: temperature == null
+                      ? null
+                      : Text(l10n.receptionArrivalTemp(temperature)),
                 ),
                 const Divider(indent: CosechaSpace.sm),
                 CheckboxListTile(

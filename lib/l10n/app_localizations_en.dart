@@ -400,6 +400,64 @@ class AppLocalizationsEn extends AppLocalizations {
   String get trackingTransport => 'Transport';
 
   @override
+  String get trackingYourDeliveries => 'Your deliveries';
+
+  @override
+  String get trackingLoadError => 'We couldn\'t load your deliveries';
+
+  @override
+  String get trackingEtaUnknown => 'To be confirmed';
+
+  @override
+  String get trackingRoute => 'Route';
+
+  @override
+  String trackingRouteValue(String origin, String destination) {
+    return '$origin to $destination';
+  }
+
+  @override
+  String get trackingStatusScheduled => 'Scheduled';
+
+  @override
+  String get trackingStatusDispatched => 'Dispatched';
+
+  @override
+  String get trackingStatusDelayed => 'Delayed';
+
+  @override
+  String get trackingDriverSection => 'Driver and vehicle';
+
+  @override
+  String get trackingDriverPending => 'A driver hasn\'t been assigned yet';
+
+  @override
+  String get trackingVehicle => 'Vehicle';
+
+  @override
+  String get trackingPlate => 'Plate';
+
+  @override
+  String get trackingCallDriver => 'Call driver';
+
+  @override
+  String trackingCallDriverHint(String name) {
+    return 'Opens the phone app to call $name';
+  }
+
+  @override
+  String get trackingCallError => 'We couldn\'t open the phone app';
+
+  @override
+  String get trackingNoReadings =>
+      'The reefer hasn\'t sent temperature readings yet.';
+
+  @override
+  String trackingLastReading(String time) {
+    return 'Last reading: $time';
+  }
+
+  @override
   String get trackingEvents => 'Route checkpoints';
 
   @override

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../contexts/logistics_and_monitoring/infrastructure/in_memory_shipment_repository.dart';
+import '../contexts/logistics_and_monitoring/domain/shipment.dart';
+import '../contexts/logistics_and_monitoring/logistics_module.dart';
 import '../contexts/logistics_and_monitoring/presentation/delivery_tracking_page.dart';
 import '../contexts/order_management/presentation/customer_catalog_page.dart';
 import '../contexts/order_management/presentation/customer_orders_page.dart';
@@ -58,6 +59,7 @@ class CustomerShell extends StatefulWidget {
     this.paymentModule,
     this.qualityModule,
     this.orderModule,
+    this.logisticsModule,
     super.key,
     this.profileRepository,
   });
@@ -77,6 +79,9 @@ class CustomerShell extends StatefulWidget {
 
   /// Overrides the Order Management wiring (tests).
   final OrderManagementModule? orderModule;
+
+  /// Overrides the Logistics & Monitoring wiring (tests).
+  final LogisticsModule? logisticsModule;
 
   @override
   State<CustomerShell> createState() => _CustomerShellState();
@@ -105,7 +110,29 @@ class _CustomerShellState extends State<CustomerShell>
   late final CommercialClientProfileRepository _profileRepository =
       widget.profileRepository ??
           InMemoryCommercialClientProfileRepository();
-  final _shipmentRepository = InMemoryShipmentRepository();
+  /// Tracking: deliveries of the client's orders (demo without session).
+  late final LogisticsModule _logistics = widget.logisticsModule ??
+      (widget.session == null
+          ? LogisticsModule.demo()
+          : LogisticsModule.remote(
+              widget.session!,
+              clientOrders: _clientOrderRefs,
+            ));
+
+  /// The client's orders, to keep only their deliveries.
+  Future<List<ShipmentOrderRef>> _clientOrderRefs() async {
+    final orders = _orders.orders;
+    if (!orders.hasData) await orders.load();
+    return [
+      for (final order in orders.orders)
+        if (int.tryParse(order.id) case final id?)
+          ShipmentOrderRef(
+            orderId: id,
+            orderCode: order.code,
+            itemsSummary: order.productSummary.isEmpty ? null : order.productSummary,
+          ),
+    ];
+  }
 
   late final PaymentManagementModule _payments = widget.paymentModule ??
       (widget.session == null
@@ -165,6 +192,7 @@ class _CustomerShellState extends State<CustomerShell>
       // Not awaited: the dashboard renders at once (US36).
       _payments.start();
       _orders.start();
+      _logistics.start();
       _quality.start();
     }
   }
@@ -196,6 +224,7 @@ class _CustomerShellState extends State<CustomerShell>
     _payments.membership.removeListener(_onMembershipChanged);
     if (widget.paymentModule == null) _payments.dispose();
     if (widget.orderModule == null) _orders.dispose();
+    if (widget.logisticsModule == null) _logistics.dispose();
     if (widget.qualityModule == null) _quality.dispose();
     super.dispose();
   }
@@ -364,7 +393,8 @@ class _CustomerShellState extends State<CustomerShell>
                 _openIncidentReport(orderCode: orderCode),
           ),
         _trackingTab => DeliveryTrackingPage(
-            repository: _shipmentRepository,
+            controller: _logistics.shipments,
+            dialer: _logistics.dialer,
             onReportIncident: (orderCode) =>
                 _openIncidentReport(orderCode: orderCode),
           ),

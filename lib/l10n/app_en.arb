@@ -179,6 +179,35 @@
   "trackingHumidity": "Humidity",
   "trackingReefer": "Reefer unit",
   "trackingTransport": "Transport",
+  "trackingYourDeliveries": "Your deliveries",
+  "trackingLoadError": "We couldn't load your deliveries",
+  "trackingEtaUnknown": "To be confirmed",
+  "trackingRoute": "Route",
+  "trackingRouteValue": "{origin} to {destination}",
+  "@trackingRouteValue": {
+    "placeholders": {
+      "origin": { "type": "String", "example": "Piura" },
+      "destination": { "type": "String", "example": "Lima" }
+    }
+  },
+  "trackingStatusScheduled": "Scheduled",
+  "trackingStatusDispatched": "Dispatched",
+  "trackingStatusDelayed": "Delayed",
+  "trackingDriverSection": "Driver and vehicle",
+  "trackingDriverPending": "A driver hasn't been assigned yet",
+  "trackingVehicle": "Vehicle",
+  "trackingPlate": "Plate",
+  "trackingCallDriver": "Call driver",
+  "trackingCallDriverHint": "Opens the phone app to call {name}",
+  "@trackingCallDriverHint": {
+    "placeholders": { "name": { "type": "String", "example": "Luis Ramírez" } }
+  },
+  "trackingCallError": "We couldn't open the phone app",
+  "trackingNoReadings": "The reefer hasn't sent temperature readings yet.",
+  "trackingLastReading": "Last reading: {time}",
+  "@trackingLastReading": {
+    "placeholders": { "time": { "type": "String", "example": "23 November 2026 · 2:10 PM" } }
+  },
   "trackingEvents": "Route checkpoints",
   "trackingEventDone": "Completed",
   "trackingEventPending": "Pending",

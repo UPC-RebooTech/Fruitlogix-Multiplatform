@@ -818,6 +818,108 @@ abstract class AppLocalizations {
   /// **'Transport'**
   String get trackingTransport;
 
+  /// No description provided for @trackingYourDeliveries.
+  ///
+  /// In en, this message translates to:
+  /// **'Your deliveries'**
+  String get trackingYourDeliveries;
+
+  /// No description provided for @trackingLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load your deliveries'**
+  String get trackingLoadError;
+
+  /// No description provided for @trackingEtaUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'To be confirmed'**
+  String get trackingEtaUnknown;
+
+  /// No description provided for @trackingRoute.
+  ///
+  /// In en, this message translates to:
+  /// **'Route'**
+  String get trackingRoute;
+
+  /// No description provided for @trackingRouteValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{origin} to {destination}'**
+  String trackingRouteValue(String origin, String destination);
+
+  /// No description provided for @trackingStatusScheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled'**
+  String get trackingStatusScheduled;
+
+  /// No description provided for @trackingStatusDispatched.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatched'**
+  String get trackingStatusDispatched;
+
+  /// No description provided for @trackingStatusDelayed.
+  ///
+  /// In en, this message translates to:
+  /// **'Delayed'**
+  String get trackingStatusDelayed;
+
+  /// No description provided for @trackingDriverSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver and vehicle'**
+  String get trackingDriverSection;
+
+  /// No description provided for @trackingDriverPending.
+  ///
+  /// In en, this message translates to:
+  /// **'A driver hasn\'t been assigned yet'**
+  String get trackingDriverPending;
+
+  /// No description provided for @trackingVehicle.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle'**
+  String get trackingVehicle;
+
+  /// No description provided for @trackingPlate.
+  ///
+  /// In en, this message translates to:
+  /// **'Plate'**
+  String get trackingPlate;
+
+  /// No description provided for @trackingCallDriver.
+  ///
+  /// In en, this message translates to:
+  /// **'Call driver'**
+  String get trackingCallDriver;
+
+  /// No description provided for @trackingCallDriverHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens the phone app to call {name}'**
+  String trackingCallDriverHint(String name);
+
+  /// No description provided for @trackingCallError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t open the phone app'**
+  String get trackingCallError;
+
+  /// No description provided for @trackingNoReadings.
+  ///
+  /// In en, this message translates to:
+  /// **'The reefer hasn\'t sent temperature readings yet.'**
+  String get trackingNoReadings;
+
+  /// No description provided for @trackingLastReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Last reading: {time}'**
+  String trackingLastReading(String time);
+
   /// No description provided for @trackingEvents.
   ///
   /// In en, this message translates to:
