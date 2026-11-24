@@ -38,4 +38,26 @@ void main() {
       throwsArgumentError,
     );
   });
+
+  test('validates Peruvian mobile phone numbers', () {
+    expect(
+      CommercialClientProfile.validatePhone('987654321'),
+      isNull,
+    );
+
+    expect(
+      CommercialClientProfile.validatePhone('+51 987 654 321'),
+      isNull,
+    );
+
+    expect(
+      CommercialClientProfile.validatePhone('98765432'),
+      isNotNull,
+    );
+
+    expect(
+      CommercialClientProfile.validatePhone('812345678'),
+      isNotNull,
+    );
+  });
 }

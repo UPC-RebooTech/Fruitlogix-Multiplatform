@@ -176,6 +176,180 @@ abstract class AppLocalizations {
   /// **'Business and contact details'**
   String get profileDetail;
 
+  /// No description provided for @authLoginTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get authLoginTitle;
+
+  /// No description provided for @authRegisterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your account'**
+  String get authRegisterTitle;
+
+  /// No description provided for @authWelcome.
+  ///
+  /// In en, this message translates to:
+  /// **'FruitLogix for commercial clients'**
+  String get authWelcome;
+
+  /// No description provided for @authUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Username'**
+  String get authUsername;
+
+  /// No description provided for @authPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get authPassword;
+
+  /// No description provided for @authConfirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm password'**
+  String get authConfirmPassword;
+
+  /// No description provided for @authSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get authSignIn;
+
+  /// No description provided for @authCreateAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create account'**
+  String get authCreateAccount;
+
+  /// No description provided for @authRememberMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep me signed in'**
+  String get authRememberMe;
+
+  /// No description provided for @authAcceptance.
+  ///
+  /// In en, this message translates to:
+  /// **'I accept the Terms of Service and Privacy Policy'**
+  String get authAcceptance;
+
+  /// No description provided for @authMustAccept.
+  ///
+  /// In en, this message translates to:
+  /// **'You must accept the terms and privacy policy to register.'**
+  String get authMustAccept;
+
+  /// No description provided for @authSwitchToLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account? Sign in'**
+  String get authSwitchToLogin;
+
+  /// No description provided for @authSwitchToRegister.
+  ///
+  /// In en, this message translates to:
+  /// **'New here? Create an account'**
+  String get authSwitchToRegister;
+
+  /// No description provided for @authUsernameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your username'**
+  String get authUsernameRequired;
+
+  /// No description provided for @authInvalidUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Use 4–20 lowercase letters, digits, dots or underscores.'**
+  String get authInvalidUsername;
+
+  /// No description provided for @authRequiredPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password'**
+  String get authRequiredPassword;
+
+  /// No description provided for @authInvalidPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Use at least 8 characters, including a letter and a number.'**
+  String get authInvalidPassword;
+
+  /// No description provided for @authPasswordMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get authPasswordMismatch;
+
+  /// No description provided for @authInvalidCredentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid username or password'**
+  String get authInvalidCredentials;
+
+  /// No description provided for @authUsernameUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Username unavailable or invalid'**
+  String get authUsernameUnavailable;
+
+  /// No description provided for @authNetworkError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not connect to the server. Try again.'**
+  String get authNetworkError;
+
+  /// No description provided for @authServerError.
+  ///
+  /// In en, this message translates to:
+  /// **'Server error. Please try again later.'**
+  String get authServerError;
+
+  /// No description provided for @authUnexpectedResponse.
+  ///
+  /// In en, this message translates to:
+  /// **'Unexpected response. Please try again.'**
+  String get authUnexpectedResponse;
+
+  /// No description provided for @authSignOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get authSignOut;
+
+  /// No description provided for @authLocalProfileNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Business and contact details are managed in Profile.'**
+  String get authLocalProfileNote;
+
+  /// No description provided for @profileLegalSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal information'**
+  String get profileLegalSection;
+
+  /// No description provided for @profileLegalTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms and Conditions'**
+  String get profileLegalTerms;
+
+  /// No description provided for @profileLegalPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get profileLegalPrivacy;
+
+  /// No description provided for @profileLegalOpenError.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to open the document'**
+  String get profileLegalOpenError;
+
   /// No description provided for @dashboardOverline.
   ///
   /// In en, this message translates to:
@@ -809,7 +983,7 @@ abstract class AppLocalizations {
   /// No description provided for @profilePhone.
   ///
   /// In en, this message translates to:
-  /// **'Contact phone'**
+  /// **'Contact mobile'**
   String get profilePhone;
 
   /// No description provided for @profileTaxId.
@@ -839,7 +1013,7 @@ abstract class AppLocalizations {
   /// No description provided for @profilePhoneError.
   ///
   /// In en, this message translates to:
-  /// **'Enter a valid phone number'**
+  /// **'Enter a valid 9-digit Peruvian mobile number'**
   String get profilePhoneError;
 
   /// No description provided for @profileTaxIdError.
@@ -863,14 +1037,332 @@ abstract class AppLocalizations {
   /// No description provided for @profileSaved.
   ///
   /// In en, this message translates to:
-  /// **'Profile updated for this session (demo)'**
+  /// **'Profile updated successfully'**
   String get profileSaved;
+
+  /// No description provided for @profileStoredOnDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile information is stored on this device only.'**
+  String get profileStoredOnDevice;
+
+  /// No description provided for @profileSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save your profile. Please try again.'**
+  String get profileSaveFailed;
+
+  /// No description provided for @profileLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load your local profile.'**
+  String get profileLoadFailed;
+
+  /// No description provided for @profileRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get profileRetry;
 
   /// No description provided for @featurePending.
   ///
   /// In en, this message translates to:
   /// **'Implementation pending'**
   String get featurePending;
+
+  /// No description provided for @balanceOverline.
+  ///
+  /// In en, this message translates to:
+  /// **'Financial balance'**
+  String get balanceOverline;
+
+  /// No description provided for @balanceDebt.
+  ///
+  /// In en, this message translates to:
+  /// **'Accumulated debt'**
+  String get balanceDebt;
+
+  /// No description provided for @balanceTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total billed'**
+  String get balanceTotal;
+
+  /// No description provided for @balanceOverdue.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue'**
+  String get balanceOverdue;
+
+  /// No description provided for @balancePaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get balancePaid;
+
+  /// No description provided for @balanceLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading your balance…'**
+  String get balanceLoading;
+
+  /// No description provided for @balanceError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load your balance.'**
+  String get balanceError;
+
+  /// No description provided for @balanceUpToDate.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re up to date'**
+  String get balanceUpToDate;
+
+  /// No description provided for @paymentsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load your invoices.'**
+  String get paymentsLoadError;
+
+  /// No description provided for @paymentsSessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session expired. Sign in again to see your invoices.'**
+  String get paymentsSessionExpired;
+
+  /// No description provided for @paymentsRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get paymentsRetry;
+
+  /// No description provided for @balancePendingInvoices.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 pending invoice} other{{count} pending invoices}}'**
+  String balancePendingInvoices(int count);
+
+  /// No description provided for @paymentStatusFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get paymentStatusFailed;
+
+  /// No description provided for @paymentStatusRefunded.
+  ///
+  /// In en, this message translates to:
+  /// **'Refunded'**
+  String get paymentStatusRefunded;
+
+  /// No description provided for @invoiceIssued.
+  ///
+  /// In en, this message translates to:
+  /// **'Issued'**
+  String get invoiceIssued;
+
+  /// No description provided for @invoicePaidAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid on'**
+  String get invoicePaidAt;
+
+  /// No description provided for @remindersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice reminders'**
+  String get remindersTitle;
+
+  /// No description provided for @remindersEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Notify me before the due date'**
+  String get remindersEnabled;
+
+  /// No description provided for @remindersLeadDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{days, plural, =1{1 day before} other{{days} days before}}'**
+  String remindersLeadDays(int days);
+
+  /// No description provided for @remindersPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are off for FruitLogix. Turn them on in your phone settings to get reminders.'**
+  String get remindersPermissionDenied;
+
+  /// No description provided for @remindersUpcoming.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 invoice is due soon} other{{count} invoices are due soon}}'**
+  String remindersUpcoming(int count);
+
+  /// No description provided for @remindersUpcomingDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay on time to avoid surcharges or credit holds'**
+  String get remindersUpcomingDetail;
+
+  /// No description provided for @reminderNotificationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice {invoice} is due soon'**
+  String reminderNotificationTitle(String invoice);
+
+  /// No description provided for @reminderNotificationBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} · due {date}. Pay on time to avoid surcharges.'**
+  String reminderNotificationBody(String amount, String date);
+
+  /// No description provided for @invoiceReminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder'**
+  String get invoiceReminder;
+
+  /// No description provided for @invoiceReminderNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No reminder · invoice already paid'**
+  String get invoiceReminderNone;
+
+  /// No description provided for @invoiceReminderOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminders are turned off'**
+  String get invoiceReminderOff;
+
+  /// No description provided for @invoiceReminderOverdue.
+  ///
+  /// In en, this message translates to:
+  /// **'Past due · pay as soon as possible'**
+  String get invoiceReminderOverdue;
+
+  /// No description provided for @proTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pro plan'**
+  String get proTitle;
+
+  /// No description provided for @proBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Pro member'**
+  String get proBadge;
+
+  /// No description provided for @proOverline.
+  ///
+  /// In en, this message translates to:
+  /// **'FruitLogix Pro'**
+  String get proOverline;
+
+  /// No description provided for @proHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Become a Pro member'**
+  String get proHeadline;
+
+  /// No description provided for @proPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'{price} / month'**
+  String proPrice(String price);
+
+  /// No description provided for @proBenefitPriority.
+  ///
+  /// In en, this message translates to:
+  /// **'Priority attention for your orders'**
+  String get proBenefitPriority;
+
+  /// No description provided for @proBenefitReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced purchase and payment reports'**
+  String get proBenefitReports;
+
+  /// No description provided for @proBenefitAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Real-time cold-chain alerts'**
+  String get proBenefitAlerts;
+
+  /// No description provided for @proUpgrade.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to Pro'**
+  String get proUpgrade;
+
+  /// No description provided for @proUpsellDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade without leaving the app'**
+  String get proUpsellDetail;
+
+  /// No description provided for @proSecureNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure payment with Stripe. Your card details never pass through FruitLogix.'**
+  String get proSecureNote;
+
+  /// No description provided for @proPreparing.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing secure payment…'**
+  String get proPreparing;
+
+  /// No description provided for @proConfirming.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirming your payment with Stripe…'**
+  String get proConfirming;
+
+  /// No description provided for @proSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Pro! Your plan is active.'**
+  String get proSuccess;
+
+  /// No description provided for @proPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment received. We\'re still waiting for Stripe\'s confirmation.'**
+  String get proPending;
+
+  /// No description provided for @proCheckAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Check again'**
+  String get proCheckAgain;
+
+  /// No description provided for @proCanceled.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment canceled. You were not charged.'**
+  String get proCanceled;
+
+  /// No description provided for @proFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The payment could not be completed.'**
+  String get proFailed;
+
+  /// No description provided for @proUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments with Stripe are not available on this device.'**
+  String get proUnavailable;
+
+  /// No description provided for @proActive.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re a Pro member'**
+  String get proActive;
+
+  /// No description provided for @proActiveSince.
+  ///
+  /// In en, this message translates to:
+  /// **'Active since {date}'**
+  String proActiveSince(String date);
 }
 
 class _AppLocalizationsDelegate

@@ -18,10 +18,14 @@ class CosechaTopBar extends StatelessWidget implements PreferredSizeWidget {
     this.avatarTooltip,
     this.onBack,
     this.actions,
+    this.badge,
     super.key,
   });
 
   final String title;
+
+  /// Shown next to the title (e.g. the "Miembro Pro" insignia).
+  final Widget? badge;
   final String? subtitle;
   final String initials;
   final VoidCallback? onAvatarTap;
@@ -66,12 +70,22 @@ class CosechaTopBar extends StatelessWidget implements PreferredSizeWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: textTheme.titleMedium
-                        ?.copyWith(color: status.onDarkPrimary),
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: textTheme.titleMedium
+                              ?.copyWith(color: status.onDarkPrimary),
+                        ),
+                      ),
+                      if (badge != null) ...[
+                        const SizedBox(width: CosechaSpace.xs),
+                        badge!,
+                      ],
+                    ],
                   ),
                   if (subtitle != null)
                     Text(

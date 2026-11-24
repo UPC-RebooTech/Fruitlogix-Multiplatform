@@ -49,6 +49,101 @@ class AppLocalizationsEs extends AppLocalizations {
   String get profileDetail => 'Datos del negocio y de contacto';
 
   @override
+  String get authLoginTitle => 'Iniciar sesión';
+
+  @override
+  String get authRegisterTitle => 'Crear tu cuenta';
+
+  @override
+  String get authWelcome => 'FruitLogix para clientes comerciales';
+
+  @override
+  String get authUsername => 'Usuario';
+
+  @override
+  String get authPassword => 'Contraseña';
+
+  @override
+  String get authConfirmPassword => 'Confirmar contraseña';
+
+  @override
+  String get authSignIn => 'Iniciar sesión';
+
+  @override
+  String get authCreateAccount => 'Crear cuenta';
+
+  @override
+  String get authRememberMe => 'Mantener mi sesión iniciada';
+
+  @override
+  String get authAcceptance =>
+      'Acepto los Términos del servicio y la Política de privacidad';
+
+  @override
+  String get authMustAccept =>
+      'Debes aceptar los términos y la política de privacidad para registrarte.';
+
+  @override
+  String get authSwitchToLogin => '¿Ya tienes cuenta? Inicia sesión';
+
+  @override
+  String get authSwitchToRegister => '¿No tienes cuenta? Regístrate';
+
+  @override
+  String get authUsernameRequired => 'Ingresa tu usuario';
+
+  @override
+  String get authInvalidUsername =>
+      'Usa entre 4 y 20 letras minúsculas, números, puntos o guiones bajos.';
+
+  @override
+  String get authRequiredPassword => 'Ingresa tu contraseña';
+
+  @override
+  String get authInvalidPassword =>
+      'Usa al menos 8 caracteres, incluyendo una letra y un número.';
+
+  @override
+  String get authPasswordMismatch => 'Las contraseñas no coinciden';
+
+  @override
+  String get authInvalidCredentials => 'Usuario o contraseña incorrectos';
+
+  @override
+  String get authUsernameUnavailable =>
+      'El usuario no está disponible o es inválido';
+
+  @override
+  String get authNetworkError =>
+      'No se pudo conectar con el servidor. Intenta de nuevo.';
+
+  @override
+  String get authServerError => 'Error del servidor. Intenta más tarde.';
+
+  @override
+  String get authUnexpectedResponse =>
+      'Respuesta inesperada. Intenta otra vez.';
+
+  @override
+  String get authSignOut => 'Cerrar sesión';
+
+  @override
+  String get authLocalProfileNote =>
+      'Los datos del negocio y de contacto se gestionan en Perfil.';
+
+  @override
+  String get profileLegalSection => 'Información legal';
+
+  @override
+  String get profileLegalTerms => 'Términos y Condiciones';
+
+  @override
+  String get profileLegalPrivacy => 'Política de Privacidad';
+
+  @override
+  String get profileLegalOpenError => 'No se pudo abrir el documento';
+
+  @override
   String get dashboardOverline => 'Tu panel';
 
   @override
@@ -395,7 +490,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get profileEmail => 'Correo electrónico';
 
   @override
-  String get profilePhone => 'Teléfono de contacto';
+  String get profilePhone => 'Celular de contacto';
 
   @override
   String get profileTaxId => 'RUC';
@@ -410,7 +505,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get profileEmailError => 'Ingresa un correo válido';
 
   @override
-  String get profilePhoneError => 'Ingresa un teléfono válido';
+  String get profilePhoneError =>
+      'Ingresa un celular peruano válido de 9 dígitos';
 
   @override
   String get profileTaxIdError => 'El RUC debe tener 11 dígitos';
@@ -422,8 +518,207 @@ class AppLocalizationsEs extends AppLocalizations {
   String get profileSave => 'Guardar cambios';
 
   @override
-  String get profileSaved => 'Perfil actualizado para esta sesión (demo)';
+  String get profileSaved => 'Perfil actualizado correctamente';
+
+  @override
+  String get profileStoredOnDevice =>
+      'Los datos del perfil se guardan únicamente en este dispositivo.';
+
+  @override
+  String get profileSaveFailed =>
+      'No se pudo guardar el perfil. Inténtalo nuevamente.';
+
+  @override
+  String get profileLoadFailed => 'No se pudo cargar tu perfil local.';
+
+  @override
+  String get profileRetry => 'Reintentar';
 
   @override
   String get featurePending => 'Implementación pendiente';
+
+  @override
+  String get balanceOverline => 'Balance financiero';
+
+  @override
+  String get balanceDebt => 'Deuda acumulada';
+
+  @override
+  String get balanceTotal => 'Saldo total';
+
+  @override
+  String get balanceOverdue => 'Vencido';
+
+  @override
+  String get balancePaid => 'Pagado';
+
+  @override
+  String get balanceLoading => 'Cargando tu balance…';
+
+  @override
+  String get balanceError => 'No pudimos cargar tu balance.';
+
+  @override
+  String get balanceUpToDate => 'Estás al día';
+
+  @override
+  String get paymentsLoadError => 'No pudimos cargar tus facturas.';
+
+  @override
+  String get paymentsSessionExpired =>
+      'Tu sesión expiró. Vuelve a iniciar sesión para ver tus facturas.';
+
+  @override
+  String get paymentsRetry => 'Reintentar';
+
+  @override
+  String balancePendingInvoices(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count facturas pendientes',
+      one: '1 factura pendiente',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get paymentStatusFailed => 'Fallido';
+
+  @override
+  String get paymentStatusRefunded => 'Reembolsado';
+
+  @override
+  String get invoiceIssued => 'Emitida';
+
+  @override
+  String get invoicePaidAt => 'Pagada el';
+
+  @override
+  String get remindersTitle => 'Recordatorios de facturas';
+
+  @override
+  String get remindersEnabled => 'Avisarme antes del vencimiento';
+
+  @override
+  String remindersLeadDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days días antes',
+      one: '1 día antes',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get remindersPermissionDenied =>
+      'Las notificaciones de FruitLogix están desactivadas. Actívalas en los ajustes del teléfono para recibir recordatorios.';
+
+  @override
+  String remindersUpcoming(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count facturas vencen pronto',
+      one: '1 factura vence pronto',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get remindersUpcomingDetail =>
+      'Paga a tiempo y evita recargos o bloqueos de crédito';
+
+  @override
+  String reminderNotificationTitle(String invoice) {
+    return 'La factura $invoice vence pronto';
+  }
+
+  @override
+  String reminderNotificationBody(String amount, String date) {
+    return '$amount · vence el $date. Paga a tiempo y evita recargos.';
+  }
+
+  @override
+  String get invoiceReminder => 'Recordatorio';
+
+  @override
+  String get invoiceReminderNone => 'Sin recordatorio · factura pagada';
+
+  @override
+  String get invoiceReminderOff => 'Recordatorios desactivados';
+
+  @override
+  String get invoiceReminderOverdue => 'Vencida · paga lo antes posible';
+
+  @override
+  String get proTitle => 'Plan Pro';
+
+  @override
+  String get proBadge => 'Miembro Pro';
+
+  @override
+  String get proOverline => 'FruitLogix Pro';
+
+  @override
+  String get proHeadline => 'Hazte Miembro Pro';
+
+  @override
+  String proPrice(String price) {
+    return '$price / mes';
+  }
+
+  @override
+  String get proBenefitPriority => 'Atención prioritaria de tus pedidos';
+
+  @override
+  String get proBenefitReports => 'Reportes avanzados de compras y pagos';
+
+  @override
+  String get proBenefitAlerts => 'Alertas de cadena de frío en tiempo real';
+
+  @override
+  String get proUpgrade => 'Actualizar a Miembro Pro';
+
+  @override
+  String get proUpsellDetail => 'Actualiza tu plan sin salir de la app';
+
+  @override
+  String get proSecureNote =>
+      'Pago seguro con Stripe. Los datos de tu tarjeta nunca pasan por FruitLogix.';
+
+  @override
+  String get proPreparing => 'Preparando el pago seguro…';
+
+  @override
+  String get proConfirming => 'Confirmando tu pago con Stripe…';
+
+  @override
+  String get proSuccess => '¡Bienvenido a Pro! Tu plan ya está activo.';
+
+  @override
+  String get proPending =>
+      'Pago recibido. Aún esperamos la confirmación de Stripe.';
+
+  @override
+  String get proCheckAgain => 'Verificar de nuevo';
+
+  @override
+  String get proCanceled => 'Pago cancelado. No se realizó ningún cobro.';
+
+  @override
+  String get proFailed => 'No se pudo completar el pago.';
+
+  @override
+  String get proUnavailable =>
+      'Los pagos con Stripe no están disponibles en este dispositivo.';
+
+  @override
+  String get proActive => 'Ya eres Miembro Pro';
+
+  @override
+  String proActiveSince(String date) {
+    return 'Activo desde $date';
+  }
 }

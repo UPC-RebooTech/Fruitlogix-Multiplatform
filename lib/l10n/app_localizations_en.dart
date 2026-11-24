@@ -49,6 +49,98 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileDetail => 'Business and contact details';
 
   @override
+  String get authLoginTitle => 'Sign in';
+
+  @override
+  String get authRegisterTitle => 'Create your account';
+
+  @override
+  String get authWelcome => 'FruitLogix for commercial clients';
+
+  @override
+  String get authUsername => 'Username';
+
+  @override
+  String get authPassword => 'Password';
+
+  @override
+  String get authConfirmPassword => 'Confirm password';
+
+  @override
+  String get authSignIn => 'Sign in';
+
+  @override
+  String get authCreateAccount => 'Create account';
+
+  @override
+  String get authRememberMe => 'Keep me signed in';
+
+  @override
+  String get authAcceptance =>
+      'I accept the Terms of Service and Privacy Policy';
+
+  @override
+  String get authMustAccept =>
+      'You must accept the terms and privacy policy to register.';
+
+  @override
+  String get authSwitchToLogin => 'Already have an account? Sign in';
+
+  @override
+  String get authSwitchToRegister => 'New here? Create an account';
+
+  @override
+  String get authUsernameRequired => 'Enter your username';
+
+  @override
+  String get authInvalidUsername =>
+      'Use 4–20 lowercase letters, digits, dots or underscores.';
+
+  @override
+  String get authRequiredPassword => 'Enter your password';
+
+  @override
+  String get authInvalidPassword =>
+      'Use at least 8 characters, including a letter and a number.';
+
+  @override
+  String get authPasswordMismatch => 'Passwords do not match';
+
+  @override
+  String get authInvalidCredentials => 'Invalid username or password';
+
+  @override
+  String get authUsernameUnavailable => 'Username unavailable or invalid';
+
+  @override
+  String get authNetworkError => 'Could not connect to the server. Try again.';
+
+  @override
+  String get authServerError => 'Server error. Please try again later.';
+
+  @override
+  String get authUnexpectedResponse => 'Unexpected response. Please try again.';
+
+  @override
+  String get authSignOut => 'Sign out';
+
+  @override
+  String get authLocalProfileNote =>
+      'Business and contact details are managed in Profile.';
+
+  @override
+  String get profileLegalSection => 'Legal information';
+
+  @override
+  String get profileLegalTerms => 'Terms and Conditions';
+
+  @override
+  String get profileLegalPrivacy => 'Privacy Policy';
+
+  @override
+  String get profileLegalOpenError => 'Unable to open the document';
+
+  @override
   String get dashboardOverline => 'Your dashboard';
 
   @override
@@ -395,7 +487,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileEmail => 'Email';
 
   @override
-  String get profilePhone => 'Contact phone';
+  String get profilePhone => 'Contact mobile';
 
   @override
   String get profileTaxId => 'RUC';
@@ -410,7 +502,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileEmailError => 'Enter a valid email';
 
   @override
-  String get profilePhoneError => 'Enter a valid phone number';
+  String get profilePhoneError =>
+      'Enter a valid 9-digit Peruvian mobile number';
 
   @override
   String get profileTaxIdError => 'The RUC must have 11 digits';
@@ -422,8 +515,207 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileSave => 'Save changes';
 
   @override
-  String get profileSaved => 'Profile updated for this session (demo)';
+  String get profileSaved => 'Profile updated successfully';
+
+  @override
+  String get profileStoredOnDevice =>
+      'Profile information is stored on this device only.';
+
+  @override
+  String get profileSaveFailed =>
+      'Could not save your profile. Please try again.';
+
+  @override
+  String get profileLoadFailed => 'Could not load your local profile.';
+
+  @override
+  String get profileRetry => 'Try again';
 
   @override
   String get featurePending => 'Implementation pending';
+
+  @override
+  String get balanceOverline => 'Financial balance';
+
+  @override
+  String get balanceDebt => 'Accumulated debt';
+
+  @override
+  String get balanceTotal => 'Total billed';
+
+  @override
+  String get balanceOverdue => 'Overdue';
+
+  @override
+  String get balancePaid => 'Paid';
+
+  @override
+  String get balanceLoading => 'Loading your balance…';
+
+  @override
+  String get balanceError => 'We couldn\'t load your balance.';
+
+  @override
+  String get balanceUpToDate => 'You\'re up to date';
+
+  @override
+  String get paymentsLoadError => 'We couldn\'t load your invoices.';
+
+  @override
+  String get paymentsSessionExpired =>
+      'Your session expired. Sign in again to see your invoices.';
+
+  @override
+  String get paymentsRetry => 'Retry';
+
+  @override
+  String balancePendingInvoices(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pending invoices',
+      one: '1 pending invoice',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get paymentStatusFailed => 'Failed';
+
+  @override
+  String get paymentStatusRefunded => 'Refunded';
+
+  @override
+  String get invoiceIssued => 'Issued';
+
+  @override
+  String get invoicePaidAt => 'Paid on';
+
+  @override
+  String get remindersTitle => 'Invoice reminders';
+
+  @override
+  String get remindersEnabled => 'Notify me before the due date';
+
+  @override
+  String remindersLeadDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days days before',
+      one: '1 day before',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get remindersPermissionDenied =>
+      'Notifications are off for FruitLogix. Turn them on in your phone settings to get reminders.';
+
+  @override
+  String remindersUpcoming(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count invoices are due soon',
+      one: '1 invoice is due soon',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get remindersUpcomingDetail =>
+      'Pay on time to avoid surcharges or credit holds';
+
+  @override
+  String reminderNotificationTitle(String invoice) {
+    return 'Invoice $invoice is due soon';
+  }
+
+  @override
+  String reminderNotificationBody(String amount, String date) {
+    return '$amount · due $date. Pay on time to avoid surcharges.';
+  }
+
+  @override
+  String get invoiceReminder => 'Reminder';
+
+  @override
+  String get invoiceReminderNone => 'No reminder · invoice already paid';
+
+  @override
+  String get invoiceReminderOff => 'Reminders are turned off';
+
+  @override
+  String get invoiceReminderOverdue => 'Past due · pay as soon as possible';
+
+  @override
+  String get proTitle => 'Pro plan';
+
+  @override
+  String get proBadge => 'Pro member';
+
+  @override
+  String get proOverline => 'FruitLogix Pro';
+
+  @override
+  String get proHeadline => 'Become a Pro member';
+
+  @override
+  String proPrice(String price) {
+    return '$price / month';
+  }
+
+  @override
+  String get proBenefitPriority => 'Priority attention for your orders';
+
+  @override
+  String get proBenefitReports => 'Advanced purchase and payment reports';
+
+  @override
+  String get proBenefitAlerts => 'Real-time cold-chain alerts';
+
+  @override
+  String get proUpgrade => 'Upgrade to Pro';
+
+  @override
+  String get proUpsellDetail => 'Upgrade without leaving the app';
+
+  @override
+  String get proSecureNote =>
+      'Secure payment with Stripe. Your card details never pass through FruitLogix.';
+
+  @override
+  String get proPreparing => 'Preparing secure payment…';
+
+  @override
+  String get proConfirming => 'Confirming your payment with Stripe…';
+
+  @override
+  String get proSuccess => 'Welcome to Pro! Your plan is active.';
+
+  @override
+  String get proPending =>
+      'Payment received. We\'re still waiting for Stripe\'s confirmation.';
+
+  @override
+  String get proCheckAgain => 'Check again';
+
+  @override
+  String get proCanceled => 'Payment canceled. You were not charged.';
+
+  @override
+  String get proFailed => 'The payment could not be completed.';
+
+  @override
+  String get proUnavailable =>
+      'Payments with Stripe are not available on this device.';
+
+  @override
+  String get proActive => 'You\'re a Pro member';
+
+  @override
+  String proActiveSince(String date) {
+    return 'Active since $date';
+  }
 }
