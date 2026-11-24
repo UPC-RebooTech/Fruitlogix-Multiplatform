@@ -114,13 +114,31 @@ class _ButtonContent extends StatelessWidget {
             textAlign: TextAlign.center,
           );
     if (icon == null) return text;
+    if (!adaptive) {
+      // Icon and label in one paragraph: it wraps to a second line instead
+      // of overflowing, whether or not the button width is bounded.
+      return Text.rich(
+        TextSpan(children: [
+          WidgetSpan(
+            alignment: PlaceholderAlignment.middle,
+            child: Padding(
+              padding: const EdgeInsetsDirectional.only(end: CosechaSpace.xs),
+              child: Icon(icon, size: CosechaSize.iconSm),
+            ),
+          ),
+          TextSpan(text: label),
+        ]),
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.center,
+      );
+    }
     return Row(
-      mainAxisSize: adaptive ? MainAxisSize.max : MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Icon(icon, size: CosechaSize.iconSm),
         const SizedBox(width: CosechaSpace.xs),
-        adaptive ? Flexible(child: text) : text,
+        Flexible(child: text),
       ],
     );
   }

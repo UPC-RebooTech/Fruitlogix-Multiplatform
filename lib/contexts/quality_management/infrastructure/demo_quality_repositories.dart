@@ -89,13 +89,31 @@ class DemoIncidentTargets implements IncidentTargetSource {
     ),
   ];
 
+  /// The client's orders first, then the demo history; one entry per order.
+  /// Known demo orders keep their demo lot.
+  List<IncidentTarget> _merged() {
+    final known = {for (final target in _known) target.orderCode: target};
+    final seen = <String>{};
+    return [
+      for (final target in [...extraOrders(), ..._known])
+        if (seen.add(target.orderCode))
+          known.containsKey(target.orderCode)
+              ? IncidentTarget(
+                  orderCode: target.orderCode,
+                  batchId: known[target.orderCode]!.batchId,
+                  productSummary:
+                      target.productSummary ?? known[target.orderCode]!.productSummary,
+                )
+              : target,
+    ];
+  }
+
   @override
-  Future<List<IncidentTarget>> reportableTargets() async =>
-      [...extraOrders(), ..._known];
+  Future<List<IncidentTarget>> reportableTargets() async => _merged();
 
   @override
   IncidentTarget targetForOrder(String orderCode) {
-    for (final target in [...extraOrders(), ..._known]) {
+    for (final target in _merged()) {
       if (target.orderCode == orderCode) return target;
     }
     return IncidentTarget(orderCode: orderCode, batchId: demoBatchFor(orderCode));

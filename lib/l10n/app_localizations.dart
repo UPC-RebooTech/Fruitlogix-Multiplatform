@@ -656,6 +656,60 @@ abstract class AppLocalizations {
   /// **'Rejected'**
   String get orderStatusRejected;
 
+  /// No description provided for @orderStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get orderStatusCancelled;
+
+  /// No description provided for @ordersLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load your orders'**
+  String get ordersLoadError;
+
+  /// No description provided for @orderSendError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t place the order. Your cart was kept; try again.'**
+  String get orderSendError;
+
+  /// No description provided for @orderPlaced.
+  ///
+  /// In en, this message translates to:
+  /// **'Order placed'**
+  String get orderPlaced;
+
+  /// No description provided for @orderSending.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending order…'**
+  String get orderSending;
+
+  /// No description provided for @orderNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes for the distributor'**
+  String get orderNotes;
+
+  /// No description provided for @orderNotesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes for the distributor (optional)'**
+  String get orderNotesLabel;
+
+  /// No description provided for @orderNotesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Unloading hours, ripeness, packaging…'**
+  String get orderNotesHint;
+
+  /// No description provided for @dashboardNoActiveOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no active orders.'**
+  String get dashboardNoActiveOrders;
+
   /// No description provided for @ordersTitle.
   ///
   /// In en, this message translates to:
@@ -665,7 +719,7 @@ abstract class AppLocalizations {
   /// No description provided for @ordersSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Orders placed in this session (demo)'**
+  /// **'Your orders and their status'**
   String get ordersSubtitle;
 
   /// No description provided for @ordersEmptyTitle.

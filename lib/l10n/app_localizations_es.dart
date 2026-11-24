@@ -315,10 +315,39 @@ class AppLocalizationsEs extends AppLocalizations {
   String get orderStatusRejected => 'Rechazado';
 
   @override
+  String get orderStatusCancelled => 'Cancelado';
+
+  @override
+  String get ordersLoadError => 'No pudimos cargar tus pedidos';
+
+  @override
+  String get orderSendError =>
+      'No pudimos registrar el pedido. Tu carrito sigue igual; inténtalo de nuevo.';
+
+  @override
+  String get orderPlaced => 'Pedido registrado';
+
+  @override
+  String get orderSending => 'Enviando pedido…';
+
+  @override
+  String get orderNotes => 'Notas para el distribuidor';
+
+  @override
+  String get orderNotesLabel => 'Notas para el distribuidor (opcional)';
+
+  @override
+  String get orderNotesHint =>
+      'Horario de descarga, punto de maduración, empaque…';
+
+  @override
+  String get dashboardNoActiveOrders => 'No tienes pedidos activos.';
+
+  @override
   String get ordersTitle => 'Mis pedidos';
 
   @override
-  String get ordersSubtitle => 'Pedidos creados en esta sesión (demo)';
+  String get ordersSubtitle => 'Tus pedidos y su estado';
 
   @override
   String get ordersEmptyTitle => 'Aún no tienes pedidos';

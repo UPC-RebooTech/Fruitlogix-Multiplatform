@@ -312,10 +312,38 @@ class AppLocalizationsEn extends AppLocalizations {
   String get orderStatusRejected => 'Rejected';
 
   @override
+  String get orderStatusCancelled => 'Cancelled';
+
+  @override
+  String get ordersLoadError => 'We couldn\'t load your orders';
+
+  @override
+  String get orderSendError =>
+      'We couldn\'t place the order. Your cart was kept; try again.';
+
+  @override
+  String get orderPlaced => 'Order placed';
+
+  @override
+  String get orderSending => 'Sending order…';
+
+  @override
+  String get orderNotes => 'Notes for the distributor';
+
+  @override
+  String get orderNotesLabel => 'Notes for the distributor (optional)';
+
+  @override
+  String get orderNotesHint => 'Unloading hours, ripeness, packaging…';
+
+  @override
+  String get dashboardNoActiveOrders => 'You have no active orders.';
+
+  @override
   String get ordersTitle => 'My orders';
 
   @override
-  String get ordersSubtitle => 'Orders placed in this session (demo)';
+  String get ordersSubtitle => 'Your orders and their status';
 
   @override
   String get ordersEmptyTitle => 'No orders yet';

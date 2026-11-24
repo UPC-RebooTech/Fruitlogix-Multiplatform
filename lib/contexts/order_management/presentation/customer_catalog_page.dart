@@ -5,9 +5,11 @@ import '../../../shared/ui/components/components.dart';
 import '../../../shared/ui/formatters/money_format.dart';
 import '../../../shared/ui/theme/theme.dart';
 import '../application/cart_controller.dart';
+import '../application/orders_controller.dart';
+import '../domain/catalog_repository.dart';
+import '../domain/commercial_order.dart';
 import '../domain/fruit_product.dart';
-import '../infrastructure/demo_catalog_repository.dart';
-import '../infrastructure/in_memory_order_repository.dart';
+import 'order_status_view.dart';
 
 /// Category filters. [key] matches `FruitProduct.category` (domain data);
 /// the label comes from the ARB files.
@@ -23,15 +25,25 @@ enum _CatalogFilter {
   bool matches(FruitProduct product) => key == null || product.category == key;
 
   String label(AppLocalizations l10n) => switch (this) {
-        _CatalogFilter.all => l10n.catalogFilterAll,
-        _CatalogFilter.fruits => l10n.catalogFilterFruits,
-        _CatalogFilter.vegetables => l10n.catalogFilterVegetables,
-      };
+    _CatalogFilter.all => l10n.catalogFilterAll,
+    _CatalogFilter.fruits => l10n.catalogFilterFruits,
+    _CatalogFilter.vegetables => l10n.catalogFilterVegetables,
+  };
 }
 
 class CustomerCatalogPage extends StatefulWidget {
-  const CustomerCatalogPage({required this.onOrderCreated, super.key});
+  const CustomerCatalogPage({
+    required this.catalog,
+    required this.orders,
+    required this.onOrderCreated,
+    super.key,
+  });
 
+  /// Demo products (the platform API has no products endpoint yet).
+  final CatalogRepository catalog;
+
+  /// Places the order in the platform API (demo without session).
+  final OrdersController orders;
   final VoidCallback onOrderCreated;
 
   @override
@@ -45,7 +57,7 @@ class _CustomerCatalogPageState extends State<CustomerCatalogPage> {
   @override
   void initState() {
     super.initState();
-    _cart = CartController(const DemoCatalogRepository().getProducts());
+    _cart = CartController(widget.catalog.getProducts());
   }
 
   @override
@@ -58,19 +70,35 @@ class _CustomerCatalogPageState extends State<CustomerCatalogPage> {
     final result = await showModalBottomSheet<_OrderReviewResult>(
       context: context,
       isScrollControlled: true,
-      builder: (_) => _OrderReviewSheet(
-        quantity: _cart.itemCount,
-        total: _cart.total,
-      ),
+      builder: (_) =>
+          _OrderReviewSheet(quantity: _cart.itemCount, total: _cart.total),
     );
     if (!mounted || result == null) return;
 
-    InMemoryOrderRepository.instance.placeOrder(
-      lines: _cart.lines,
-      deliveryAddress: result.address,
-      deliveryDate: result.deliveryDate,
-    );
-
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await widget.orders.placeOrder(
+        NewOrder(
+          lines: _cart.lines,
+          deliveryAddress: result.address,
+          deliveryDate: result.deliveryDate,
+          notes: result.notes,
+        ),
+      );
+    } catch (error) {
+      // The cart is kept so the client can retry.
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            orderErrorMessage(error, l10n, fallback: l10n.orderSendError),
+          ),
+        ),
+      );
+      return;
+    }
+    if (!mounted) return;
+    messenger.showSnackBar(SnackBar(content: Text(l10n.orderPlaced)));
     _cart.clear();
     widget.onOrderCreated();
   }
@@ -78,8 +106,8 @@ class _CustomerCatalogPageState extends State<CustomerCatalogPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return AnimatedBuilder(
-      animation: _cart,
+    return ListenableBuilder(
+      listenable: Listenable.merge([_cart, widget.orders]),
       builder: (context, _) {
         final visible = _cart.products.where(_filter.matches).toList();
         return Column(
@@ -135,6 +163,7 @@ class _CustomerCatalogPageState extends State<CustomerCatalogPage> {
                   _cart.itemCount,
                   formatSoles(_cart.total),
                 ),
+                sending: widget.orders.submitting,
                 onReview: _reviewOrder,
               ),
           ],
@@ -177,13 +206,15 @@ class _ProductCard extends StatelessWidget {
                   children: [
                     Text(
                       product.name,
-                      style: textTheme.titleMedium
-                          ?.copyWith(color: context.cosechaContent),
+                      style: textTheme.titleMedium?.copyWith(
+                        color: context.cosechaContent,
+                      ),
                     ),
                     Text(
                       product.description,
-                      style: textTheme.bodyMedium
-                          ?.copyWith(color: context.cosechaContentSecondary),
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: context.cosechaContentSecondary,
+                      ),
                     ),
                   ],
                 ),
@@ -206,8 +237,9 @@ class _ProductCard extends StatelessWidget {
                     ),
                     Text(
                       l10n.productStock(product.stock, product.unit),
-                      style: data.dataMonoSmall
-                          .copyWith(color: context.cosechaContentSecondary),
+                      style: data.dataMonoSmall.copyWith(
+                        color: context.cosechaContentSecondary,
+                      ),
                     ),
                   ],
                 ),
@@ -270,8 +302,7 @@ class _QuantityStepper extends StatelessWidget {
             child: Text(
               '$quantity',
               textAlign: TextAlign.center,
-              style: CosechaDataText.of(context)
-                  .dataMono
+              style: CosechaDataText.of(context).dataMono
                   .copyWith(color: context.cosechaContent),
             ),
           ),
@@ -288,9 +319,16 @@ class _QuantityStepper extends StatelessWidget {
 
 /// Sticky summary of the current order with the screen's primary action.
 class _CartPanel extends StatelessWidget {
-  const _CartPanel({required this.summary, required this.onReview});
+  const _CartPanel({
+    required this.summary,
+    required this.sending,
+    required this.onReview,
+  });
 
   final String summary;
+
+  /// The order is being sent: the action is disabled and a bar shows it.
+  final bool sending;
   final VoidCallback onReview;
 
   @override
@@ -315,20 +353,28 @@ class _CartPanel extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    CosechaOverline(l10n.cartOverline),
+                    CosechaOverline(
+                      sending ? l10n.orderSending : l10n.cartOverline,
+                    ),
                     Text(
                       summary,
-                      style: CosechaDataText.of(context)
-                          .dataMono
+                      style: CosechaDataText.of(context).dataMono
                           .copyWith(color: scheme.onSurface),
                     ),
+                    if (sending) ...[
+                      const SizedBox(height: CosechaSpace.xxs),
+                      CosechaProgressBar(
+                        value: null,
+                        semanticLabel: l10n.orderSending,
+                      ),
+                    ],
                   ],
                 ),
               ),
               const SizedBox(width: CosechaSpace.sm),
               CosechaPrimaryButton(
                 label: l10n.reviewOrder,
-                onPressed: onReview,
+                onPressed: sending ? null : onReview,
                 expand: false,
               ),
             ],
@@ -339,7 +385,11 @@ class _CartPanel extends StatelessWidget {
   }
 }
 
-typedef _OrderReviewResult = ({String address, DateTime deliveryDate});
+typedef _OrderReviewResult = ({
+  String address,
+  DateTime deliveryDate,
+  String? notes,
+});
 
 /// Bottom sheet to confirm the order: address and delivery date, validated
 /// when tapping Save (Cosecha rule 11).
@@ -356,19 +406,23 @@ class _OrderReviewSheet extends StatefulWidget {
 class _OrderReviewSheetState extends State<_OrderReviewSheet> {
   final _formKey = GlobalKey<FormState>();
   final _address = TextEditingController();
+  final _notes = TextEditingController();
   DateTime? _deliveryDate;
 
   @override
   void dispose() {
     _address.dispose();
+    _notes.dispose();
     super.dispose();
   }
 
   void _save() {
     if (!_formKey.currentState!.validate()) return;
+    final notes = _notes.text.trim();
     Navigator.of(context).pop<_OrderReviewResult>((
       address: _address.text.trim(),
       deliveryDate: _deliveryDate!,
+      notes: notes.isEmpty ? null : notes,
     ));
   }
 
@@ -381,9 +435,7 @@ class _OrderReviewSheetState extends State<_OrderReviewSheet> {
     final today = DateTime(now.year, now.month, now.day);
 
     return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.viewInsetsOf(context).bottom,
-      ),
+      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(
           CosechaSpace.md,
@@ -418,8 +470,7 @@ class _OrderReviewSheetState extends State<_OrderReviewSheet> {
                         widget.quantity,
                         formatSoles(widget.total),
                       ),
-                      style: CosechaDataText.of(context)
-                          .dataMono
+                      style: CosechaDataText.of(context).dataMono
                           .copyWith(color: scheme.onSurface),
                     ),
                   ],
@@ -445,6 +496,14 @@ class _OrderReviewSheetState extends State<_OrderReviewSheet> {
                 onChanged: (date) => _deliveryDate = date,
                 validator: (date) =>
                     date == null ? l10n.deliveryDateRequired : null,
+              ),
+              const SizedBox(height: CosechaSpace.sm),
+              CosechaTextField(
+                label: l10n.orderNotesLabel,
+                hint: l10n.orderNotesHint,
+                controller: _notes,
+                maxLines: 2,
+                textInputAction: TextInputAction.newline,
               ),
               const SizedBox(height: CosechaSpace.md),
               CosechaPrimaryButton(label: l10n.saveOrder, onPressed: _save),

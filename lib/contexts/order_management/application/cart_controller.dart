@@ -16,10 +16,10 @@ class CartController extends ChangeNotifier {
 
   List<OrderLine> get lines => products
       .where((product) => quantityFor(product.id) > 0)
-      .map((product) => OrderLine(
-            product: product,
-            quantity: quantityFor(product.id),
-          ))
+      .map(
+        (product) =>
+            OrderLine(product: product, quantity: quantityFor(product.id)),
+      )
       .toList(growable: false);
 
   double get total => lines.fold<double>(0, (sum, line) => sum + line.subtotal);

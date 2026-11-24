@@ -1,12 +1,10 @@
 import 'commercial_order.dart';
 
-/// Contract for registering and consulting commercial orders.
+/// Contract for registering and consulting the signed-in client's orders.
 abstract interface class OrderRepository {
-  List<CommercialOrder> get orders;
+  /// The client's orders.
+  Future<List<CommercialOrder>> fetchMyOrders();
 
-  CommercialOrder placeOrder({
-    required List<OrderLine> lines,
-    required String deliveryAddress,
-    required DateTime deliveryDate,
-  });
+  /// Registers [order]. Throws [ArgumentError] when it is not valid.
+  Future<CommercialOrder> placeOrder(NewOrder order);
 }

@@ -12,7 +12,7 @@ import '../contexts/payment_management/presentation/payment_detail_page.dart';
 import '../contexts/payment_management/presentation/payments_page.dart';
 import '../contexts/payment_management/presentation/pro_badge.dart';
 import '../contexts/payment_management/presentation/pro_membership_page.dart';
-import '../contexts/order_management/infrastructure/in_memory_order_repository.dart';
+import '../contexts/order_management/order_management_module.dart';
 import '../contexts/quality_management/domain/incident.dart';
 import '../contexts/quality_management/infrastructure/demo_quality_repositories.dart';
 import '../contexts/quality_management/presentation/incident_detail_page.dart';
@@ -57,6 +57,7 @@ class CustomerShell extends StatefulWidget {
     this.session,
     this.paymentModule,
     this.qualityModule,
+    this.orderModule,
     super.key,
     this.profileRepository,
   });
@@ -73,6 +74,9 @@ class CustomerShell extends StatefulWidget {
 
   /// Overrides the Quality Management wiring (tests).
   final QualityManagementModule? qualityModule;
+
+  /// Overrides the Order Management wiring (tests).
+  final OrderManagementModule? orderModule;
 
   @override
   State<CustomerShell> createState() => _CustomerShellState();
@@ -117,15 +121,22 @@ class _CustomerShellState extends State<CustomerShell>
           ? QualityManagementModule.remote(widget.session!, targets: _incidentTargets)
           : QualityManagementModule.demo(targets: _incidentTargets));
 
-  /// Orders the client can report about: the ones created in this session
-  /// (catalog) plus the demo history.
-  static final DemoIncidentTargets _incidentTargets = DemoIncidentTargets(
+  /// Order Management: the signed-in client's orders from the platform API
+  /// (demo without session).
+  late final OrderManagementModule _orders = widget.orderModule ??
+      (widget.session == null
+          ? OrderManagementModule.demo()
+          : OrderManagementModule.remote(widget.session!));
+
+  /// Orders the client can report about: their orders (newest first). Lots
+  /// are demo values until the API links orders to harvest lots.
+  late final DemoIncidentTargets _incidentTargets = DemoIncidentTargets(
     extraOrders: () => [
-      for (final order in InMemoryOrderRepository.instance.orders)
+      for (final order in _orders.orders.orders)
         IncidentTarget(
-          orderCode: order.id,
-          batchId: DemoIncidentTargets.demoBatchFor(order.id),
-          productSummary: order.lines.map((line) => line.product.name).join(' · '),
+          orderCode: order.code,
+          batchId: DemoIncidentTargets.demoBatchFor(order.code),
+          productSummary: order.productSummary,
         ),
     ],
   );
@@ -153,6 +164,7 @@ class _CustomerShellState extends State<CustomerShell>
       _paymentsStarted = true;
       // Not awaited: the dashboard renders at once (US36).
       _payments.start();
+      _orders.start();
       _quality.start();
     }
   }
@@ -183,6 +195,7 @@ class _CustomerShellState extends State<CustomerShell>
     WidgetsBinding.instance.removeObserver(this);
     _payments.membership.removeListener(_onMembershipChanged);
     if (widget.paymentModule == null) _payments.dispose();
+    if (widget.orderModule == null) _orders.dispose();
     if (widget.qualityModule == null) _quality.dispose();
     super.dispose();
   }
@@ -340,9 +353,12 @@ class _CustomerShellState extends State<CustomerShell>
 
   Widget _tabBody(int index) => switch (index) {
         _catalogTab => CustomerCatalogPage(
+            catalog: _orders.catalog,
+            orders: _orders.orders,
             onOrderCreated: () => _navigateTo(_ordersTab),
           ),
         _ordersTab => CustomerOrdersPage(
+            orders: _orders.orders,
             onNewOrder: () => _navigateTo(_catalogTab),
             onReportIncident: (orderCode) =>
                 _openIncidentReport(orderCode: orderCode),
@@ -359,6 +375,8 @@ class _CustomerShellState extends State<CustomerShell>
             onPayments: () => _openSection(MoreSection.payments),
             balance: _payments.overview,
             reminders: _payments.reminders,
+            orders: _orders.orders,
+            onOpenOrders: () => _navigateTo(_ordersTab),
           ),
       };
 
