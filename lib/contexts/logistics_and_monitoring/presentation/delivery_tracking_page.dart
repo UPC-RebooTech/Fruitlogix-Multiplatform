@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/ui/components/components.dart';
 import '../../../shared/ui/theme/theme.dart';
@@ -7,6 +6,7 @@ import '../domain/shipment.dart';
 import '../infrastructure/in_memory_shipment_repository.dart';
 import 'cold_chain_certificate_sheet.dart';
 import 'confirm_reception_page.dart';
+import 'delay_alert_banner.dart';
 import 'lot_traceability_card.dart';
 
 /// Tracking of the active shipment: overview (dark highlight), cold chain
@@ -148,10 +148,10 @@ class _ShipmentOverview extends StatelessWidget {
               CosechaStatusTag(
                 label: shipment.isReceived
                     ? l10n.trackingStatusReceived
-                    : l10n.orderStatusInTransit,
+                    : (shipment.isDelayed ? 'Delayed' : l10n.orderStatusInTransit),
                 status: shipment.isReceived
                     ? CosechaStatus.success
-                    : CosechaStatus.info,
+                    : (shipment.isDelayed ? CosechaStatus.warning : CosechaStatus.info),
               ),
             ],
           ),
@@ -178,7 +178,9 @@ class _ShipmentOverview extends StatelessWidget {
           CosechaInfoRow(
             icon: Icons.schedule,
             label: l10n.trackingEta,
-            value: shipment.estimatedArrival,
+            value: shipment.isDelayed
+                ? '${shipment.delay!.updatedEta} (Delayed)'
+                : shipment.estimatedArrival,
           ),
           const SizedBox(height: CosechaSpace.xs),
           CosechaInfoRow(
@@ -186,6 +188,10 @@ class _ShipmentOverview extends StatelessWidget {
             label: l10n.trackingTransport,
             value: shipment.transportStatus,
           ),
+          if (shipment.delay != null) ...[
+            const SizedBox(height: CosechaSpace.sm),
+            DelayAlertBanner(delay: shipment.delay!),
+          ],
         ],
       ),
     );

@@ -6,8 +6,18 @@ class InMemoryShipmentRepository {
       trackingNumber: 'TRK-2026-001',
       orderId: 'ORD-1042',
       shipmentProgress: 0.75,
-      estimatedArrival: 'Today, 03:45 PM',
+      estimatedArrival: 'Today, 04:30 PM',
       transportStatus: 'In Transit • Reefer Truck (Plate ABC-123)',
+      //Comentado para pruebas
+      /*
+      delay: const ShipmentDelayInfo(
+        delayMinutes: 45,
+        reason: 'Control Fitosanitario SENASA en Garita de Peaje',
+        originalEta: '03:45 PM',
+        updatedEta: '04:30 PM',
+        reportedAt: '02:30 PM',
+      ),
+      */
       telemetry: const TelemetryLog(
         temperatureC: 4.2,
         humidityPercent: 86.0,
@@ -60,12 +70,12 @@ class InMemoryShipmentRepository {
           isCompleted: true,
         ),
         TrackingEventItem(
-          time: '02:15 PM',
-          description: 'Approaching Destination Warehouse Lima',
+          time: '02:30 PM',
+          description: 'SENASA Inspection Point (Delayed +45 min)',
           isCompleted: true,
         ),
         TrackingEventItem(
-          time: '03:45 PM',
+          time: '04:30 PM',
           description: 'Final Delivery & Dock Inspection',
           isCompleted: false,
         ),

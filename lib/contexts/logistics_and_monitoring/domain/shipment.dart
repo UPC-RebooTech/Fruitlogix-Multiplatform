@@ -22,7 +22,7 @@ class TrackingEventItem {
   final bool isCompleted;
 }
 
-/// Certificado de auditoría térmica (US71)
+/// Certificado de auditoría térmica
 class ColdChainCertificate {
   const ColdChainCertificate({
     required this.certificateId,
@@ -47,7 +47,8 @@ class ColdChainCertificate {
   final String issuedAt;
 }
 
-/// Trazabilidad agrícola desde la cosecha en fundo hasta la entrega (US72)
+
+/// Trazabilidad agrícola desde la cosecha en fundo hasta la entrega
 class TraceableLotItem {
   const TraceableLotItem({
     required this.lotCode,
@@ -72,6 +73,23 @@ class TraceableLotItem {
   final String qualityGrade;
 }
 
+/// Información de contingencia o retraso en ruta
+class ShipmentDelayInfo {
+  const ShipmentDelayInfo({
+    required this.delayMinutes,
+    required this.reason,
+    required this.originalEta,
+    required this.updatedEta,
+    required this.reportedAt,
+  });
+
+  final int delayMinutes;
+  final String reason;
+  final String originalEta;
+  final String updatedEta;
+  final String reportedAt;
+}
+
 class DeliveryShipment {
   DeliveryShipment({
     required this.trackingNumber,
@@ -83,6 +101,7 @@ class DeliveryShipment {
     required this.events,
     required this.lots,
     this.certificate,
+    this.delay,
     this.isReceived = false,
     this.inspectionNotes,
     this.hasIncidents = false,
@@ -97,11 +116,13 @@ class DeliveryShipment {
   final List<TrackingEventItem> events;
   final List<TraceableLotItem> lots;
   final ColdChainCertificate? certificate;
+  final ShipmentDelayInfo? delay;
   bool isReceived;
   String? inspectionNotes;
   bool hasIncidents;
 
-  /// Mantiene compatibilidad con vistas existentes como ConfirmReceptionPage
   String get itemsSummary =>
       lots.map((l) => '${l.productName} ${l.variety} (${l.quantityKg} kg)').join(' • ');
+
+  bool get isDelayed => delay != null;
 }
