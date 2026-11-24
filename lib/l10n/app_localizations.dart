@@ -2161,6 +2161,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'We couldn\'t send the report. Try again.'**
   String get qmSendError;
+
+  /// No description provided for @arrivalsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrivals at your warehouse'**
+  String get arrivalsSection;
+
+  /// No description provided for @arrivalsZoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse zone'**
+  String get arrivalsZoneTitle;
+
+  /// No description provided for @arrivalsZoneActive.
+  ///
+  /// In en, this message translates to:
+  /// **'{radius} km around your warehouse · alerts on'**
+  String arrivalsZoneActive(String radius);
+
+  /// No description provided for @arrivalsZoneNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set · set it to get an alert when a truck arrives'**
+  String get arrivalsZoneNotSet;
+
+  /// No description provided for @arrivalsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No arrivals yet'**
+  String get arrivalsEmptyTitle;
+
+  /// No description provided for @arrivalsEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll notify you when a truck enters your warehouse zone.'**
+  String get arrivalsEmptyMessage;
+
+  /// No description provided for @arrivalsDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'{distance} km away'**
+  String arrivalsDistance(String distance);
+
+  /// No description provided for @arrivalsSheetMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Do this from your warehouse: your current location becomes the center of the zone.'**
+  String get arrivalsSheetMessage;
+
+  /// No description provided for @arrivalsRadiusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Alert radius'**
+  String get arrivalsRadiusLabel;
+
+  /// No description provided for @arrivalsRadiusValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{radius} km'**
+  String arrivalsRadiusValue(String radius);
+
+  /// No description provided for @arrivalsUseLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Use my current location'**
+  String get arrivalsUseLocation;
+
+  /// No description provided for @arrivalsUpdateLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Move to my current location'**
+  String get arrivalsUpdateLocation;
+
+  /// No description provided for @arrivalsSaveRadius.
+  ///
+  /// In en, this message translates to:
+  /// **'Save radius'**
+  String get arrivalsSaveRadius;
+
+  /// No description provided for @arrivalsRemoveZone.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove zone'**
+  String get arrivalsRemoveZone;
+
+  /// No description provided for @arrivalsZoneSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse zone saved'**
+  String get arrivalsZoneSaved;
+
+  /// No description provided for @arrivalsZoneRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Zone removed. Your arrivals are kept.'**
+  String get arrivalsZoneRemoved;
+
+  /// No description provided for @arrivalsLocationDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on your phone\'s location and try again.'**
+  String get arrivalsLocationDisabled;
+
+  /// No description provided for @arrivalsLocationDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'FruitLogix needs your location to set the zone.'**
+  String get arrivalsLocationDenied;
+
+  /// No description provided for @arrivalsLocationDeniedForever.
+  ///
+  /// In en, this message translates to:
+  /// **'Location is blocked for FruitLogix. Allow it in your phone settings.'**
+  String get arrivalsLocationDeniedForever;
+
+  /// No description provided for @arrivalsLocationUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t get your location. Try again in a moment.'**
+  String get arrivalsLocationUnavailable;
+
+  /// No description provided for @arrivalNotificationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Truck arriving · {order}'**
+  String arrivalNotificationTitle(String order);
+
+  /// No description provided for @arrivalNotificationBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{driver} entered your warehouse zone ({distance} km).'**
+  String arrivalNotificationBody(String driver, String distance);
 }
 
 class _AppLocalizationsDelegate

@@ -8,15 +8,20 @@ import '../application/shipments_controller.dart';
 import '../domain/shipment.dart';
 import '../infrastructure/fruitlogix_logistics_api.dart';
 import '../infrastructure/phone_dialer.dart';
+import '../application/arrivals_controller.dart';
 import 'confirm_reception_page.dart';
+import 'warehouse_arrivals_section.dart';
 
 /// Tracking of the client's deliveries: overview (dark highlight), driver
 /// and vehicle with a call button (US38, US77), cold chain readings
-/// (Glaciar, reserved for cold chain) and route checkpoints.
+/// (Glaciar, reserved for cold chain), route checkpoints and the arrivals
+/// at the client's warehouse (US65).
 class DeliveryTrackingPage extends StatefulWidget {
   const DeliveryTrackingPage({
     required this.controller,
     required this.dialer,
+    this.arrivals,
+    this.onRefresh,
     this.onReportIncident,
     this.onReceptionConfirmed,
     super.key,
@@ -24,6 +29,13 @@ class DeliveryTrackingPage extends StatefulWidget {
 
   final ShipmentsController controller;
   final PhoneDialer dialer;
+
+  /// Warehouse zone and arrivals list; hidden when null.
+  final ArrivalsController? arrivals;
+
+  /// Pull to refresh (e.g. deliveries plus the arrivals check); defaults to
+  /// reloading the deliveries.
+  final Future<void> Function()? onRefresh;
 
   /// The platform registered a reception (e.g. to refresh the orders).
   final VoidCallback? onReceptionConfirmed;
@@ -83,7 +95,7 @@ class _DeliveryTrackingPageState extends State<DeliveryTrackingPage> {
               );
 
         return RefreshIndicator(
-          onRefresh: controller.load,
+          onRefresh: widget.onRefresh ?? controller.load,
           child: ListView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.fromLTRB(
@@ -220,6 +232,13 @@ class _DeliveryTrackingPageState extends State<DeliveryTrackingPage> {
                     icon: Icons.fact_check_outlined,
                     onPressed: () => _confirmReception(selected),
                   ),
+              ],
+              if (widget.arrivals case final arrivals? when !loading) ...[
+                const SizedBox(height: CosechaSpace.lg),
+                WarehouseArrivalsSection(
+                  controller: arrivals,
+                  onZoneChanged: () => arrivals.check(controller.shipments),
+                ),
               ],
             ],
           ),

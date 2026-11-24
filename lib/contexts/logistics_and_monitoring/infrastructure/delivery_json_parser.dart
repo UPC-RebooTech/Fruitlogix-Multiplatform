@@ -1,3 +1,4 @@
+import '../domain/geofence.dart';
 import '../domain/shipment.dart';
 
 /// Reads `DeliveryResource` and `TrackingLogResource` from the platform API.
@@ -62,10 +63,14 @@ abstract final class DeliveryJsonParser {
               (latest.recordedAt != null && !at.isAfter(latest.recordedAt!)))) {
         continue;
       }
+      final lat = _double(json['latitude']);
+      final lng = _double(json['longitude']);
+      final position = lat == null || lng == null ? null : GeoPoint(lat, lng);
       latest = TelemetryLog(
         temperatureC: temperature,
         humidityPercent: humidity,
         recordedAt: at,
+        position: position != null && position.isValid ? position : null,
       );
     }
     return latest;

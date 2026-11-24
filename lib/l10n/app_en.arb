@@ -506,5 +506,45 @@
   "qmPhotoError": "We couldn't get the photo",
   "qmSend": "Send report",
   "qmSent": "Incident reported",
-  "qmSendError": "We couldn't send the report. Try again."
+  "qmSendError": "We couldn't send the report. Try again.",
+  "arrivalsSection": "Arrivals at your warehouse",
+  "arrivalsZoneTitle": "Warehouse zone",
+  "arrivalsZoneActive": "{radius} km around your warehouse · alerts on",
+  "@arrivalsZoneActive": {
+    "placeholders": { "radius": { "type": "String", "example": "3" } }
+  },
+  "arrivalsZoneNotSet": "Not set · set it to get an alert when a truck arrives",
+  "arrivalsEmptyTitle": "No arrivals yet",
+  "arrivalsEmptyMessage": "We'll notify you when a truck enters your warehouse zone.",
+  "arrivalsDistance": "{distance} km away",
+  "@arrivalsDistance": {
+    "placeholders": { "distance": { "type": "String", "example": "1.4" } }
+  },
+  "arrivalsSheetMessage": "Do this from your warehouse: your current location becomes the center of the zone.",
+  "arrivalsRadiusLabel": "Alert radius",
+  "arrivalsRadiusValue": "{radius} km",
+  "@arrivalsRadiusValue": {
+    "placeholders": { "radius": { "type": "String", "example": "3" } }
+  },
+  "arrivalsUseLocation": "Use my current location",
+  "arrivalsUpdateLocation": "Move to my current location",
+  "arrivalsSaveRadius": "Save radius",
+  "arrivalsRemoveZone": "Remove zone",
+  "arrivalsZoneSaved": "Warehouse zone saved",
+  "arrivalsZoneRemoved": "Zone removed. Your arrivals are kept.",
+  "arrivalsLocationDisabled": "Turn on your phone's location and try again.",
+  "arrivalsLocationDenied": "FruitLogix needs your location to set the zone.",
+  "arrivalsLocationDeniedForever": "Location is blocked for FruitLogix. Allow it in your phone settings.",
+  "arrivalsLocationUnavailable": "We couldn't get your location. Try again in a moment.",
+  "arrivalNotificationTitle": "Truck arriving · {order}",
+  "@arrivalNotificationTitle": {
+    "placeholders": { "order": { "type": "String", "example": "ORD-1042" } }
+  },
+  "arrivalNotificationBody": "{driver} entered your warehouse zone ({distance} km).",
+  "@arrivalNotificationBody": {
+    "placeholders": {
+      "driver": { "type": "String", "example": "Luis Ramírez" },
+      "distance": { "type": "String", "example": "1.4" }
+    }
+  }
 }

@@ -1191,4 +1191,87 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get qmSendError => 'No pudimos enviar el reporte. Inténtalo de nuevo.';
+
+  @override
+  String get arrivalsSection => 'Llegadas a tu almacén';
+
+  @override
+  String get arrivalsZoneTitle => 'Zona de tu almacén';
+
+  @override
+  String arrivalsZoneActive(String radius) {
+    return '$radius km alrededor de tu almacén · alertas activas';
+  }
+
+  @override
+  String get arrivalsZoneNotSet =>
+      'Sin configurar · defínela para recibir una alerta cuando llegue un camión';
+
+  @override
+  String get arrivalsEmptyTitle => 'Aún no hay llegadas';
+
+  @override
+  String get arrivalsEmptyMessage =>
+      'Te avisaremos cuando un camión entre a la zona de tu almacén.';
+
+  @override
+  String arrivalsDistance(String distance) {
+    return 'a $distance km';
+  }
+
+  @override
+  String get arrivalsSheetMessage =>
+      'Hazlo desde tu almacén: tu ubicación actual será el centro de la zona.';
+
+  @override
+  String get arrivalsRadiusLabel => 'Radio de alerta';
+
+  @override
+  String arrivalsRadiusValue(String radius) {
+    return '$radius km';
+  }
+
+  @override
+  String get arrivalsUseLocation => 'Usar mi ubicación actual';
+
+  @override
+  String get arrivalsUpdateLocation => 'Mover a mi ubicación actual';
+
+  @override
+  String get arrivalsSaveRadius => 'Guardar radio';
+
+  @override
+  String get arrivalsRemoveZone => 'Quitar zona';
+
+  @override
+  String get arrivalsZoneSaved => 'Zona del almacén guardada';
+
+  @override
+  String get arrivalsZoneRemoved => 'Zona quitada. Tus llegadas se conservan.';
+
+  @override
+  String get arrivalsLocationDisabled =>
+      'Activa la ubicación de tu teléfono e inténtalo de nuevo.';
+
+  @override
+  String get arrivalsLocationDenied =>
+      'FruitLogix necesita tu ubicación para definir la zona.';
+
+  @override
+  String get arrivalsLocationDeniedForever =>
+      'La ubicación está bloqueada para FruitLogix. Actívala en los ajustes del teléfono.';
+
+  @override
+  String get arrivalsLocationUnavailable =>
+      'No pudimos obtener tu ubicación. Inténtalo de nuevo en un momento.';
+
+  @override
+  String arrivalNotificationTitle(String order) {
+    return 'Llegada de camión · $order';
+  }
+
+  @override
+  String arrivalNotificationBody(String driver, String distance) {
+    return '$driver entró a la zona de tu almacén ($distance km).';
+  }
 }

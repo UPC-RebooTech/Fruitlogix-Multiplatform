@@ -1186,4 +1186,87 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get qmSendError => 'We couldn\'t send the report. Try again.';
+
+  @override
+  String get arrivalsSection => 'Arrivals at your warehouse';
+
+  @override
+  String get arrivalsZoneTitle => 'Warehouse zone';
+
+  @override
+  String arrivalsZoneActive(String radius) {
+    return '$radius km around your warehouse · alerts on';
+  }
+
+  @override
+  String get arrivalsZoneNotSet =>
+      'Not set · set it to get an alert when a truck arrives';
+
+  @override
+  String get arrivalsEmptyTitle => 'No arrivals yet';
+
+  @override
+  String get arrivalsEmptyMessage =>
+      'We\'ll notify you when a truck enters your warehouse zone.';
+
+  @override
+  String arrivalsDistance(String distance) {
+    return '$distance km away';
+  }
+
+  @override
+  String get arrivalsSheetMessage =>
+      'Do this from your warehouse: your current location becomes the center of the zone.';
+
+  @override
+  String get arrivalsRadiusLabel => 'Alert radius';
+
+  @override
+  String arrivalsRadiusValue(String radius) {
+    return '$radius km';
+  }
+
+  @override
+  String get arrivalsUseLocation => 'Use my current location';
+
+  @override
+  String get arrivalsUpdateLocation => 'Move to my current location';
+
+  @override
+  String get arrivalsSaveRadius => 'Save radius';
+
+  @override
+  String get arrivalsRemoveZone => 'Remove zone';
+
+  @override
+  String get arrivalsZoneSaved => 'Warehouse zone saved';
+
+  @override
+  String get arrivalsZoneRemoved => 'Zone removed. Your arrivals are kept.';
+
+  @override
+  String get arrivalsLocationDisabled =>
+      'Turn on your phone\'s location and try again.';
+
+  @override
+  String get arrivalsLocationDenied =>
+      'FruitLogix needs your location to set the zone.';
+
+  @override
+  String get arrivalsLocationDeniedForever =>
+      'Location is blocked for FruitLogix. Allow it in your phone settings.';
+
+  @override
+  String get arrivalsLocationUnavailable =>
+      'We couldn\'t get your location. Try again in a moment.';
+
+  @override
+  String arrivalNotificationTitle(String order) {
+    return 'Truck arriving · $order';
+  }
+
+  @override
+  String arrivalNotificationBody(String driver, String distance) {
+    return '$driver entered your warehouse zone ($distance km).';
+  }
 }

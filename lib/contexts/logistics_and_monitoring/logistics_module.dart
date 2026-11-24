@@ -1,14 +1,19 @@
 import '../iam/domain/auth_session.dart';
+import 'application/arrivals_controller.dart';
 import 'application/shipments_controller.dart';
+import 'domain/geofence.dart';
 import 'domain/lot_timeline.dart';
 import 'domain/reception_repository.dart';
 import 'domain/shipment.dart';
+import 'infrastructure/arrival_notifier.dart';
+import 'infrastructure/arrivals_store.dart';
 import 'infrastructure/demo_lot_records.dart';
 import 'infrastructure/demo_shipment_repository.dart';
 import 'infrastructure/fruitlogix_logistics_api.dart';
 import 'infrastructure/http_shipment_repository.dart';
 import 'infrastructure/phone_dialer.dart';
 import 'infrastructure/reception_repositories.dart';
+import 'infrastructure/warehouse_locator.dart';
 
 /// Composition root of the Logistics & Monitoring bounded context
 /// (Tracking tab).
@@ -21,6 +26,7 @@ class LogisticsModule {
     required this.shipments,
     required this.dialer,
     required this.lots,
+    required this.arrivals,
     FruitLogixLogisticsApi? api,
   }) : _api = api;
 
@@ -34,6 +40,14 @@ class LogisticsModule {
       dialer: const UrlLauncherPhoneDialer(),
       // Orders are not linked to harvest lots in the platform yet (US72).
       lots: const NoLotRecords(),
+      // The platform has no warehouse geofence yet: kept on the phone (US65).
+      arrivals: ArrivalsController(
+        store: SharedPreferencesArrivalsStore(userId: session.userId),
+        notifier: LocalArrivalNotifier.isSupported
+            ? LocalArrivalNotifier()
+            : NoopArrivalNotifier(),
+        locator: const GeolocatorWarehouseLocator(),
+      ),
       shipments: ShipmentsController(
         repository: HttpShipmentRepository(
           api: api,
@@ -47,10 +61,18 @@ class LogisticsModule {
   factory LogisticsModule.demo({
     PhoneDialer dialer = const UrlLauncherPhoneDialer(),
     ReceptionRepository? reception,
+    WarehouseZone? zone,
+    ArrivalNotifier? notifier,
+    WarehouseLocator locator = const FixedWarehouseLocator(demoWarehouse),
     Duration latency = const Duration(milliseconds: 250),
   }) => LogisticsModule._(
     dialer: dialer,
     lots: DemoLotRecords(),
+    arrivals: ArrivalsController(
+      store: InMemoryArrivalsStore(zone: zone),
+      notifier: notifier ?? NoopArrivalNotifier(),
+      locator: locator,
+    ),
     shipments: ShipmentsController(
       repository: DemoShipmentRepository(latency: latency),
       reception: reception ?? DemoReceptionRepository(latency: latency),
@@ -62,12 +84,30 @@ class LogisticsModule {
 
   /// Harvest and quality records of each order's lot (US72).
   final LotRecordSource lots;
+
+  /// Warehouse zone and arrivals list (US65).
+  final ArrivalsController arrivals;
   final FruitLogixLogisticsApi? _api;
 
-  Future<void> start() => shipments.load();
+  /// Demo warehouse in Lima, ~1.4 km from the demo truck.
+  static const GeoPoint demoWarehouse = GeoPoint(-12.0600, -77.0300);
+
+  /// Loads the deliveries and records the ones inside the warehouse zone.
+  Future<void> refresh() async {
+    await shipments.load();
+    if (shipments.status == ShipmentsStatus.ready) {
+      await arrivals.check(shipments.shipments);
+    }
+  }
+
+  Future<void> start() async {
+    await arrivals.load();
+    await refresh();
+  }
 
   void dispose() {
     shipments.dispose();
+    arrivals.dispose();
     _api?.close();
   }
 }

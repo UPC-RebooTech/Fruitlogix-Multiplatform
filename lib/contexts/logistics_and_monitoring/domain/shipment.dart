@@ -1,3 +1,5 @@
+import 'geofence.dart';
+
 /// Lifecycle of a delivery as seen by the Commercial Client.
 enum ShipmentStatus {
   /// Created, waiting for dispatch.
@@ -40,6 +42,7 @@ class TelemetryLog {
     required this.humidityPercent,
     this.reeferUnitStatus,
     this.recordedAt,
+    this.position,
   });
 
   final double temperatureC;
@@ -48,6 +51,9 @@ class TelemetryLog {
   /// Free text from the reefer unit (demo only).
   final String? reeferUnitStatus;
   final DateTime? recordedAt;
+
+  /// Where the truck was at [recordedAt] (US65 geofence).
+  final GeoPoint? position;
 }
 
 /// Route checkpoint (demo only: the API has no named checkpoints yet).

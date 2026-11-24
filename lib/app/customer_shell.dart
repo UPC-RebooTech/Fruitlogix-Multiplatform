@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../contexts/logistics_and_monitoring/domain/shipment.dart';
@@ -191,6 +193,13 @@ class _CustomerShellState extends State<CustomerShell>
             formatNumericDate(invoice.dueDate),
           ),
         );
+    _logistics.arrivals.textBuilder = (arrival) => (
+          title: l10n.arrivalNotificationTitle(arrival.orderCode),
+          body: l10n.arrivalNotificationBody(
+            arrival.driverName ?? arrival.trackingNumber,
+            arrival.distanceKm.toStringAsFixed(1),
+          ),
+        );
     if (!_paymentsStarted) {
       _paymentsStarted = true;
       // Not awaited: the dashboard renders at once (US36).
@@ -198,13 +207,28 @@ class _CustomerShellState extends State<CustomerShell>
       _orders.start();
       _logistics.start();
       _quality.start();
+      _arrivalsWatch = Timer.periodic(arrivalsCheckInterval, (_) => _checkArrivals());
     }
   }
 
-  /// Back in the app: refresh balances and re-evaluate reminders (US70).
+  /// US65 — How often the truck positions are compared with the warehouse
+  /// zone while the app is open or in the background.
+  static const Duration arrivalsCheckInterval = Duration(minutes: 1);
+  Timer? _arrivalsWatch;
+
+  /// Only with a zone set: without it there is nothing to detect.
+  Future<void> _checkArrivals() async {
+    if (_logistics.arrivals.zone == null) return;
+    await _logistics.refresh();
+  }
+
+  /// Back in the app: refresh balances and re-evaluate reminders (US70), and
+  /// look for trucks that arrived meanwhile (US65).
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) _payments.overview.load();
+    if (state != AppLifecycleState.resumed) return;
+    _payments.overview.load();
+    _checkArrivals();
   }
 
   /// US30: once the backend confirms the plan, celebrate and show the badge.
@@ -225,6 +249,7 @@ class _CustomerShellState extends State<CustomerShell>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _arrivalsWatch?.cancel();
     _payments.membership.removeListener(_onMembershipChanged);
     if (widget.paymentModule == null) _payments.dispose();
     if (widget.orderModule == null) _orders.dispose();
@@ -441,6 +466,8 @@ class _CustomerShellState extends State<CustomerShell>
         _trackingTab => DeliveryTrackingPage(
             controller: _logistics.shipments,
             dialer: _logistics.dialer,
+            arrivals: _logistics.arrivals,
+            onRefresh: _logistics.refresh,
             // The order changes status in the platform after reception.
             onReceptionConfirmed: _orders.orders.load,
             onReportIncident: (orderCode) =>

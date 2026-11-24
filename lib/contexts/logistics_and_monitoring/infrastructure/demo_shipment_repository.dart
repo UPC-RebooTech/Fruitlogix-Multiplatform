@@ -1,3 +1,4 @@
+import '../domain/geofence.dart';
 import '../domain/shipment.dart';
 import '../domain/shipment_repository.dart';
 
@@ -43,6 +44,8 @@ class DemoShipmentRepository implements ShipmentRepository {
           humidityPercent: 86,
           reeferUnitStatus: 'Active & Stable',
           recordedAt: at(0, 14, 10),
+          // ~1.5 km from the demo warehouse (US65).
+          position: const GeoPoint(-12.0712, -77.0251),
         ),
         events: const [
           TrackingEventItem(
