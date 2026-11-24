@@ -7,6 +7,7 @@ import '../domain/shipment.dart';
 import '../infrastructure/in_memory_shipment_repository.dart';
 import 'cold_chain_certificate_sheet.dart';
 import 'confirm_reception_page.dart';
+import 'lot_traceability_card.dart';
 
 /// Tracking of the active shipment: overview (dark highlight), cold chain
 /// readings (Glaciar, reserved for cold chain) and route checkpoints.
@@ -63,6 +64,11 @@ class _DeliveryTrackingPageState extends State<DeliveryTrackingPage> {
           )
         else ...[
           _ShipmentOverview(shipment: shipments.first),
+          const SizedBox(height: CosechaSpace.md),
+          const CosechaOverline('Trazabilidad de Lotes y Fundo'),
+          const SizedBox(height: CosechaSpace.xs),
+          for (final lot in shipments.first.lots)
+            LotTraceabilityCard(lot: lot),
           const SizedBox(height: CosechaSpace.md),
           CosechaOverline(l10n.trackingColdChain),
           const SizedBox(height: CosechaSpace.xs),

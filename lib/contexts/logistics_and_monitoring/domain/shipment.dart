@@ -22,7 +22,7 @@ class TrackingEventItem {
   final bool isCompleted;
 }
 
-/// Certificado de auditoría térmica para cumplimiento fitosanitario y comercial (US71)
+/// Certificado de auditoría térmica (US71)
 class ColdChainCertificate {
   const ColdChainCertificate({
     required this.certificateId,
@@ -37,14 +37,39 @@ class ColdChainCertificate {
   });
 
   final String certificateId;
-  final String optimalRangeLabel; // Ej: "0.5 °C - 5.5 °C"
+  final String optimalRangeLabel;
   final double averageTempC;
   final double maxTempRecordedC;
   final double minTempRecordedC;
-  final double compliancePercentage; // Ej: 98.6
+  final double compliancePercentage;
   final double totalTripHours;
-  final String digitalSignatureHash; // Hash SHA-256 de integridad
+  final String digitalSignatureHash;
   final String issuedAt;
+}
+
+/// Trazabilidad agrícola desde la cosecha en fundo hasta la entrega (US72)
+class TraceableLotItem {
+  const TraceableLotItem({
+    required this.lotCode,
+    required this.productName,
+    required this.variety,
+    required this.quantityKg,
+    required this.originFarm,
+    required this.originRegion,
+    required this.harvestDate,
+    required this.certifications,
+    required this.qualityGrade,
+  });
+
+  final String lotCode;
+  final String productName;
+  final String variety;
+  final int quantityKg;
+  final String originFarm;
+  final String originRegion;
+  final String harvestDate;
+  final List<String> certifications;
+  final String qualityGrade;
 }
 
 class DeliveryShipment {
@@ -56,7 +81,7 @@ class DeliveryShipment {
     required this.transportStatus,
     required this.telemetry,
     required this.events,
-    required this.itemsSummary,
+    required this.lots,
     this.certificate,
     this.isReceived = false,
     this.inspectionNotes,
@@ -70,9 +95,13 @@ class DeliveryShipment {
   final String transportStatus;
   final TelemetryLog telemetry;
   final List<TrackingEventItem> events;
-  final String itemsSummary;
+  final List<TraceableLotItem> lots;
   final ColdChainCertificate? certificate;
   bool isReceived;
   String? inspectionNotes;
   bool hasIncidents;
+
+  /// Mantiene compatibilidad con vistas existentes como ConfirmReceptionPage
+  String get itemsSummary =>
+      lots.map((l) => '${l.productName} ${l.variety} (${l.quantityKg} kg)').join(' • ');
 }

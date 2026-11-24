@@ -8,7 +8,6 @@ class InMemoryShipmentRepository {
       shipmentProgress: 0.75,
       estimatedArrival: 'Today, 03:45 PM',
       transportStatus: 'In Transit • Reefer Truck (Plate ABC-123)',
-      itemsSummary: 'Mango Kent (2,500 kg) • Palta Hass (1,200 kg)',
       telemetry: const TelemetryLog(
         temperatureC: 4.2,
         humidityPercent: 86.0,
@@ -25,6 +24,30 @@ class InMemoryShipmentRepository {
         digitalSignatureHash: 'a7f3c4e912b590df88210e4a77bc89d13f9901ae',
         issuedAt: '2026-11-21 14:30 UTC-5',
       ),
+      lots: const [
+        TraceableLotItem(
+          lotCode: 'LOT-2026-MK04',
+          productName: 'Mango',
+          variety: 'Kent',
+          quantityKg: 2500,
+          originFarm: 'Campos del Norte',
+          originRegion: 'Valle del Chira, Piura',
+          harvestDate: '18 Nov 2026',
+          certifications: ['GlobalG.A.P.', 'SENASA Certificado'],
+          qualityGrade: 'Exportación Extra (Calibre 8)',
+        ),
+        TraceableLotItem(
+          lotCode: 'LOT-2026-PH12',
+          productName: 'Palta',
+          variety: 'Hass',
+          quantityKg: 1200,
+          originFarm: 'Fundo Santa Rosa',
+          originRegion: 'Caraz, Áncash',
+          harvestDate: '19 Nov 2026',
+          certifications: ['GlobalG.A.P.', 'Rainforest Alliance'],
+          qualityGrade: 'Exportación Grado 1 (Materia Seca >23%)',
+        ),
+      ],
       events: const [
         TrackingEventItem(
           time: '06:00 AM',
