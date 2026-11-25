@@ -9,6 +9,7 @@ import '../application/supplier_performance.dart';
 import '../application/orders_controller.dart';
 import '../domain/commercial_order.dart';
 import 'order_status_view.dart';
+import 'order_actions_sheet.dart';
 
 /// The client's orders, read from the platform API (demo without session).
 ///
@@ -36,7 +37,8 @@ class CustomerOrdersPage extends StatefulWidget {
   State<CustomerOrdersPage> createState() => _CustomerOrdersPageState();
 }
 
-class _CustomerOrdersPageState extends State<CustomerOrdersPage> {
+class _CustomerOrdersPageState extends State<CustomerOrdersPage>
+    with WidgetsBindingObserver {
   static const int _activeTab = 0;
   static const int _historyTab = 1;
 
@@ -54,15 +56,78 @@ class _CustomerOrdersPageState extends State<CustomerOrdersPage> {
   /// Status, dates and producer (the search is counted apart: it is visible).
   int get _activeFilterCount =>
       (_filter.status != null ? 1 : 0) +
-      (_filter.hasDateRange ? 1 : 0) +
-      (_filter.producerId != null ? 1 : 0);
+          (_filter.hasDateRange ? 1 : 0) +
+          (_filter.producerId != null ? 1 : 0);
   OrderHistoryFilter _filter = OrderHistoryFilter.none;
   final _search = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    widget.orders.startAutoRefresh();
+    widget.orders.load();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      widget.orders.startAutoRefresh();
+      widget.orders.load();
+    } else {
+      widget.orders.stopAutoRefresh();
+    }
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    widget.orders.stopAutoRefresh();
     _search.dispose();
     super.dispose();
+  }
+
+  Future<void> _editOrder(CommercialOrder order) async {
+    if (widget.orders.mutating || widget.orders.submitting) return;
+    final changes = await showOrderEditSheet(context: context, order: order);
+    if (!mounted || changes == null) return;
+    final l10n = AppLocalizations.of(context);
+    try {
+      await widget.orders.updateOrder(order, changes);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.ordersEditSuccess)),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(orderErrorMessage(
+          error, l10n, fallback: l10n.ordersEditError,
+        )),
+      ));
+    }
+  }
+
+  Future<void> _cancelOrder(CommercialOrder order) async {
+    if (widget.orders.mutating || widget.orders.submitting) return;
+    final changes = await showOrderCancelSheet(context: context, order: order);
+    if (!mounted || changes == null) return;
+    final l10n = AppLocalizations.of(context);
+    try {
+      await widget.orders.cancelOrder(order, changes);
+      if (!mounted) return;
+      setState(() => _tab = _historyTab);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.ordersCancelSuccess)),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(orderErrorMessage(
+          error, l10n, fallback: l10n.ordersCancelError,
+        )),
+      ));
+    }
   }
 
   void _setFilter(OrderHistoryFilter filter) =>
@@ -78,8 +143,8 @@ class _CustomerOrdersPageState extends State<CustomerOrdersPage> {
     final earliest = history.isEmpty
         ? DateTime(now.year - 1)
         : history
-              .map((o) => o.deliveryDate)
-              .reduce((a, b) => a.isBefore(b) ? a : b);
+        .map((o) => o.deliveryDate)
+        .reduce((a, b) => a.isBefore(b) ? a : b);
     final range = await showDateRangePicker(
       context: context,
       firstDate: DateTime(earliest.year, earliest.month, earliest.day),
@@ -144,38 +209,38 @@ class _CustomerOrdersPageState extends State<CustomerOrdersPage> {
                   ),
                 )
               else if (all.isEmpty)
-                CosechaEmptyState(
-                  icon: Icons.receipt_long_outlined,
-                  title: l10n.ordersEmptyTitle,
-                  message: l10n.ordersEmptyMessage,
-                  action: CosechaPrimaryButton(
-                    label: l10n.actionNewOrder,
-                    icon: Icons.add,
-                    onPressed: widget.onNewOrder,
-                  ),
-                )
-              else ...[
-                // One primary action per screen.
-                CosechaPrimaryButton(
-                  label: l10n.actionNewOrder,
-                  icon: Icons.add,
-                  onPressed: widget.onNewOrder,
-                ),
-                const SizedBox(height: CosechaSpace.md),
-                CosechaSegmentedTabs(
-                  labels: [
-                    l10n.ordersTabActive(active.length),
-                    l10n.ordersTabHistory(history.length),
+                  CosechaEmptyState(
+                    icon: Icons.receipt_long_outlined,
+                    title: l10n.ordersEmptyTitle,
+                    message: l10n.ordersEmptyMessage,
+                    action: CosechaPrimaryButton(
+                      label: l10n.actionNewOrder,
+                      icon: Icons.add,
+                      onPressed: widget.onNewOrder,
+                    ),
+                  )
+                else ...[
+                    // One primary action per screen.
+                    CosechaPrimaryButton(
+                      label: l10n.actionNewOrder,
+                      icon: Icons.add,
+                      onPressed: widget.onNewOrder,
+                    ),
+                    const SizedBox(height: CosechaSpace.md),
+                    CosechaSegmentedTabs(
+                      labels: [
+                        l10n.ordersTabActive(active.length),
+                        l10n.ordersTabHistory(history.length),
+                      ],
+                      selectedIndex: _tab,
+                      onSelected: (index) => setState(() => _tab = index),
+                    ),
+                    const SizedBox(height: CosechaSpace.sm),
+                    if (_tab == _activeTab)
+                      ..._activeList(l10n, active)
+                    else
+                      ..._historyList(l10n, history),
                   ],
-                  selectedIndex: _tab,
-                  onSelected: (index) => setState(() => _tab = index),
-                ),
-                const SizedBox(height: CosechaSpace.sm),
-                if (_tab == _activeTab)
-                  ..._activeList(l10n, active)
-                else
-                  ..._historyList(l10n, history),
-              ],
             ],
           ),
         );
@@ -184,9 +249,9 @@ class _CustomerOrdersPageState extends State<CustomerOrdersPage> {
   }
 
   List<Widget> _activeList(
-    AppLocalizations l10n,
-    List<CommercialOrder> active,
-  ) {
+      AppLocalizations l10n,
+      List<CommercialOrder> active,
+      ) {
     if (active.isEmpty) {
       return [
         CosechaEmptyState(
@@ -200,9 +265,9 @@ class _CustomerOrdersPageState extends State<CustomerOrdersPage> {
 
   /// US07 + US08, with the supplier compliance (US24) on top.
   List<Widget> _historyList(
-    AppLocalizations l10n,
-    List<CommercialOrder> history,
-  ) {
+      AppLocalizations l10n,
+      List<CommercialOrder> history,
+      ) {
     final performance = _SupplierPerformanceSection(
       report: measureSupplierPerformance(
         widget.orders.orders,
@@ -223,12 +288,12 @@ class _CustomerOrdersPageState extends State<CustomerOrdersPage> {
     }
     final results = _filter.apply(history);
     final producers =
-        {
-          for (final order in history)
-            if (order.producerId != null) order.producerId!,
-        }.toList()..sort(
+    {
+      for (final order in history)
+        if (order.producerId != null) order.producerId!,
+    }.toList()..sort(
           (a, b) => _producerName(l10n, a).compareTo(_producerName(l10n, b)),
-        );
+    );
     final textTheme = Theme.of(context).textTheme;
     final dateFormat = MaterialLocalizations.of(context);
 
@@ -247,13 +312,13 @@ class _CustomerOrdersPageState extends State<CustomerOrdersPage> {
           suffixIcon: _search.text.isEmpty
               ? null
               : IconButton(
-                  tooltip: l10n.ordersSearchClear,
-                  icon: const Icon(Icons.close),
-                  onPressed: () {
-                    _search.clear();
-                    _setFilter(_filter.copyWith(query: ''));
-                  },
-                ),
+            tooltip: l10n.ordersSearchClear,
+            icon: const Icon(Icons.close),
+            onPressed: () {
+              _search.clear();
+              _setFilter(_filter.copyWith(query: ''));
+            },
+          ),
         ),
       ),
       const SizedBox(height: CosechaSpace.xs),
@@ -303,9 +368,9 @@ class _CustomerOrdersPageState extends State<CustomerOrdersPage> {
             CosechaFilterChip(
               label: _filter.hasDateRange
                   ? l10n.ordersDateRange(
-                      dateFormat.formatShortDate(_filter.from!),
-                      dateFormat.formatShortDate(_filter.to!),
-                    )
+                dateFormat.formatShortDate(_filter.from!),
+                dateFormat.formatShortDate(_filter.to!),
+              )
                   : l10n.ordersAnyDate,
               selected: _filter.hasDateRange,
               onSelected: (_) => _pickDates(history),
@@ -386,8 +451,8 @@ class _CustomerOrdersPageState extends State<CustomerOrdersPage> {
     // Incidents make sense for orders that arrived or are on their way.
     final canReport =
         widget.onReportIncident != null &&
-        order.status != OrderStatus.cancelled &&
-        order.status != OrderStatus.rejected;
+            order.status != OrderStatus.cancelled &&
+            order.status != OrderStatus.rejected;
     return [
       _OrderCard(
         order: order,
@@ -397,6 +462,15 @@ class _CustomerOrdersPageState extends State<CustomerOrdersPage> {
         onReportIncident: canReport
             ? () => widget.onReportIncident!(order.code)
             : null,
+        onEdit: order.canEdit && widget.orders.supportsOrderMutations
+            && !widget.orders.mutating && !widget.orders.submitting
+            ? () => _editOrder(order)
+            : null,
+        onCancel: order.canCancel && widget.orders.supportsOrderMutations
+            && !widget.orders.mutating && !widget.orders.submitting
+            ? () => _cancelOrder(order)
+            : null,
+        busy: widget.orders.mutatingOrderId == order.id,
         // US72: the lot timeline of orders that were not cancelled.
         onOpenTraceability: canReport && widget.onOpenTraceability != null
             ? () => widget.onOpenTraceability!(order)
@@ -420,9 +494,9 @@ class _SupplierPerformanceSection extends StatelessWidget {
 
   /// ≥ 90 % meets, ≥ 70 % fair, otherwise low.
   static ({String label, CosechaStatus status}) _level(
-    SupplierPerformance supplier,
-    AppLocalizations l10n,
-  ) {
+      SupplierPerformance supplier,
+      AppLocalizations l10n,
+      ) {
     final percent = supplier.onTimePercent;
     if (percent >= 90) {
       return (label: l10n.performanceGood, status: CosechaStatus.success);
@@ -515,7 +589,7 @@ class _SupplierPerformanceSection extends StatelessWidget {
                     return Semantics(
                       container: true,
                       label:
-                          '$name, ${supplier.onTimePercent} %, '
+                      '$name, ${supplier.onTimePercent} %, '
                           '${level.label}, $detail',
                       excludeSemantics: true,
                       child: Column(
@@ -581,12 +655,18 @@ class _OrderCard extends StatelessWidget {
     this.producerName,
     this.onReportIncident,
     this.onOpenTraceability,
+    this.onEdit,
+    this.onCancel,
+    this.busy = false,
   });
 
   final CommercialOrder order;
   final String? producerName;
   final VoidCallback? onReportIncident;
   final VoidCallback? onOpenTraceability;
+  final VoidCallback? onEdit;
+  final VoidCallback? onCancel;
+  final bool busy;
 
   @override
   Widget build(BuildContext context) {
@@ -690,11 +770,28 @@ class _OrderCard extends StatelessWidget {
               value: order.notes!,
             ),
           ],
-          if (onOpenTraceability != null || onReportIncident != null) ...[
+          if (busy) ...[
+            const SizedBox(height: CosechaSpace.sm),
+            const Center(child: CircularProgressIndicator()),
+          ],
+          if (onOpenTraceability != null || onReportIncident != null ||
+              onEdit != null || onCancel != null) ...[
             const SizedBox(height: CosechaSpace.xs),
             Wrap(
               spacing: CosechaSpace.xs,
               children: [
+                if (onEdit != null)
+                  CosechaTextButton(
+                    label: l10n.ordersEditAction,
+                    icon: Icons.edit_outlined,
+                    onPressed: onEdit,
+                  ),
+                if (onCancel != null)
+                  CosechaTextButton(
+                    label: l10n.ordersCancelAction,
+                    icon: Icons.cancel_outlined,
+                    onPressed: onCancel,
+                  ),
                 if (onOpenTraceability != null)
                   CosechaTextButton(
                     label: l10n.traceOpen,

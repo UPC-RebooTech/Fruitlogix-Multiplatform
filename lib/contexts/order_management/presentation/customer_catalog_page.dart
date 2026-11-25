@@ -189,11 +189,11 @@ class _CustomerCatalogPageState extends State<CustomerCatalogPage> {
                       ),
                     )
                   else if (visible.isEmpty)
-                    CosechaEmptyState(
-                      icon: Icons.inventory_2_outlined,
-                      title: l10n.catalogEmptyTitle,
-                      message: l10n.catalogEmptyMessage,
-                    ),
+                      CosechaEmptyState(
+                        icon: Icons.inventory_2_outlined,
+                        title: l10n.catalogEmptyTitle,
+                        message: l10n.catalogEmptyMessage,
+                      ),
                   for (final product in visible) ...[
                     _ProductCard(
                       product: product,
@@ -247,7 +247,7 @@ class _ProductCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const CosechaIconBox(icon: Icons.eco_outlined),
+              _ProductThumbnail(product: product),
               const SizedBox(width: CosechaSpace.inner),
               Expanded(
                 child: Column(
@@ -311,8 +311,9 @@ class _ProductCard extends StatelessWidget {
               _QuantityStepper(
                 quantity: quantity,
                 unit: product.unit,
-                canAdd: (quantity == 0 ? product.minQuantity : quantity + 1) <=
-                    product.stock,
+                canAdd: product.isOrderable &&
+                    (quantity == 0 ? product.minQuantity : quantity + 1) <=
+                        product.stock,
                 addTooltip: l10n.productAddTooltip(product.name),
                 removeTooltip: l10n.productRemoveTooltip(product.name),
                 onAdd: onAdd,
@@ -321,6 +322,44 @@ class _ProductCard extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Uses Flutter's decoded-image memory cache for repeated catalog images.
+/// No file-system or offline cache is claimed by this widget.
+class _ProductThumbnail extends StatelessWidget {
+  const _ProductThumbnail({required this.product});
+
+  final FruitProduct product;
+
+  @override
+  Widget build(BuildContext context) {
+    final url = product.imageUrl;
+    final uri = url == null ? null : Uri.tryParse(url);
+    if (uri == null || (uri.scheme != 'https' && uri.scheme != 'http')) {
+      return const CosechaIconBox(icon: Icons.eco_outlined);
+    }
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(CosechaRadius.button),
+      child: Image.network(
+        url!,
+        width: 64,
+        height: 64,
+        cacheWidth: 192,
+        cacheHeight: 192,
+        fit: BoxFit.cover,
+        semanticLabel: product.name,
+        loadingBuilder: (context, image, progress) => progress == null
+            ? image
+            : const SizedBox(
+          width: 64,
+          height: 64,
+          child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+        ),
+        errorBuilder: (context, error, stackTrace) =>
+        const CosechaIconBox(icon: Icons.eco_outlined),
       ),
     );
   }
@@ -450,9 +489,9 @@ class _CartPanel extends StatelessWidget {
 }
 
 typedef _OrderReviewResult = ({
-  String address,
-  DateTime deliveryDate,
-  String? notes,
+String address,
+DateTime deliveryDate,
+String? notes,
 });
 
 /// Bottom sheet to confirm the order: address and delivery date, validated
@@ -484,9 +523,9 @@ class _OrderReviewSheetState extends State<_OrderReviewSheet> {
     if (!_formKey.currentState!.validate()) return;
     final notes = _notes.text.trim();
     Navigator.of(context).pop<_OrderReviewResult>((
-      address: _address.text.trim(),
-      deliveryDate: _deliveryDate!,
-      notes: notes.isEmpty ? null : notes,
+    address: _address.text.trim(),
+    deliveryDate: _deliveryDate!,
+    notes: notes.isEmpty ? null : notes,
     ));
   }
 
@@ -559,7 +598,7 @@ class _OrderReviewSheetState extends State<_OrderReviewSheet> {
                 lastDate: today.add(const Duration(days: 365)),
                 onChanged: (date) => _deliveryDate = date,
                 validator: (date) =>
-                    date == null ? l10n.deliveryDateRequired : null,
+                date == null ? l10n.deliveryDateRequired : null,
               ),
               const SizedBox(height: CosechaSpace.sm),
               CosechaTextField(
