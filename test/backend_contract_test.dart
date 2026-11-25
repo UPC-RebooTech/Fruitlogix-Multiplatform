@@ -225,6 +225,22 @@ void main() {
       });
     });
 
+    test('a profile with empty contact data greets the client by username', () async {
+      final repo = await HttpCommercialClientProfileRepository.open(
+        userId: 12,
+        username: 'cliente1',
+        token: () => 'jwt',
+        baseUri: Uri.parse('https://api.test'),
+        // Created by PUT /profiles/me/warehouse: no contact data yet.
+        client: MockClient((_) async => http.Response(
+              jsonEncode({'id': 4, 'userId': 12, 'businessName': '', 'contactName': '', 'ruc': '', 'email': '', 'phone': ''}),
+              200,
+            )),
+      );
+      expect(repo.current.fullName, 'cliente1');
+      expect(repo.current.firstName, 'cliente1');
+    });
+
     test('a rejected value shows the platform message', () async {
       final repo = await HttpCommercialClientProfileRepository.open(
         userId: 12,

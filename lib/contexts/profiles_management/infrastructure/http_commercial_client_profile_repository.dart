@@ -36,6 +36,7 @@ class HttpCommercialClientProfileRepository
     this._token,
     this._current,
     this._address,
+    this._fallback,
   );
 
   final http.Client _client;
@@ -43,6 +44,9 @@ class HttpCommercialClientProfileRepository
   final String Function() _token;
   CommercialClientProfile _current;
   String _address;
+
+  /// Shown for the fields the platform has empty (see [fromJson]).
+  final CommercialClientProfile _fallback;
 
   static const Duration _timeout = Duration(seconds: 60);
 
@@ -67,41 +71,49 @@ class HttpCommercialClientProfileRepository
       ),
       notFoundIsEmpty: true,
     );
-    final CommercialClientProfile profile;
-    var address = '';
-    if (body is Map) {
-      profile = fromJson(body, id: id);
-      address = _text(body['address']);
-    } else {
-      profile = CommercialClientProfile(
-        id: id,
-        fullName: fallback?.fullName ?? username.trim(),
-        businessName: fallback?.businessName ?? '',
-        email: fallback?.email ?? '',
-        phone: fallback?.phone ?? '',
-        taxId: fallback?.taxId ?? '',
-      );
-    }
+    // What this phone kept, or at least the IAM username as the name.
+    final base = CommercialClientProfile(
+      id: id,
+      fullName: (fallback?.fullName.trim().isNotEmpty ?? false)
+          ? fallback!.fullName
+          : username.trim(),
+      businessName: fallback?.businessName ?? '',
+      email: fallback?.email ?? '',
+      phone: fallback?.phone ?? '',
+      taxId: fallback?.taxId ?? '',
+    );
     return HttpCommercialClientProfileRepository._(
       httpClient,
       uri,
       token,
-      profile,
-      address,
+      body is Map ? fromJson(body, id: id, fallback: base) : base,
+      body is Map ? _text(body['address']) : '',
+      base,
     );
   }
 
+  /// A profile the platform created without contact data (e.g. when only
+  /// the warehouse was saved) has empty fields: [fallback] fills them, so
+  /// Home and the top bar still greet the client by name.
   static CommercialClientProfile fromJson(
     Map<dynamic, dynamic> json, {
     required String id,
-  }) => CommercialClientProfile(
-    id: id,
-    fullName: _text(json['contactName']),
-    businessName: _text(json['businessName']),
-    email: _text(json['email']),
-    phone: _text(json['phone']),
-    taxId: _text(json['ruc']),
-  );
+    CommercialClientProfile? fallback,
+  }) {
+    String field(String key, String? alternative) {
+      final value = _text(json[key]);
+      return value.isEmpty ? (alternative ?? '') : value;
+    }
+
+    return CommercialClientProfile(
+      id: id,
+      fullName: field('contactName', fallback?.fullName),
+      businessName: field('businessName', fallback?.businessName),
+      email: field('email', fallback?.email),
+      phone: field('phone', fallback?.phone),
+      taxId: field('ruc', fallback?.taxId),
+    );
+  }
 
   /// `PUT /profiles/me` replaces every field, so all are sent.
   static Map<String, Object?> toJson(
@@ -144,7 +156,9 @@ class HttpCommercialClientProfileRepository
       ),
     );
     // Update the UI only once the platform accepted it.
-    _current = body is Map ? fromJson(body, id: profile.id) : profile;
+    _current = body is Map
+        ? fromJson(body, id: profile.id, fallback: _fallback)
+        : profile;
     if (body is Map) _address = _text(body['address']);
   }
 

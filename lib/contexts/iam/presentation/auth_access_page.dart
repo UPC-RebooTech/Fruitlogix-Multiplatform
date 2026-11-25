@@ -178,6 +178,13 @@ class _AuthAccessPageState extends State<AuthAccessPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    Center(
+                      child: FruitLogixLogo(
+                        size: 96,
+                        semanticLabel: l10n.appTitle,
+                      ),
+                    ),
+                    const SizedBox(height: CosechaSpace.sm),
                     CosechaPageHeader(
                       title: _registering ? l10n.authRegisterTitle : l10n.authLoginTitle,
                       subtitle: l10n.authWelcome,

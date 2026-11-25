@@ -106,6 +106,10 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
 
+  # App logo (FruitLogix apple, transparent background).
+  assets:
+    - assets/images/fruitlogix_logo.png
+
   # Cosecha design system fonts. Bundled (not downloaded at runtime) so the
   # app works offline. Licenses: SIL OFL 1.1 (see OFL.txt next to each font).
   fonts:

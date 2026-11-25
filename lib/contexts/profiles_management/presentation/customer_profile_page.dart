@@ -386,11 +386,16 @@ class _AccountCard extends StatelessWidget {
               color: scheme.primaryContainer,
               shape: BoxShape.circle,
             ),
-            child: Text(
-              initialsOf(fullName),
-              style: textTheme.titleMedium
-                  ?.copyWith(color: scheme.onPrimaryContainer),
-            ),
+            child: fullName.trim().isEmpty
+                ? const Padding(
+                    padding: EdgeInsets.all(7),
+                    child: FruitLogixLogo(),
+                  )
+                : Text(
+                    initialsOf(fullName),
+                    style: textTheme.titleMedium
+                        ?.copyWith(color: scheme.onPrimaryContainer),
+                  ),
           ),
           const SizedBox(width: CosechaSpace.inner),
           Expanded(
