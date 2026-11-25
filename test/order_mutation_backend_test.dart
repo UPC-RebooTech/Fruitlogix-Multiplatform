@@ -57,9 +57,17 @@ void main() {
           return http.Response(jsonEncode(_serverOrder('Pending')), 200);
         }
         mutation = request;
-        return http.Response(
-          jsonEncode({..._serverOrder('Pending'), 'deliveryAddress': 'Av. Perú 123'}),
+        return http.Response.bytes(
+          utf8.encode(
+            jsonEncode({
+              ..._serverOrder('Pending'),
+              'deliveryAddress': 'Av. Perú 123',
+            }),
+          ),
           200,
+          headers: {
+            'content-type': 'application/json; charset=utf-8',
+          },
         );
       }),
     );
