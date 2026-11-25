@@ -1,3 +1,4 @@
+
 import 'dart:async';
 import 'dart:convert';
 
@@ -10,12 +11,7 @@ enum OrderApiFailure {
   network,
   unauthorized,
   notFound,
-
-  /// 409: the current state does not allow it (e.g. reception of an order
-  /// that is not in transit, not enough stock, too many photos).
   conflict,
-
-  /// 403: the client's role cannot do this action.
   forbidden,
   invalid,
   server,
@@ -26,8 +22,6 @@ class OrderApiException implements Exception {
   const OrderApiException(this.reason, [this.message]);
 
   final OrderApiFailure reason;
-
-  /// Message returned by the backend (validation errors), when present.
   final String? message;
 
   @override
@@ -35,8 +29,8 @@ class OrderApiException implements Exception {
       'OrderApiException($reason${message == null ? '' : ': $message'})';
 }
 
-/// HTTP client of the Order Management endpoints. Every call carries the
-/// IAM JWT.
+/// Order Management transport. The supplied client can be SessionGuardClient.
+/// Responses are decoded here; DTO conversion remains in Infrastructure.
 class FruitLogixOrdersApi {
   FruitLogixOrdersApi({
     required String Function() token,
@@ -49,46 +43,76 @@ class FruitLogixOrdersApi {
   final String Function() _token;
   final http.Client _client;
   final Uri _baseUri;
-
-  /// Render free instances can take a while to wake up.
   static const Duration _timeout = Duration(seconds: 60);
 
-  Map<String, String> get _headers => {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer ${_token()}',
-  };
+  Map<String, String> get _headers {
+    final token = _token().trim();
+    if (token.isEmpty) {
+      throw const OrderApiException(OrderApiFailure.unauthorized);
+    }
+    return {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+  }
 
-  /// `GET /api/v1/orders/client/{clientId}`
+  Uri _uri(String route) => _baseUri.resolve(route);
+
+  /// GET /api/v1/orders/client/{clientId}
   Future<Object?> getClientOrders(int clientId) => _send(
     () => _client.get(
-      _baseUri.resolve('/api/v1/orders/client/$clientId'),
+      _uri('/api/v1/orders/client/$clientId'),
       headers: _headers,
     ),
   );
 
-  /// `GET /api/v1/producers` — names for the history producer filter.
-  Future<Object?> getProducers() => _send(
-    () => _client.get(_baseUri.resolve('/api/v1/producers'), headers: _headers),
+  /// GET /api/v1/orders/{id}
+  Future<Object?> getOrder(int orderId) => _send(
+    () => _client.get(_uri('/api/v1/orders/$orderId'), headers: _headers),
   );
 
-  /// `GET /api/v1/products?available=true` — the catalog (active products
-  /// with stock).
-  Future<Object?> getProducts({bool available = true}) => _send(
-    () => _client.get(
-      _baseUri
-          .resolve('/api/v1/products')
-          .replace(queryParameters: {'available': '$available'}),
-      headers: _headers,
-    ),
-  );
-
-  /// `POST /api/v1/orders` — `CreateOrderResource`.
+  /// POST /api/v1/orders — CreateOrderResource
   Future<Object?> createOrder(Map<String, Object?> body) => _send(
     () => _client.post(
-      _baseUri.resolve('/api/v1/orders'),
+      _uri('/api/v1/orders'),
       headers: _headers,
       body: jsonEncode(body),
+    ),
+  );
+
+  /// PUT /api/v1/orders/{id} — UpdateOrderResource
+  Future<Object?> updateOrder(int orderId, Map<String, Object?> body) => _send(
+    () => _client.put(
+      _uri('/api/v1/orders/$orderId'),
+      headers: _headers,
+      body: jsonEncode(body),
+    ),
+  );
+
+  /// PATCH /api/v1/orders/{id}/cancel — CancelOrderResource
+  Future<Object?> cancelOrder(int orderId, Map<String, Object?> body) => _send(
+    () => _client.patch(
+      _uri('/api/v1/orders/$orderId/cancel'),
+      headers: _headers,
+      body: jsonEncode(body),
+    ),
+  );
+
+  /// GET /api/v1/producers
+  Future<Object?> getProducers() => _send(
+    () => _client.get(_uri('/api/v1/producers'), headers: _headers),
+  );
+
+  /// Existing Flutter catalog route. It is NOT present in the attached
+  /// OpenAPI specification; a 404 is surfaced rather than silently replaced
+  /// with demo products.
+  Future<Object?> getProducts({bool available = true}) => _send(
+    () => _client.get(
+      _uri('/api/v1/products').replace(
+        queryParameters: {'available': available.toString()},
+      ),
+      headers: _headers,
     ),
   );
 
@@ -96,52 +120,35 @@ class FruitLogixOrdersApi {
     final http.Response response;
     try {
       response = await request().timeout(_timeout);
+    } on OrderApiException {
+      rethrow;
     } on TimeoutException {
       throw const OrderApiException(OrderApiFailure.network);
     } on http.ClientException {
       throw const OrderApiException(OrderApiFailure.network);
     } catch (error) {
-      // SocketException/HandshakeException (dart:io is not imported so the
-      // client also compiles for the web).
-      throw OrderApiException(OrderApiFailure.network, '$error');
+      throw OrderApiException(OrderApiFailure.network, error.toString());
     }
 
     final code = response.statusCode;
-    // 401: missing, invalid or expired token (the shell signs out).
-    if (code == 401) {
-      throw const OrderApiException(OrderApiFailure.unauthorized);
-    }
-    // A client without orders may get a 404 instead of an empty list.
-    // 404: it does not exist or it is not the user's.
-    if (code == 409 || code == 403) {
-      throw OrderApiException(
-        code == 409 ? OrderApiFailure.conflict : OrderApiFailure.forbidden,
-        apiErrorMessage(response.body),
-      );
-    }
-    if (code == 404) {
-      throw OrderApiException(
-        OrderApiFailure.notFound,
-        apiErrorMessage(response.body),
-      );
-    }
-    if (code == 400 || code == 422) {
-      throw OrderApiException(
-        OrderApiFailure.invalid,
-        apiErrorMessage(response.body),
-      );
-    }
     if (code < 200 || code >= 300) {
-      throw OrderApiException(
-        code >= 500
-            ? OrderApiFailure.server
-            : OrderApiFailure.unexpectedResponse,
-        apiErrorMessage(response.body),
-      );
+      final message = apiErrorMessage(response.body);
+      final reason = switch (code) {
+        400 || 422 => OrderApiFailure.invalid,
+        401 => OrderApiFailure.unauthorized,
+        403 => OrderApiFailure.forbidden,
+        404 => OrderApiFailure.notFound,
+        409 => OrderApiFailure.conflict,
+        >= 500 => OrderApiFailure.server,
+        _ => OrderApiFailure.unexpectedResponse,
+      };
+      throw OrderApiException(reason, message);
     }
-    if (response.body.trim().isEmpty) return null;
+
+    if (response.bodyBytes.isEmpty) return null;
     try {
-      return jsonDecode(utf8.decode(response.bodyBytes));
+      final text = utf8.decode(response.bodyBytes).trim();
+      return text.isEmpty ? null : jsonDecode(text);
     } on FormatException {
       throw const OrderApiException(OrderApiFailure.unexpectedResponse);
     }

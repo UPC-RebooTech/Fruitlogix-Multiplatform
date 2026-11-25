@@ -1,10 +1,12 @@
+
 import '../domain/commercial_order.dart';
-import '../domain/order_repository.dart';
+import '../domain/order_edit.dart';
+import '../domain/order_mutation_repository.dart';
 import 'demo_catalog_repository.dart';
 
 /// Session-only demo orders (no signed-in session, widget tests). Nothing is
 /// sent to the backend.
-class DemoOrderRepository implements OrderRepository {
+class DemoOrderRepository implements OrderMutationRepository {
   DemoOrderRepository({
     DateTime Function()? clock,
     this.latency = const Duration(milliseconds: 250),
@@ -46,7 +48,7 @@ class DemoOrderRepository implements OrderRepository {
         createdAt: day(-14),
         status: OrderStatus.delivered,
         producerId: 1,
-        completedAt: day(-9), // on time (US24)
+        completedAt: day(-9), // on time
       ),
       CommercialOrder(
         id: '1031',
@@ -68,7 +70,7 @@ class DemoOrderRepository implements OrderRepository {
         createdAt: day(-42),
         status: OrderStatus.delivered,
         producerId: 2,
-        completedAt: day(-36), // two days late (US24)
+        completedAt: day(-36), // two days late
       ),
     ]);
   }
@@ -109,5 +111,40 @@ class DemoOrderRepository implements OrderRepository {
     );
     _orders.add(created);
     return created;
+  }
+
+  @override
+  Future<CommercialOrder?> fetchOrderById(String orderId) async {
+    if (latency > Duration.zero) await Future<void>.delayed(latency);
+    for (final order in _orders) {
+      if (order.id == orderId) return order;
+    }
+    return null;
+  }
+
+  @override
+  Future<CommercialOrder> updateOrder(
+    CommercialOrder current,
+    OrderUpdate changes,
+  ) async {
+    if (latency > Duration.zero) await Future<void>.delayed(latency);
+    final index = _orders.indexWhere((order) => order.id == current.id);
+    if (index < 0) throw StateError('Order does not exist');
+    final updated = changes.applyTo(_orders[index], today: _clock());
+    _orders[index] = updated;
+    return updated;
+  }
+
+  @override
+  Future<CommercialOrder> cancelOrder(
+    CommercialOrder current,
+    OrderCancellation changes,
+  ) async {
+    if (latency > Duration.zero) await Future<void>.delayed(latency);
+    final index = _orders.indexWhere((order) => order.id == current.id);
+    if (index < 0) throw StateError('Order does not exist');
+    final cancelled = changes.applyTo(_orders[index]);
+    _orders[index] = cancelled;
+    return cancelled;
   }
 }

@@ -1,13 +1,11 @@
 import 'commercial_order.dart';
 
-/// Contract for registering and consulting the signed-in client's orders.
+/// Read and creation port for the signed-in Commercial Client.
+///
+/// Retained unchanged at the method-signature level so current demo and HTTP
+/// adapters, controllers, and existing widget tests keep compiling.
 abstract interface class OrderRepository {
-  /// The client's orders.
   Future<List<CommercialOrder>> fetchMyOrders();
-
-  /// Registers [order]. Throws [ArgumentError] when it is not valid.
   Future<CommercialOrder> placeOrder(NewOrder order);
-
-  /// Producer id → display name, for the history filter (US08).
   Future<Map<int, String>> fetchProducerNames();
 }
