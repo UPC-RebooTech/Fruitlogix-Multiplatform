@@ -53,13 +53,13 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.3
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -137,3 +137,12 @@ flutter:
           weight: 500
         - asset: assets/fonts/atkinson_hyperlegible_mono/AtkinsonHyperlegibleMono-SemiBold.ttf
           weight: 600
+# Configuration for launcher icons
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/fruitlogix_logo_small.png"
+  min_sdk_android: 21
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/images/fruitlogix_logo_small.png"
+  adaptive_icon_padding: true
