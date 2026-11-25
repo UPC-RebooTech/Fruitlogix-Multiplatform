@@ -27,6 +27,7 @@ abstract final class DeliveryJsonParser {
     Map<dynamic, dynamic> json, {
     required ShipmentOrderRef order,
     TelemetryLog? telemetry,
+    List<TelemetryLog> readings = const [],
     List<TrackingEventItem> events = const [],
   }) {
     final id = _int(json['id']);
@@ -52,6 +53,7 @@ abstract final class DeliveryJsonParser {
       dispatchedAt: _date(json['dispatchedAt']),
       arrivedAt: _date(json['arrivedAt']),
       telemetry: telemetry,
+      readings: readings,
       events: events,
       rating: order.rating,
     );
@@ -88,6 +90,29 @@ abstract final class DeliveryJsonParser {
         'delivered' => DeliveryEventType.delivered,
         _ => DeliveryEventType.other,
       };
+
+  /// Every valid `TrackingLogResource`, oldest first (US: cold-chain
+  /// certificate). Readings without a time keep their order at the start.
+  static List<TelemetryLog> readings(Object? body) {
+    final parsed = <TelemetryLog>[];
+    for (final json in list(body)) {
+      final temperature = _double(json['temperature']);
+      final humidity = _double(json['humidity']);
+      if (temperature == null || humidity == null) continue;
+      final lat = _double(json['latitude']);
+      final lng = _double(json['longitude']);
+      final position = lat == null || lng == null ? null : GeoPoint(lat, lng);
+      parsed.add(TelemetryLog(
+        temperatureC: temperature,
+        humidityPercent: humidity,
+        recordedAt: _date(json['timestamp']),
+        position: position != null && position.isValid ? position : null,
+      ));
+    }
+    final epoch = DateTime.fromMillisecondsSinceEpoch(0);
+    return parsed
+      ..sort((a, b) => (a.recordedAt ?? epoch).compareTo(b.recordedAt ?? epoch));
+  }
 
   /// The most recent `TrackingLogResource`, or null without readings.
   static TelemetryLog? latestReading(Object? body) {

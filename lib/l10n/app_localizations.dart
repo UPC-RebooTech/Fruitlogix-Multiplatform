@@ -2443,6 +2443,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'None of your orders has a harvest lot linked yet. You can report an incident once the producer links it.'**
   String get qmNoReportableOrders;
+
+  /// No description provided for @trackingDelayTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delay in transit'**
+  String get trackingDelayTitle;
+
+  /// No description provided for @trackingDelayNoReason.
+  ///
+  /// In en, this message translates to:
+  /// **'The distributor reported a delay.'**
+  String get trackingDelayNoReason;
+
+  /// No description provided for @trackingDelayEta.
+  ///
+  /// In en, this message translates to:
+  /// **'Current ETA: {eta}'**
+  String trackingDelayEta(String eta);
+
+  /// No description provided for @coldChainOpenCertificate.
+  ///
+  /// In en, this message translates to:
+  /// **'View cold-chain certificate'**
+  String get coldChainOpenCertificate;
+
+  /// No description provided for @coldChainCertificateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cold-chain certificate'**
+  String get coldChainCertificateTitle;
+
+  /// No description provided for @coldChainCompliance.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% in range'**
+  String coldChainCompliance(String percent);
+
+  /// No description provided for @coldChainReadings.
+  ///
+  /// In en, this message translates to:
+  /// **'{inRange} of {total} readings inside the target range'**
+  String coldChainReadings(int inRange, int total);
+
+  /// No description provided for @coldChainOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Order'**
+  String get coldChainOrder;
+
+  /// No description provided for @coldChainTargetRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Target range'**
+  String get coldChainTargetRange;
+
+  /// No description provided for @coldChainMonitored.
+  ///
+  /// In en, this message translates to:
+  /// **'Monitored'**
+  String get coldChainMonitored;
+
+  /// No description provided for @coldChainHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} h'**
+  String coldChainHours(String hours);
+
+  /// No description provided for @coldChainLastReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Last reading'**
+  String get coldChainLastReading;
+
+  /// No description provided for @coldChainMetrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Temperatures of the trip'**
+  String get coldChainMetrics;
+
+  /// No description provided for @coldChainAverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Average'**
+  String get coldChainAverage;
+
+  /// No description provided for @coldChainMinimum.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum'**
+  String get coldChainMinimum;
+
+  /// No description provided for @coldChainMaximum.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum'**
+  String get coldChainMaximum;
+
+  /// No description provided for @coldChainSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Calculated from the reefer readings of this delivery.'**
+  String get coldChainSource;
 }
 
 class _AppLocalizationsDelegate

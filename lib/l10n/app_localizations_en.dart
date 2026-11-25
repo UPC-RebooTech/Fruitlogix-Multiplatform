@@ -1357,4 +1357,64 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get qmNoReportableOrders =>
       'None of your orders has a harvest lot linked yet. You can report an incident once the producer links it.';
+
+  @override
+  String get trackingDelayTitle => 'Delay in transit';
+
+  @override
+  String get trackingDelayNoReason => 'The distributor reported a delay.';
+
+  @override
+  String trackingDelayEta(String eta) {
+    return 'Current ETA: $eta';
+  }
+
+  @override
+  String get coldChainOpenCertificate => 'View cold-chain certificate';
+
+  @override
+  String get coldChainCertificateTitle => 'Cold-chain certificate';
+
+  @override
+  String coldChainCompliance(String percent) {
+    return '$percent% in range';
+  }
+
+  @override
+  String coldChainReadings(int inRange, int total) {
+    return '$inRange of $total readings inside the target range';
+  }
+
+  @override
+  String get coldChainOrder => 'Order';
+
+  @override
+  String get coldChainTargetRange => 'Target range';
+
+  @override
+  String get coldChainMonitored => 'Monitored';
+
+  @override
+  String coldChainHours(String hours) {
+    return '$hours h';
+  }
+
+  @override
+  String get coldChainLastReading => 'Last reading';
+
+  @override
+  String get coldChainMetrics => 'Temperatures of the trip';
+
+  @override
+  String get coldChainAverage => 'Average';
+
+  @override
+  String get coldChainMinimum => 'Minimum';
+
+  @override
+  String get coldChainMaximum => 'Maximum';
+
+  @override
+  String get coldChainSource =>
+      'Calculated from the reefer readings of this delivery.';
 }

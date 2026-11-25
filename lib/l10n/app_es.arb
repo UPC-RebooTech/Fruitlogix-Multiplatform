@@ -408,5 +408,22 @@
   "productMinOrder": "Pedido mínimo: {quantity} {unit}",
   "traceNotApplicable": "No aplica",
   "traceLoadError": "No pudimos cargar la trazabilidad de este pedido.",
-  "qmNoReportableOrders": "Ninguno de tus pedidos tiene un lote de cosecha vinculado todavía. Podrás reportar una incidencia cuando el productor lo vincule."
+  "qmNoReportableOrders": "Ninguno de tus pedidos tiene un lote de cosecha vinculado todavía. Podrás reportar una incidencia cuando el productor lo vincule.",
+  "trackingDelayTitle": "Retraso en tránsito",
+  "trackingDelayNoReason": "El distribuidor reportó un retraso.",
+  "trackingDelayEta": "Llegada estimada actual: {eta}",
+  "coldChainOpenCertificate": "Ver certificado de cadena de frío",
+  "coldChainCertificateTitle": "Certificado de cadena de frío",
+  "coldChainCompliance": "{percent}% en rango",
+  "coldChainReadings": "{inRange} de {total} lecturas dentro del rango objetivo",
+  "coldChainOrder": "Pedido",
+  "coldChainTargetRange": "Rango objetivo",
+  "coldChainMonitored": "Monitoreado",
+  "coldChainHours": "{hours} h",
+  "coldChainLastReading": "Última lectura",
+  "coldChainMetrics": "Temperaturas del viaje",
+  "coldChainAverage": "Promedio",
+  "coldChainMinimum": "Mínima",
+  "coldChainMaximum": "Máxima",
+  "coldChainSource": "Calculado con las lecturas del equipo de frío de esta entrega."
 }

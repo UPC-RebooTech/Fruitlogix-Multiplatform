@@ -139,6 +139,7 @@ class DeliveryShipment {
     this.dispatchedAt,
     this.arrivedAt,
     this.telemetry,
+    this.readings = const [],
     this.events = const [],
     this.itemsSummary,
     this.isReceived = false,
@@ -179,6 +180,19 @@ class DeliveryShipment {
 
   /// Latest reading; null when the reefer has not reported yet.
   final TelemetryLog? telemetry;
+
+  /// Every cold-chain reading of the trip, oldest first.
+  final List<TelemetryLog> readings;
+
+  /// Cold-chain summary of the trip, computed from [readings]; null
+  /// without readings.
+  ColdChainCertificate? get coldChainCertificate =>
+      ColdChainCertificate.fromReadings(readings);
+
+  /// The latest delay the distributor reported (its `note` is the reason).
+  TrackingEventItem? get latestDelay => events
+      .where((e) => e.type == DeliveryEventType.delayed)
+      .lastOrNull;
   final List<TrackingEventItem> events;
   final String? itemsSummary;
 
@@ -195,6 +209,62 @@ class DeliveryShipment {
 
   bool get canCallDriver =>
       (driverPhone ?? '').replaceAll(RegExp(r'\D'), '').length >= 6;
+}
+
+/// Cold-chain compliance of a trip, from its tracking logs (the platform
+/// stores every reading; it issues no certificate of its own).
+class ColdChainCertificate {
+  const ColdChainCertificate({
+    required this.readingsCount,
+    required this.averageTempC,
+    required this.minTempC,
+    required this.maxTempC,
+    required this.inRangeCount,
+    this.firstReadingAt,
+    this.lastReadingAt,
+  });
+
+  /// Target range of the reefer for fresh fruit (°C).
+  static const double rangeMinC = 1;
+  static const double rangeMaxC = 6;
+
+  /// Null without readings.
+  static ColdChainCertificate? fromReadings(List<TelemetryLog> readings) {
+    if (readings.isEmpty) return null;
+    final temps = [for (final r in readings) r.temperatureC];
+    final dated = [
+      for (final r in readings)
+        if (r.recordedAt != null) r.recordedAt!,
+    ]..sort();
+    return ColdChainCertificate(
+      readingsCount: readings.length,
+      averageTempC: temps.reduce((a, b) => a + b) / temps.length,
+      minTempC: temps.reduce((a, b) => a < b ? a : b),
+      maxTempC: temps.reduce((a, b) => a > b ? a : b),
+      inRangeCount:
+          temps.where((t) => t >= rangeMinC && t <= rangeMaxC).length,
+      firstReadingAt: dated.firstOrNull,
+      lastReadingAt: dated.lastOrNull,
+    );
+  }
+
+  final int readingsCount;
+  final double averageTempC;
+  final double minTempC;
+  final double maxTempC;
+  final int inRangeCount;
+  final DateTime? firstReadingAt;
+  final DateTime? lastReadingAt;
+
+  /// Share of readings inside the target range (0–100).
+  double get compliancePercent => inRangeCount * 100 / readingsCount;
+
+  bool get isCompliant => inRangeCount == readingsCount;
+
+  /// Time between the first and the last reading.
+  Duration? get monitored => firstReadingAt == null || lastReadingAt == null
+      ? null
+      : lastReadingAt!.difference(firstReadingAt!);
 }
 
 /// What the client records when the goods arrive (US35).

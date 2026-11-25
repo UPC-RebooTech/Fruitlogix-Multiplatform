@@ -9,7 +9,9 @@ import '../domain/shipment.dart';
 import '../infrastructure/fruitlogix_logistics_api.dart';
 import '../infrastructure/phone_dialer.dart';
 import '../application/arrivals_controller.dart';
+import 'cold_chain_certificate_sheet.dart';
 import 'confirm_reception_page.dart';
+import 'delay_alert_banner.dart';
 import 'warehouse_arrivals_section.dart';
 
 /// Tracking of the client's deliveries: overview (dark highlight), driver
@@ -152,6 +154,16 @@ class _DeliveryTrackingPageState extends State<DeliveryTrackingPage> {
                   const SizedBox(height: CosechaSpace.sm),
                 ],
                 _ShipmentOverview(shipment: selected),
+                // The distributor reported a delay (`report-delay`).
+                if (selected.status == ShipmentStatus.delayed) ...[
+                  const SizedBox(height: CosechaSpace.xs),
+                  DelayAlertBanner(
+                    delay: selected.latestDelay,
+                    eta: selected.estimatedArrival == null
+                        ? null
+                        : _formatDateTime(context, selected.estimatedArrival!),
+                  ),
+                ],
                 const SizedBox(height: CosechaSpace.md),
                 CosechaOverline(l10n.trackingDriverSection),
                 const SizedBox(height: CosechaSpace.xs),
@@ -175,6 +187,19 @@ class _DeliveryTrackingPageState extends State<DeliveryTrackingPage> {
                   )
                 else
                   _ColdChain(telemetry: selected.telemetry!),
+                if (selected.coldChainCertificate case final certificate?) ...[
+                  const SizedBox(height: CosechaSpace.xs),
+                  CosechaSecondaryButton(
+                    label: l10n.coldChainOpenCertificate,
+                    icon: Icons.verified_outlined,
+                    onPressed: () => ColdChainCertificateSheet.show(
+                      context,
+                      certificate: certificate,
+                      trackingNumber: selected.trackingNumber,
+                      orderCode: selected.orderId,
+                    ),
+                  ),
+                ],
                 if (selected.events.isNotEmpty) ...[
                   const SizedBox(height: CosechaSpace.md),
                   CosechaOverline(l10n.trackingEvents),

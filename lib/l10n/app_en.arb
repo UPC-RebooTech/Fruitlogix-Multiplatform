@@ -580,5 +580,34 @@
   },
   "traceNotApplicable": "Does not apply",
   "traceLoadError": "We couldn't load the traceability of this order.",
-  "qmNoReportableOrders": "None of your orders has a harvest lot linked yet. You can report an incident once the producer links it."
+  "qmNoReportableOrders": "None of your orders has a harvest lot linked yet. You can report an incident once the producer links it.",
+  "trackingDelayTitle": "Delay in transit",
+  "trackingDelayNoReason": "The distributor reported a delay.",
+  "trackingDelayEta": "Current ETA: {eta}",
+  "@trackingDelayEta": {
+    "placeholders": { "eta": { "type": "String", "example": "26 November 2026 · 4:30 PM" } }
+  },
+  "coldChainOpenCertificate": "View cold-chain certificate",
+  "coldChainCertificateTitle": "Cold-chain certificate",
+  "coldChainCompliance": "{percent}% in range",
+  "@coldChainCompliance": {
+    "placeholders": { "percent": { "type": "String", "example": "99" } }
+  },
+  "coldChainReadings": "{inRange} of {total} readings inside the target range",
+  "@coldChainReadings": {
+    "placeholders": { "inRange": { "type": "int", "example": "5" }, "total": { "type": "int", "example": "5" } }
+  },
+  "coldChainOrder": "Order",
+  "coldChainTargetRange": "Target range",
+  "coldChainMonitored": "Monitored",
+  "coldChainHours": "{hours} h",
+  "@coldChainHours": {
+    "placeholders": { "hours": { "type": "String", "example": "9.5" } }
+  },
+  "coldChainLastReading": "Last reading",
+  "coldChainMetrics": "Temperatures of the trip",
+  "coldChainAverage": "Average",
+  "coldChainMinimum": "Minimum",
+  "coldChainMaximum": "Maximum",
+  "coldChainSource": "Calculated from the reefer readings of this delivery."
 }

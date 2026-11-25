@@ -1364,4 +1364,64 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get qmNoReportableOrders =>
       'Ninguno de tus pedidos tiene un lote de cosecha vinculado todavía. Podrás reportar una incidencia cuando el productor lo vincule.';
+
+  @override
+  String get trackingDelayTitle => 'Retraso en tránsito';
+
+  @override
+  String get trackingDelayNoReason => 'El distribuidor reportó un retraso.';
+
+  @override
+  String trackingDelayEta(String eta) {
+    return 'Llegada estimada actual: $eta';
+  }
+
+  @override
+  String get coldChainOpenCertificate => 'Ver certificado de cadena de frío';
+
+  @override
+  String get coldChainCertificateTitle => 'Certificado de cadena de frío';
+
+  @override
+  String coldChainCompliance(String percent) {
+    return '$percent% en rango';
+  }
+
+  @override
+  String coldChainReadings(int inRange, int total) {
+    return '$inRange de $total lecturas dentro del rango objetivo';
+  }
+
+  @override
+  String get coldChainOrder => 'Pedido';
+
+  @override
+  String get coldChainTargetRange => 'Rango objetivo';
+
+  @override
+  String get coldChainMonitored => 'Monitoreado';
+
+  @override
+  String coldChainHours(String hours) {
+    return '$hours h';
+  }
+
+  @override
+  String get coldChainLastReading => 'Última lectura';
+
+  @override
+  String get coldChainMetrics => 'Temperaturas del viaje';
+
+  @override
+  String get coldChainAverage => 'Promedio';
+
+  @override
+  String get coldChainMinimum => 'Mínima';
+
+  @override
+  String get coldChainMaximum => 'Máxima';
+
+  @override
+  String get coldChainSource =>
+      'Calculado con las lecturas del equipo de frío de esta entrega.';
 }

@@ -43,19 +43,21 @@ class HttpShipmentRepository implements ShipmentRepository {
     ShipmentOrderRef order,
   ) async {
     final id = DeliveryJsonParser.idOf(json);
-    final (reading, events) = id == null
+    final (logs, events) = id == null
         ? (null, null)
         : await (
             _optional(() async =>
-                DeliveryJsonParser.latestReading(await api.getTrackingLogs(id))),
+                DeliveryJsonParser.readings(await api.getTrackingLogs(id))),
             _optional(() async =>
                 DeliveryJsonParser.events(await api.getDeliveryEvents(id))),
           ).wait;
+    final readings = logs ?? const <TelemetryLog>[];
     try {
       return DeliveryJsonParser.parse(
         json,
         order: order,
-        telemetry: reading,
+        telemetry: readings.lastOrNull,
+        readings: readings,
         events: events ?? const [],
       );
     } on FormatException {

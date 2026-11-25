@@ -47,6 +47,14 @@ class DemoShipmentRepository implements ShipmentRepository {
           // ~1.5 km from the demo warehouse (US65).
           position: const GeoPoint(-12.0712, -77.0251),
         ),
+        // The trip so far, for the cold-chain certificate.
+        readings: [
+          TelemetryLog(temperatureC: 3.8, humidityPercent: 88, recordedAt: at(0, 6, 0)),
+          TelemetryLog(temperatureC: 4.0, humidityPercent: 87, recordedAt: at(0, 8, 0)),
+          TelemetryLog(temperatureC: 5.3, humidityPercent: 85, recordedAt: at(0, 11, 30)),
+          TelemetryLog(temperatureC: 4.1, humidityPercent: 86, recordedAt: at(0, 12, 50)),
+          TelemetryLog(temperatureC: 4.2, humidityPercent: 86, recordedAt: at(0, 14, 10)),
+        ],
         events: const [
           TrackingEventItem(
             time: '06:00 AM',
