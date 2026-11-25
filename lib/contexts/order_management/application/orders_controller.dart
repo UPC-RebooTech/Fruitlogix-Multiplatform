@@ -247,10 +247,14 @@ class OrdersController extends ChangeNotifier {
   }
 
   void _upsert(CommercialOrder updated) {
-    _orders = List.unmodifiable([
+    final updatedOrders = <CommercialOrder>[
       ..._orders.where((order) => order.id != updated.id),
       updated,
-    ]..sort(_newestFirst));
+    ];
+
+    updatedOrders.sort(_newestFirst);
+
+    _orders = List<CommercialOrder>.unmodifiable(updatedOrders);
     _status = OrdersStatus.ready;
     _notify();
   }
