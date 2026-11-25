@@ -39,7 +39,14 @@ void main() {
     await tester.tap(find.text('Open edit'));
     await tester.pumpAndSettle();
     expect(find.text('Edit order details'), findsOneWidget);
-    await tester.tap(find.text('Save changes'));
+
+    final saveButton = find.text('Save changes');
+    expect(saveButton, findsOneWidget);
+
+    await tester.ensureVisible(saveButton);
+    await tester.pumpAndSettle();
+
+    await tester.tap(saveButton);
     await tester.pumpAndSettle();
     expect(result, isNotNull);
     expect(result!.deliveryAddress, 'Av. Arequipa 123');
