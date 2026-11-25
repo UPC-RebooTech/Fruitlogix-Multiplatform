@@ -4,9 +4,16 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 
+import '../../../shared/infrastructure/api_errors.dart';
 import '../../../shared/infrastructure/fruitlogix_api_config.dart';
 
-enum PaymentApiFailure { network, unauthorized, notFound, server, unexpectedResponse }
+enum PaymentApiFailure {
+  network,
+  unauthorized,
+  notFound,
+  server,
+  unexpectedResponse,
+}
 
 class PaymentApiException implements Exception {
   const PaymentApiException(this.reason, [this.message]);
@@ -16,7 +23,8 @@ class PaymentApiException implements Exception {
   final String? message;
 
   @override
-  String toString() => 'PaymentApiException($reason${message == null ? '' : ': $message'})';
+  String toString() =>
+      'PaymentApiException($reason${message == null ? '' : ': $message'})';
 }
 
 /// HTTP client of the Payment Management endpoints. Every call carries the
@@ -26,9 +34,9 @@ class FruitLogixPaymentsApi {
     required String Function() token,
     http.Client? client,
     Uri? baseUri,
-  })  : _token = token,
-        _client = client ?? http.Client(),
-        _baseUri = baseUri ?? Uri.parse(fruitLogixApiUrl);
+  }) : _token = token,
+       _client = client ?? http.Client(),
+       _baseUri = baseUri ?? Uri.parse(fruitLogixApiUrl);
 
   final String Function() _token;
   final http.Client _client;
@@ -38,34 +46,36 @@ class FruitLogixPaymentsApi {
   static const Duration _timeout = Duration(seconds: 60);
 
   Map<String, String> get _headers => {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${_token()}',
-      };
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer ${_token()}',
+  };
 
   /// `GET /api/v1/invoices`
   Future<Object?> getInvoices() => _send(
-        () => _client.get(_baseUri.resolve('/api/v1/invoices'), headers: _headers),
-      );
+    () => _client.get(_baseUri.resolve('/api/v1/invoices'), headers: _headers),
+  );
 
   /// `GET /api/v1/memberships/me`
   Future<Object?> getMyMembership() => _send(
-        () => _client.get(_baseUri.resolve('/api/v1/memberships/me'), headers: _headers),
-      );
+    () => _client.get(
+      _baseUri.resolve('/api/v1/memberships/me'),
+      headers: _headers,
+    ),
+  );
 
   /// `POST /api/v1/payments/subscribe`
   Future<Object?> subscribe({
     required String email,
     required String name,
     required String planType,
-  }) =>
-      _send(
-        () => _client.post(
-          _baseUri.resolve('/api/v1/payments/subscribe'),
-          headers: _headers,
-          body: jsonEncode({'email': email, 'name': name, 'planType': planType}),
-        ),
-      );
+  }) => _send(
+    () => _client.post(
+      _baseUri.resolve('/api/v1/payments/subscribe'),
+      headers: _headers,
+      body: jsonEncode({'email': email, 'name': name, 'planType': planType}),
+    ),
+  );
 
   Future<Object?> _send(Future<http.Response> Function() request) async {
     final http.Response response;
@@ -82,19 +92,23 @@ class FruitLogixPaymentsApi {
     }
 
     final code = response.statusCode;
-    if (code == 401 || code == 403) {
+    // 401: missing, invalid or expired token (the shell signs out).
+    if (code == 401) {
       throw const PaymentApiException(PaymentApiFailure.unauthorized);
     }
-    if (code == 404) throw const PaymentApiException(PaymentApiFailure.notFound);
-    // The IAM middleware throws on a missing/invalid token, which surfaces
-    // as a 500 with an "invalid token" message.
-    if (code >= 500 && response.body.toLowerCase().contains('token')) {
-      throw const PaymentApiException(PaymentApiFailure.unauthorized);
+    // 404: it does not exist or it is not the user's.
+    if (code == 404) {
+      throw PaymentApiException(
+        PaymentApiFailure.notFound,
+        apiErrorMessage(response.body),
+      );
     }
     if (code < 200 || code >= 300) {
       throw PaymentApiException(
-        code >= 500 ? PaymentApiFailure.server : PaymentApiFailure.unexpectedResponse,
-        _messageOf(response.body),
+        code >= 500
+            ? PaymentApiFailure.server
+            : PaymentApiFailure.unexpectedResponse,
+        apiErrorMessage(response.body),
       );
     }
     if (response.body.trim().isEmpty) return null;
@@ -103,18 +117,6 @@ class FruitLogixPaymentsApi {
     } on FormatException {
       throw const PaymentApiException(PaymentApiFailure.unexpectedResponse);
     }
-  }
-
-  static String? _messageOf(String body) {
-    try {
-      final decoded = jsonDecode(body);
-      if (decoded is Map && decoded['message'] is String) {
-        return decoded['message'] as String;
-      }
-    } on FormatException {
-      return null;
-    }
-    return null;
   }
 
   void close() => _client.close();

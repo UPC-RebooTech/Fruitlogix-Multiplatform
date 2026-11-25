@@ -656,6 +656,60 @@ abstract class AppLocalizations {
   /// **'Rejected'**
   String get orderStatusRejected;
 
+  /// No description provided for @orderStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get orderStatusCancelled;
+
+  /// No description provided for @ordersLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load your orders'**
+  String get ordersLoadError;
+
+  /// No description provided for @orderSendError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t place the order. Your cart was kept; try again.'**
+  String get orderSendError;
+
+  /// No description provided for @orderPlaced.
+  ///
+  /// In en, this message translates to:
+  /// **'Order placed'**
+  String get orderPlaced;
+
+  /// No description provided for @orderSending.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending order…'**
+  String get orderSending;
+
+  /// No description provided for @orderNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes for the distributor'**
+  String get orderNotes;
+
+  /// No description provided for @orderNotesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes for the distributor (optional)'**
+  String get orderNotesLabel;
+
+  /// No description provided for @orderNotesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Unloading hours, ripeness, packaging…'**
+  String get orderNotesHint;
+
+  /// No description provided for @dashboardNoActiveOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no active orders.'**
+  String get dashboardNoActiveOrders;
+
   /// No description provided for @ordersTitle.
   ///
   /// In en, this message translates to:
@@ -665,7 +719,7 @@ abstract class AppLocalizations {
   /// No description provided for @ordersSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Orders placed in this session (demo)'**
+  /// **'Your orders and their status'**
   String get ordersSubtitle;
 
   /// No description provided for @ordersEmptyTitle.
@@ -679,6 +733,294 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add products in the catalog to create your first order.'**
   String get ordersEmptyMessage;
+
+  /// No description provided for @ordersTabActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active ({count})'**
+  String ordersTabActive(int count);
+
+  /// No description provided for @ordersTabHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'History ({count})'**
+  String ordersTabHistory(int count);
+
+  /// No description provided for @ordersHistoryEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No orders in your history yet'**
+  String get ordersHistoryEmptyTitle;
+
+  /// No description provided for @ordersHistoryEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered, cancelled or rejected orders will appear here.'**
+  String get ordersHistoryEmptyMessage;
+
+  /// No description provided for @ordersSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by order code or product'**
+  String get ordersSearchHint;
+
+  /// No description provided for @ordersSearchClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear search'**
+  String get ordersSearchClear;
+
+  /// No description provided for @ordersFilterStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get ordersFilterStatus;
+
+  /// No description provided for @ordersFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get ordersFilterAll;
+
+  /// No description provided for @ordersFiltersToggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get ordersFiltersToggle;
+
+  /// No description provided for @ordersFiltersToggleActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters ({count})'**
+  String ordersFiltersToggleActive(int count);
+
+  /// No description provided for @ordersFilterDates.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery date'**
+  String get ordersFilterDates;
+
+  /// No description provided for @ordersFilterProducer.
+  ///
+  /// In en, this message translates to:
+  /// **'Producer'**
+  String get ordersFilterProducer;
+
+  /// No description provided for @ordersAnyDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Any date'**
+  String get ordersAnyDate;
+
+  /// No description provided for @ordersDateRange.
+  ///
+  /// In en, this message translates to:
+  /// **'{from} – {to}'**
+  String ordersDateRange(String from, String to);
+
+  /// No description provided for @ordersClearDates.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove dates'**
+  String get ordersClearDates;
+
+  /// No description provided for @ordersResultsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No orders} =1{1 order} other{{count} orders}}'**
+  String ordersResultsCount(int count);
+
+  /// No description provided for @ordersClearFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear filters'**
+  String get ordersClearFilters;
+
+  /// No description provided for @ordersNoResultsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No orders match these filters'**
+  String get ordersNoResultsTitle;
+
+  /// No description provided for @ordersNoResultsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Try another search or remove some filters.'**
+  String get ordersNoResultsMessage;
+
+  /// No description provided for @ordersProducer.
+  ///
+  /// In en, this message translates to:
+  /// **'Producer'**
+  String get ordersProducer;
+
+  /// No description provided for @traceOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'View traceability'**
+  String get traceOpen;
+
+  /// No description provided for @traceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Traceability {code}'**
+  String traceTitle(String code);
+
+  /// No description provided for @traceStagesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Lot timeline'**
+  String get traceStagesTitle;
+
+  /// No description provided for @traceProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{done} of {total} stages'**
+  String traceProgress(int done, int total);
+
+  /// No description provided for @traceLotUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Not linked to a lot yet'**
+  String get traceLotUnknown;
+
+  /// No description provided for @traceHarvested.
+  ///
+  /// In en, this message translates to:
+  /// **'Harvested'**
+  String get traceHarvested;
+
+  /// No description provided for @traceInspected.
+  ///
+  /// In en, this message translates to:
+  /// **'Quality inspected'**
+  String get traceInspected;
+
+  /// No description provided for @traceLoaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Loaded and dispatched'**
+  String get traceLoaded;
+
+  /// No description provided for @traceReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'Received'**
+  String get traceReceived;
+
+  /// No description provided for @traceInvoiced.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoiced'**
+  String get traceInvoiced;
+
+  /// No description provided for @tracePending.
+  ///
+  /// In en, this message translates to:
+  /// **'To do'**
+  String get tracePending;
+
+  /// No description provided for @traceNoRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'No record'**
+  String get traceNoRecord;
+
+  /// No description provided for @traceNoDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date not recorded'**
+  String get traceNoDate;
+
+  /// No description provided for @traceResponsible.
+  ///
+  /// In en, this message translates to:
+  /// **'Responsible: {name}'**
+  String traceResponsible(String name);
+
+  /// No description provided for @traceInspectionApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get traceInspectionApproved;
+
+  /// No description provided for @traceInspectionRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get traceInspectionRejected;
+
+  /// No description provided for @traceInvoiceIssuer.
+  ///
+  /// In en, this message translates to:
+  /// **'Distributor'**
+  String get traceInvoiceIssuer;
+
+  /// No description provided for @traceNoRecordNote.
+  ///
+  /// In en, this message translates to:
+  /// **'\"No record\": the stage already happened, but the platform has no data for it yet.'**
+  String get traceNoRecordNote;
+
+  /// No description provided for @performanceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Compliance by producer'**
+  String get performanceTitle;
+
+  /// No description provided for @performanceOnTime.
+  ///
+  /// In en, this message translates to:
+  /// **'On time'**
+  String get performanceOnTime;
+
+  /// No description provided for @performanceLate.
+  ///
+  /// In en, this message translates to:
+  /// **'Late'**
+  String get performanceLate;
+
+  /// No description provided for @performanceGood.
+  ///
+  /// In en, this message translates to:
+  /// **'Meets'**
+  String get performanceGood;
+
+  /// No description provided for @performanceFair.
+  ///
+  /// In en, this message translates to:
+  /// **'Fair'**
+  String get performanceFair;
+
+  /// No description provided for @performanceLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get performanceLow;
+
+  /// No description provided for @performanceDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'{onTime} of {total} on time · {late} late'**
+  String performanceDetail(int onTime, int total, int late);
+
+  /// No description provided for @performanceNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered orders compared with their delivery date; active orders past their date count as late.'**
+  String get performanceNote;
+
+  /// No description provided for @performanceNoData.
+  ///
+  /// In en, this message translates to:
+  /// **'No compliance statistics yet. They appear when orders with an assigned producer are delivered.'**
+  String get performanceNoData;
+
+  /// No description provided for @ordersProducerFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Producer #{id}'**
+  String ordersProducerFallback(int id);
 
   /// No description provided for @orderDeliveryDate.
   ///
@@ -763,6 +1105,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Transport'**
   String get trackingTransport;
+
+  /// No description provided for @trackingYourDeliveries.
+  ///
+  /// In en, this message translates to:
+  /// **'Your deliveries'**
+  String get trackingYourDeliveries;
+
+  /// No description provided for @trackingLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load your deliveries'**
+  String get trackingLoadError;
+
+  /// No description provided for @trackingEtaUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'To be confirmed'**
+  String get trackingEtaUnknown;
+
+  /// No description provided for @trackingRoute.
+  ///
+  /// In en, this message translates to:
+  /// **'Route'**
+  String get trackingRoute;
+
+  /// No description provided for @trackingRouteValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{origin} to {destination}'**
+  String trackingRouteValue(String origin, String destination);
+
+  /// No description provided for @trackingStatusScheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled'**
+  String get trackingStatusScheduled;
+
+  /// No description provided for @trackingStatusDispatched.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatched'**
+  String get trackingStatusDispatched;
+
+  /// No description provided for @trackingStatusDelayed.
+  ///
+  /// In en, this message translates to:
+  /// **'Delayed'**
+  String get trackingStatusDelayed;
+
+  /// No description provided for @trackingDriverSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver and vehicle'**
+  String get trackingDriverSection;
+
+  /// No description provided for @trackingDriverPending.
+  ///
+  /// In en, this message translates to:
+  /// **'A driver hasn\'t been assigned yet'**
+  String get trackingDriverPending;
+
+  /// No description provided for @trackingVehicle.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle'**
+  String get trackingVehicle;
+
+  /// No description provided for @trackingPlate.
+  ///
+  /// In en, this message translates to:
+  /// **'Plate'**
+  String get trackingPlate;
+
+  /// No description provided for @trackingCallDriver.
+  ///
+  /// In en, this message translates to:
+  /// **'Call driver'**
+  String get trackingCallDriver;
+
+  /// No description provided for @trackingCallDriverHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens the phone app to call {name}'**
+  String trackingCallDriverHint(String name);
+
+  /// No description provided for @trackingCallError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t open the phone app'**
+  String get trackingCallError;
+
+  /// No description provided for @trackingNoReadings.
+  ///
+  /// In en, this message translates to:
+  /// **'The reefer hasn\'t sent temperature readings yet.'**
+  String get trackingNoReadings;
+
+  /// No description provided for @trackingLastReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Last reading: {time}'**
+  String trackingLastReading(String time);
 
   /// No description provided for @trackingEvents.
   ///
@@ -865,6 +1309,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reception confirmed.'**
   String get receptionConfirmed;
+
+  /// No description provided for @receptionRateSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Service rating'**
+  String get receptionRateSection;
+
+  /// No description provided for @receptionRateQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'How was the delivery service?'**
+  String get receptionRateQuestion;
+
+  /// No description provided for @receptionRateOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional. Tap a star again to remove it.'**
+  String get receptionRateOptional;
+
+  /// No description provided for @receptionNotRated.
+  ///
+  /// In en, this message translates to:
+  /// **'Not rated'**
+  String get receptionNotRated;
+
+  /// No description provided for @receptionStars.
+  ///
+  /// In en, this message translates to:
+  /// **'{stars} of {max} stars'**
+  String receptionStars(int stars, int max);
+
+  /// No description provided for @receptionRating1.
+  ///
+  /// In en, this message translates to:
+  /// **'Very bad'**
+  String get receptionRating1;
+
+  /// No description provided for @receptionRating2.
+  ///
+  /// In en, this message translates to:
+  /// **'Bad'**
+  String get receptionRating2;
+
+  /// No description provided for @receptionRating3.
+  ///
+  /// In en, this message translates to:
+  /// **'Fair'**
+  String get receptionRating3;
+
+  /// No description provided for @receptionRating4.
+  ///
+  /// In en, this message translates to:
+  /// **'Good'**
+  String get receptionRating4;
+
+  /// No description provided for @receptionRating5.
+  ///
+  /// In en, this message translates to:
+  /// **'Excellent'**
+  String get receptionRating5;
+
+  /// No description provided for @receptionComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Comment (optional)'**
+  String get receptionComment;
+
+  /// No description provided for @receptionCommentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Punctuality, condition of the fruit, driver…'**
+  String get receptionCommentHint;
+
+  /// No description provided for @receptionSending.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending reception…'**
+  String get receptionSending;
+
+  /// No description provided for @receptionSendError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t register the reception. Try again.'**
+  String get receptionSendError;
+
+  /// No description provided for @receptionYourRatingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Your rating:'**
+  String get receptionYourRatingLabel;
+
+  /// No description provided for @receptionYourRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Your rating: {stars}'**
+  String receptionYourRating(String stars);
 
   /// No description provided for @paymentsInvoices.
   ///
@@ -1055,7 +1595,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileLoadFailed.
   ///
   /// In en, this message translates to:
-  /// **'Could not load your local profile.'**
+  /// **'Could not load your profile.'**
   String get profileLoadFailed;
 
   /// No description provided for @profileRetry.
@@ -1363,6 +1903,648 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Active since {date}'**
   String proActiveSince(String date);
+
+  /// No description provided for @qmIncidentsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Incidents'**
+  String get qmIncidentsTitle;
+
+  /// No description provided for @qmKpiOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get qmKpiOpen;
+
+  /// No description provided for @qmKpiInReview.
+  ///
+  /// In en, this message translates to:
+  /// **'In review'**
+  String get qmKpiInReview;
+
+  /// No description provided for @qmKpiClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get qmKpiClosed;
+
+  /// No description provided for @qmReportIncident.
+  ///
+  /// In en, this message translates to:
+  /// **'Report an incident'**
+  String get qmReportIncident;
+
+  /// No description provided for @qmNewIncidentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New incident'**
+  String get qmNewIncidentTitle;
+
+  /// No description provided for @qmYourIncidents.
+  ///
+  /// In en, this message translates to:
+  /// **'Your incidents'**
+  String get qmYourIncidents;
+
+  /// No description provided for @qmFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get qmFilterAll;
+
+  /// No description provided for @qmStatusOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get qmStatusOpen;
+
+  /// No description provided for @qmStatusInReview.
+  ///
+  /// In en, this message translates to:
+  /// **'In review'**
+  String get qmStatusInReview;
+
+  /// No description provided for @qmStatusResolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get qmStatusResolved;
+
+  /// No description provided for @qmStatusRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get qmStatusRejected;
+
+  /// No description provided for @qmEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No incidents'**
+  String get qmEmptyTitle;
+
+  /// No description provided for @qmEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'If an order arrives with a problem, report it here with photos.'**
+  String get qmEmptyMessage;
+
+  /// No description provided for @qmEmptyFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'No incidents with this status'**
+  String get qmEmptyFilter;
+
+  /// No description provided for @qmLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load your incidents'**
+  String get qmLoadError;
+
+  /// No description provided for @qmRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get qmRetry;
+
+  /// No description provided for @qmSessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session expired. Sign in again.'**
+  String get qmSessionExpired;
+
+  /// No description provided for @qmIncidentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Incident {code}'**
+  String qmIncidentTitle(String code);
+
+  /// No description provided for @qmOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Order'**
+  String get qmOrder;
+
+  /// No description provided for @qmLot.
+  ///
+  /// In en, this message translates to:
+  /// **'Lot'**
+  String get qmLot;
+
+  /// No description provided for @qmReportedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Reported'**
+  String get qmReportedAt;
+
+  /// No description provided for @qmDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get qmDescription;
+
+  /// No description provided for @qmPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos'**
+  String get qmPhotos;
+
+  /// No description provided for @qmPhotoCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No photos} =1{1 photo} other{{count} photos}}'**
+  String qmPhotoCount(int count);
+
+  /// No description provided for @qmPhotoLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo {number}'**
+  String qmPhotoLabel(int number);
+
+  /// No description provided for @qmPhotosLocalNote.
+  ///
+  /// In en, this message translates to:
+  /// **'A copy of the photos stays on this phone.'**
+  String get qmPhotosLocalNote;
+
+  /// No description provided for @qmTargetLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Order'**
+  String get qmTargetLabel;
+
+  /// No description provided for @qmTargetRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the order with the problem'**
+  String get qmTargetRequired;
+
+  /// No description provided for @qmTargetValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{order} · Lot {lot}'**
+  String qmTargetValue(String order, String lot);
+
+  /// No description provided for @qmDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'What happened?'**
+  String get qmDescriptionLabel;
+
+  /// No description provided for @qmDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Damaged fruit, wrong product, temperature…'**
+  String get qmDescriptionHint;
+
+  /// No description provided for @qmDescriptionHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us what you saw and how many boxes are affected.'**
+  String get qmDescriptionHelper;
+
+  /// No description provided for @qmDescriptionError.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe the problem (at least 10 characters)'**
+  String get qmDescriptionError;
+
+  /// No description provided for @qmPhotosLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos (optional, up to {max})'**
+  String qmPhotosLabel(int max);
+
+  /// No description provided for @qmAddPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Add photo'**
+  String get qmAddPhoto;
+
+  /// No description provided for @qmTakePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a photo'**
+  String get qmTakePhoto;
+
+  /// No description provided for @qmChooseGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from gallery'**
+  String get qmChooseGallery;
+
+  /// No description provided for @qmRemovePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove photo {number}'**
+  String qmRemovePhoto(int number);
+
+  /// No description provided for @qmPhotoError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t get the photo'**
+  String get qmPhotoError;
+
+  /// No description provided for @qmSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send report'**
+  String get qmSend;
+
+  /// No description provided for @qmSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Incident reported'**
+  String get qmSent;
+
+  /// No description provided for @qmSendError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t send the report. Try again.'**
+  String get qmSendError;
+
+  /// No description provided for @arrivalsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrivals at your warehouse'**
+  String get arrivalsSection;
+
+  /// No description provided for @arrivalsZoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse zone'**
+  String get arrivalsZoneTitle;
+
+  /// No description provided for @arrivalsZoneActive.
+  ///
+  /// In en, this message translates to:
+  /// **'{radius} km around your warehouse · alerts on'**
+  String arrivalsZoneActive(String radius);
+
+  /// No description provided for @arrivalsZoneNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set · set it to get an alert when a truck arrives'**
+  String get arrivalsZoneNotSet;
+
+  /// No description provided for @arrivalsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No arrivals yet'**
+  String get arrivalsEmptyTitle;
+
+  /// No description provided for @arrivalsEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll notify you when a truck enters your warehouse zone.'**
+  String get arrivalsEmptyMessage;
+
+  /// No description provided for @arrivalsDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'{distance} km away'**
+  String arrivalsDistance(String distance);
+
+  /// No description provided for @arrivalsSheetMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Do this from your warehouse: your current location becomes the center of the zone.'**
+  String get arrivalsSheetMessage;
+
+  /// No description provided for @arrivalsRadiusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Alert radius'**
+  String get arrivalsRadiusLabel;
+
+  /// No description provided for @arrivalsRadiusValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{radius} km'**
+  String arrivalsRadiusValue(String radius);
+
+  /// No description provided for @arrivalsUseLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Use my current location'**
+  String get arrivalsUseLocation;
+
+  /// No description provided for @arrivalsUpdateLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Move to my current location'**
+  String get arrivalsUpdateLocation;
+
+  /// No description provided for @arrivalsSaveRadius.
+  ///
+  /// In en, this message translates to:
+  /// **'Save radius'**
+  String get arrivalsSaveRadius;
+
+  /// No description provided for @arrivalsRemoveZone.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove zone'**
+  String get arrivalsRemoveZone;
+
+  /// No description provided for @arrivalsZoneSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse zone saved'**
+  String get arrivalsZoneSaved;
+
+  /// No description provided for @arrivalsZoneRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Zone removed. Your arrivals are kept.'**
+  String get arrivalsZoneRemoved;
+
+  /// No description provided for @arrivalsLocationDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on your phone\'s location and try again.'**
+  String get arrivalsLocationDisabled;
+
+  /// No description provided for @arrivalsLocationDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'FruitLogix needs your location to set the zone.'**
+  String get arrivalsLocationDenied;
+
+  /// No description provided for @arrivalsLocationDeniedForever.
+  ///
+  /// In en, this message translates to:
+  /// **'Location is blocked for FruitLogix. Allow it in your phone settings.'**
+  String get arrivalsLocationDeniedForever;
+
+  /// No description provided for @arrivalsLocationUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t get your location. Try again in a moment.'**
+  String get arrivalsLocationUnavailable;
+
+  /// No description provided for @arrivalNotificationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Truck arriving · {order}'**
+  String arrivalNotificationTitle(String order);
+
+  /// No description provided for @arrivalNotificationBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{driver} entered your warehouse zone ({distance} km).'**
+  String arrivalNotificationBody(String driver, String distance);
+
+  /// No description provided for @authWrongRole.
+  ///
+  /// In en, this message translates to:
+  /// **'This app is for commercial clients. Producers and distributors use the FruitLogix operations app.'**
+  String get authWrongRole;
+
+  /// No description provided for @authSessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session expired. Sign in again.'**
+  String get authSessionExpired;
+
+  /// No description provided for @orderStatusDeliveredWithIncidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered with incidence'**
+  String get orderStatusDeliveredWithIncidence;
+
+  /// No description provided for @trackingStatusFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'With a problem'**
+  String get trackingStatusFailed;
+
+  /// No description provided for @receptionNotInTransit.
+  ///
+  /// In en, this message translates to:
+  /// **'The order isn\'t in transit yet: confirm the reception once it has been dispatched.'**
+  String get receptionNotInTransit;
+
+  /// No description provided for @trackingEventCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery scheduled'**
+  String get trackingEventCreated;
+
+  /// No description provided for @trackingEventDispatched.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatched'**
+  String get trackingEventDispatched;
+
+  /// No description provided for @trackingEventDelayed.
+  ///
+  /// In en, this message translates to:
+  /// **'Delay reported'**
+  String get trackingEventDelayed;
+
+  /// No description provided for @trackingEventCheckpoint.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkpoint'**
+  String get trackingEventCheckpoint;
+
+  /// No description provided for @trackingEventCheckpointAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkpoint: {place}'**
+  String trackingEventCheckpointAt(String place);
+
+  /// No description provided for @trackingEventArrived.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrived at the warehouse'**
+  String get trackingEventArrived;
+
+  /// No description provided for @trackingEventDelivered.
+  ///
+  /// In en, this message translates to:
+  /// **'Reception confirmed'**
+  String get trackingEventDelivered;
+
+  /// No description provided for @trackingEventOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery update'**
+  String get trackingEventOther;
+
+  /// No description provided for @trackingDispatchedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatched'**
+  String get trackingDispatchedAt;
+
+  /// No description provided for @trackingArrivedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrived'**
+  String get trackingArrivedAt;
+
+  /// No description provided for @arrivalNotificationBodyNoDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'{driver} arrived at your warehouse.'**
+  String arrivalNotificationBodyNoDistance(String driver);
+
+  /// No description provided for @arrivalsZoneSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t save the warehouse zone. Try again.'**
+  String get arrivalsZoneSaveError;
+
+  /// No description provided for @profileStoredOnPlatform.
+  ///
+  /// In en, this message translates to:
+  /// **'Your profile is saved in your FruitLogix account.'**
+  String get profileStoredOnPlatform;
+
+  /// No description provided for @catalogNotEnoughStock.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough stock for that quantity.'**
+  String get catalogNotEnoughStock;
+
+  /// No description provided for @catalogOneProducer.
+  ///
+  /// In en, this message translates to:
+  /// **'An order can only have products of one producer. Place this one in another order.'**
+  String get catalogOneProducer;
+
+  /// No description provided for @catalogLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load the catalog.'**
+  String get catalogLoadError;
+
+  /// No description provided for @productMinOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum order: {quantity} {unit}'**
+  String productMinOrder(int quantity, String unit);
+
+  /// No description provided for @traceNotApplicable.
+  ///
+  /// In en, this message translates to:
+  /// **'Does not apply'**
+  String get traceNotApplicable;
+
+  /// No description provided for @traceLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load the traceability of this order.'**
+  String get traceLoadError;
+
+  /// No description provided for @qmNoReportableOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'None of your orders has a harvest lot linked yet. You can report an incident once the producer links it.'**
+  String get qmNoReportableOrders;
+
+  /// No description provided for @trackingDelayTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delay in transit'**
+  String get trackingDelayTitle;
+
+  /// No description provided for @trackingDelayNoReason.
+  ///
+  /// In en, this message translates to:
+  /// **'The distributor reported a delay.'**
+  String get trackingDelayNoReason;
+
+  /// No description provided for @trackingDelayEta.
+  ///
+  /// In en, this message translates to:
+  /// **'Current ETA: {eta}'**
+  String trackingDelayEta(String eta);
+
+  /// No description provided for @coldChainOpenCertificate.
+  ///
+  /// In en, this message translates to:
+  /// **'View cold-chain certificate'**
+  String get coldChainOpenCertificate;
+
+  /// No description provided for @coldChainCertificateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cold-chain certificate'**
+  String get coldChainCertificateTitle;
+
+  /// No description provided for @coldChainCompliance.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% in range'**
+  String coldChainCompliance(String percent);
+
+  /// No description provided for @coldChainReadings.
+  ///
+  /// In en, this message translates to:
+  /// **'{inRange} of {total} readings inside the target range'**
+  String coldChainReadings(int inRange, int total);
+
+  /// No description provided for @coldChainOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Order'**
+  String get coldChainOrder;
+
+  /// No description provided for @coldChainTargetRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Target range'**
+  String get coldChainTargetRange;
+
+  /// No description provided for @coldChainMonitored.
+  ///
+  /// In en, this message translates to:
+  /// **'Monitored'**
+  String get coldChainMonitored;
+
+  /// No description provided for @coldChainHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} h'**
+  String coldChainHours(String hours);
+
+  /// No description provided for @coldChainLastReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Last reading'**
+  String get coldChainLastReading;
+
+  /// No description provided for @coldChainMetrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Temperatures of the trip'**
+  String get coldChainMetrics;
+
+  /// No description provided for @coldChainAverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Average'**
+  String get coldChainAverage;
+
+  /// No description provided for @coldChainMinimum.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum'**
+  String get coldChainMinimum;
+
+  /// No description provided for @coldChainMaximum.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum'**
+  String get coldChainMaximum;
+
+  /// No description provided for @coldChainSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Calculated from the reefer readings of this delivery.'**
+  String get coldChainSource;
 }
 
 class _AppLocalizationsDelegate

@@ -78,6 +78,9 @@ class SecureLocalCommercialClientProfileRepository
   bool get isPersistent => true;
 
   @override
+  bool get syncsWithPlatform => false;
+
+  @override
   CommercialClientProfile get current => _current;
 
   @override

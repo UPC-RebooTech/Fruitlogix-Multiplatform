@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'fruitlogix_logo.dart';
+
 import '../theme/cosecha_status_colors.dart';
 import '../theme/cosecha_tokens.dart';
 import 'cosecha_surface.dart';
@@ -132,13 +134,18 @@ class CosechaAvatar extends StatelessWidget {
             color: scheme.primaryContainer,
             shape: BoxShape.circle,
           ),
-          child: Text(
-            initials,
-            style: Theme.of(context)
-                .textTheme
-                .labelLarge
-                ?.copyWith(color: scheme.onPrimaryContainer, height: 1),
-          ),
+          child: initials == '?'
+              ? const Padding(
+                  padding: EdgeInsets.all(5),
+                  child: FruitLogixLogo(),
+                )
+              : Text(
+                  initials,
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelLarge
+                      ?.copyWith(color: scheme.onPrimaryContainer, height: 1),
+                ),
         ),
       ),
     );

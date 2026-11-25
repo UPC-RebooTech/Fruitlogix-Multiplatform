@@ -45,6 +45,10 @@ dependencies:
   flutter_stripe: ^14.2.0 # US30 / TS17: native Payment Sheet
   flutter_local_notifications: ^23.0.3 # US70: invoice reminders
   timezone: any # US70: scheduled reminders (version pinned by the plugin)
+  image_picker: ^1.2.4
+  path_provider: ^2.1.6
+  geolocator: ^14.0.1
+  http_parser: ^4.1.2
 
 dev_dependencies:
   flutter_test:
@@ -101,6 +105,10 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+  # App logo (FruitLogix apple, transparent background).
+  assets:
+    - assets/images/fruitlogix_logo.png
 
   # Cosecha design system fonts. Bundled (not downloaded at runtime) so the
   # app works offline. Licenses: SIL OFL 1.1 (see OFL.txt next to each font).

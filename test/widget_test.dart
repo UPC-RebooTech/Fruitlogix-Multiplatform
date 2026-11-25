@@ -22,9 +22,14 @@ void main() {
     expect(find.text('Welcome, Carlos'), findsOneWidget);
 
     // The quick action sits below the KPI cards.
+    // Let the balance card replace its loader first (it changes the layout).
+    await tester.pumpAndSettle();
     final newOrder = find.text('New order');
     await tester.scrollUntilVisible(newOrder, 200,
         scrollable: find.byType(Scrollable).first);
+    // Bring the row fully above the bottom bar before tapping it.
+    await tester.ensureVisible(newOrder);
+    await tester.pumpAndSettle();
     await tester.tap(newOrder);
     await tester.pumpAndSettle();
 

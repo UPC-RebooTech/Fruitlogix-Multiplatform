@@ -56,6 +56,8 @@ class _FruitLogixAppState extends State<FruitLogixApp> {
           onSignOut: () {
             _authController.signOut();
           },
+          // A 401 from the platform: back to the login with a notice.
+          onSessionExpired: _authController.expire,
         ),
       ),
     );

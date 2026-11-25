@@ -1,274 +1,217 @@
 import 'package:flutter/material.dart';
 
-import '../../../shared/ui/theme/cosecha_palette.dart';
+import '../../../l10n/app_localizations.dart';
+import '../../../shared/ui/components/components.dart';
+import '../../../shared/ui/formatters/date_format.dart';
+import '../../../shared/ui/theme/theme.dart';
 import '../domain/shipment.dart';
 
+/// Cold-chain certificate of a trip: target range, monitored time and the
+/// temperatures of its tracking logs (average, minimum, maximum), with the
+/// share of readings inside the range.
 class ColdChainCertificateSheet extends StatelessWidget {
   const ColdChainCertificateSheet({
     required this.certificate,
     required this.trackingNumber,
-    required this.orderId,
+    required this.orderCode,
     super.key,
   });
 
   final ColdChainCertificate certificate;
   final String trackingNumber;
-  final String orderId;
+  final String orderCode;
 
   static Future<void> show(
-      BuildContext context, {
-        required ColdChainCertificate certificate,
-        required String trackingNumber,
-        required String orderId,
-      }) {
-    return showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => ColdChainCertificateSheet(
-        certificate: certificate,
-        trackingNumber: trackingNumber,
-        orderId: orderId,
-      ),
-    );
-  }
+    BuildContext context, {
+    required ColdChainCertificate certificate,
+    required String trackingNumber,
+    required String orderCode,
+  }) => showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    builder: (_) => ColdChainCertificateSheet(
+      certificate: certificate,
+      trackingNumber: trackingNumber,
+      orderCode: orderCode,
+    ),
+  );
+
+  static String _temp(double value) => '${value.toStringAsFixed(1)} °C';
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: CosechaPalette.neutral0,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      padding: EdgeInsets.only(
-        top: 16,
-        left: 20,
-        right: 20,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Barra de arrastre superior
-          Center(
-            child: Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: CosechaPalette.outlineVariant,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
+    final l10n = AppLocalizations.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    final colors = CosechaStatusColors.of(context);
+    final tone = certificate.isCompliant ? colors.success : colors.warning;
+    final monitored = certificate.monitored;
+    final last = certificate.lastReadingAt;
 
-          // Cabecera con insignia de certificación
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Cold-Chain Certificate',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: CosechaPalette.forest,
-                    ),
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(
+          CosechaSpace.md,
+          0,
+          CosechaSpace.md,
+          CosechaSpace.lg,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    l10n.coldChainCertificateTitle,
+                    style: textTheme.titleLarge,
                   ),
-                  Text(
-                    certificate.certificateId,
-                    style: const TextStyle(fontSize: 12, color: CosechaPalette.neutralVariant),
-                  ),
-                ],
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  color: CosechaPalette.ripeContainer,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: CosechaPalette.ripe),
                 ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.verified, size: 16, color: CosechaPalette.onRipeContainer),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${certificate.compliancePercentage}% Compliant',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: CosechaPalette.onRipeContainer,
+                CosechaStatusTag(
+                  label: l10n.coldChainCompliance(
+                    certificate.compliancePercent.toStringAsFixed(0),
+                  ),
+                  status: certificate.isCompliant
+                      ? CosechaStatus.success
+                      : CosechaStatus.warning,
+                  icon: certificate.isCompliant
+                      ? Icons.verified_outlined
+                      : Icons.warning_amber_rounded,
+                ),
+              ],
+            ),
+            const SizedBox(height: CosechaSpace.xxs),
+            Text(
+              l10n.coldChainReadings(
+                certificate.inRangeCount,
+                certificate.readingsCount,
+              ),
+              style: textTheme.bodyMedium?.copyWith(color: tone.color),
+            ),
+            const SizedBox(height: CosechaSpace.md),
+            CosechaCard(
+              tone: CosechaCardTone.light,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  CosechaInfoRow(
+                    icon: Icons.receipt_long_outlined,
+                    label: l10n.coldChainOrder,
+                    value: '$orderCode · $trackingNumber',
+                  ),
+                  const SizedBox(height: CosechaSpace.xs),
+                  CosechaInfoRow(
+                    icon: Icons.thermostat,
+                    label: l10n.coldChainTargetRange,
+                    value:
+                        '${_temp(ColdChainCertificate.rangeMinC)} – '
+                        '${_temp(ColdChainCertificate.rangeMaxC)}',
+                  ),
+                  if (monitored != null) ...[
+                    const SizedBox(height: CosechaSpace.xs),
+                    CosechaInfoRow(
+                      icon: Icons.schedule,
+                      label: l10n.coldChainMonitored,
+                      value: l10n.coldChainHours(
+                        (monitored.inMinutes / 60).toStringAsFixed(1),
                       ),
                     ),
                   ],
-                ),
-              ),
-            ],
-          ),
-          const Divider(height: 24),
-
-          // Rango Óptimo y Datos del Envío
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: CosechaPalette.neutral10,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: CosechaPalette.outlineVariant),
-            ),
-            child: Column(
-              children: [
-                _DetailRow(label: 'Order Reference', value: orderId),
-                const SizedBox(height: 6),
-                _DetailRow(label: 'Tracking Dispatch', value: trackingNumber),
-                const SizedBox(height: 6),
-                _DetailRow(label: 'Standard Target', value: certificate.optimalRangeLabel),
-                const SizedBox(height: 6),
-                _DetailRow(label: 'Monitored Duration', value: '${certificate.totalTripHours} hrs in transit'),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // Métricas de Temperatura
-          const Text(
-            'Thermal Journey Metrics',
-            style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: CosechaPalette.forest),
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              Expanded(
-                child: _MetricTile(
-                  label: 'Average',
-                  value: '${certificate.averageTempC} °C',
-                  color: CosechaPalette.glacier,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _MetricTile(
-                  label: 'Minimum Peak',
-                  value: '${certificate.minTempRecordedC} °C',
-                  color: const Color(0xFF1E88E5),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _MetricTile(
-                  label: 'Maximum Peak',
-                  value: '${certificate.maxTempRecordedC} °C',
-                  color: CosechaPalette.mango,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-
-          // Integridad Criptográfica / Blockchain Audit Hash
-          const Text(
-            'Integrity & Digital Validation',
-            style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: CosechaPalette.forest),
-          ),
-          const SizedBox(height: 6),
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: CosechaPalette.neutral20,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: CosechaPalette.outlineVariant),
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.lock_outline, size: 16, color: CosechaPalette.neutralVariant),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    certificate.digitalSignatureHash,
-                    style: const TextStyle(
-                      fontFamily: 'monospace',
-                      fontSize: 11,
-                      color: CosechaPalette.neutralVariant,
+                  if (last != null) ...[
+                    const SizedBox(height: CosechaSpace.xs),
+                    CosechaInfoRow(
+                      icon: Icons.update,
+                      label: l10n.coldChainLastReading,
+                      value: formatLongDate(context, last),
                     ),
-                    overflow: TextOverflow.ellipsis,
+                  ],
+                ],
+              ),
+            ),
+            const SizedBox(height: CosechaSpace.md),
+            CosechaOverline(l10n.coldChainMetrics),
+            const SizedBox(height: CosechaSpace.xs),
+            Row(
+              children: [
+                Expanded(
+                  child: _Metric(
+                    label: l10n.coldChainAverage,
+                    value: _temp(certificate.averageTempC),
+                  ),
+                ),
+                const SizedBox(width: CosechaSpace.xs),
+                Expanded(
+                  child: _Metric(
+                    label: l10n.coldChainMinimum,
+                    value: _temp(certificate.minTempC),
+                  ),
+                ),
+                const SizedBox(width: CosechaSpace.xs),
+                Expanded(
+                  child: _Metric(
+                    label: l10n.coldChainMaximum,
+                    value: _temp(certificate.maxTempC),
                   ),
                 ),
               ],
             ),
-          ),
-          const SizedBox(height: 20),
-
-          // Botón de acción: Descargar
-          SizedBox(
-            width: double.infinity,
-            height: 48,
-            child: ElevatedButton.icon(
-              onPressed: () {
-                Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Cold-chain certificate exported to PDF successfully.'),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.download, size: 18),
-              label: const Text(
-                'Download Audit Report (PDF)',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: CosechaPalette.lime,
-                foregroundColor: CosechaPalette.forest,
-                elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            const SizedBox(height: CosechaSpace.sm),
+            Text(
+              l10n.coldChainSource,
+              style: textTheme.bodySmall?.copyWith(
+                color: context.cosechaContentSecondary,
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
-class _DetailRow extends StatelessWidget {
-  const _DetailRow({required this.label, required this.value});
+/// Glaciar (cold chain) tile, like the live readings.
+class _Metric extends StatelessWidget {
+  const _Metric({required this.label, required this.value});
+
   final String label;
   final String value;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(label, style: const TextStyle(fontSize: 12, color: CosechaPalette.neutralVariant)),
-        Text(value, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: CosechaPalette.forest)),
-      ],
-    );
-  }
-}
-
-class _MetricTile extends StatelessWidget {
-  const _MetricTile({required this.label, required this.value, required this.color});
-  final String label;
-  final String value;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        children: [
-          Text(value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: color)),
-          const SizedBox(height: 2),
-          Text(label, style: const TextStyle(fontSize: 10, color: CosechaPalette.neutralVariant)),
-        ],
+    final scheme = Theme.of(context).colorScheme;
+    return Semantics(
+      container: true,
+      label: '$label: $value',
+      excludeSemantics: true,
+      child: Container(
+        padding: const EdgeInsets.all(CosechaSpace.xs),
+        decoration: BoxDecoration(
+          color: scheme.tertiaryContainer,
+          borderRadius: CosechaRadius.cardAll,
+        ),
+        child: Column(
+          children: [
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                value,
+                maxLines: 1,
+                style: CosechaDataText.of(context).dataMono.copyWith(
+                  color: scheme.onTertiaryContainer,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            const SizedBox(height: CosechaSpace.xxs),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: scheme.onTertiaryContainer,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

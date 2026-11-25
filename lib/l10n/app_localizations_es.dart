@@ -315,10 +315,39 @@ class AppLocalizationsEs extends AppLocalizations {
   String get orderStatusRejected => 'Rechazado';
 
   @override
+  String get orderStatusCancelled => 'Cancelado';
+
+  @override
+  String get ordersLoadError => 'No pudimos cargar tus pedidos';
+
+  @override
+  String get orderSendError =>
+      'No pudimos registrar el pedido. Tu carrito sigue igual; inténtalo de nuevo.';
+
+  @override
+  String get orderPlaced => 'Pedido registrado';
+
+  @override
+  String get orderSending => 'Enviando pedido…';
+
+  @override
+  String get orderNotes => 'Notas para el distribuidor';
+
+  @override
+  String get orderNotesLabel => 'Notas para el distribuidor (opcional)';
+
+  @override
+  String get orderNotesHint =>
+      'Horario de descarga, punto de maduración, empaque…';
+
+  @override
+  String get dashboardNoActiveOrders => 'No tienes pedidos activos.';
+
+  @override
   String get ordersTitle => 'Mis pedidos';
 
   @override
-  String get ordersSubtitle => 'Pedidos creados en esta sesión (demo)';
+  String get ordersSubtitle => 'Tus pedidos y su estado';
 
   @override
   String get ordersEmptyTitle => 'Aún no tienes pedidos';
@@ -326,6 +355,182 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get ordersEmptyMessage =>
       'Agrega productos en el catálogo para crear tu primer pedido.';
+
+  @override
+  String ordersTabActive(int count) {
+    return 'Activos ($count)';
+  }
+
+  @override
+  String ordersTabHistory(int count) {
+    return 'Historial ($count)';
+  }
+
+  @override
+  String get ordersHistoryEmptyTitle => 'Aún no hay pedidos en tu historial';
+
+  @override
+  String get ordersHistoryEmptyMessage =>
+      'Aquí aparecerán los pedidos entregados, cancelados o rechazados.';
+
+  @override
+  String get ordersSearchHint => 'Buscar por código o producto';
+
+  @override
+  String get ordersSearchClear => 'Borrar búsqueda';
+
+  @override
+  String get ordersFilterStatus => 'Estado';
+
+  @override
+  String get ordersFilterAll => 'Todos';
+
+  @override
+  String get ordersFiltersToggle => 'Filtros';
+
+  @override
+  String ordersFiltersToggleActive(int count) {
+    return 'Filtros ($count)';
+  }
+
+  @override
+  String get ordersFilterDates => 'Fecha de entrega';
+
+  @override
+  String get ordersFilterProducer => 'Productor';
+
+  @override
+  String get ordersAnyDate => 'Cualquier fecha';
+
+  @override
+  String ordersDateRange(String from, String to) {
+    return '$from – $to';
+  }
+
+  @override
+  String get ordersClearDates => 'Quitar fechas';
+
+  @override
+  String ordersResultsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pedidos',
+      one: '1 pedido',
+      zero: 'Ningún pedido',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ordersClearFilters => 'Limpiar filtros';
+
+  @override
+  String get ordersNoResultsTitle => 'No encontramos pedidos con estos filtros';
+
+  @override
+  String get ordersNoResultsMessage =>
+      'Prueba con otra búsqueda o quita algunos filtros.';
+
+  @override
+  String get ordersProducer => 'Productor';
+
+  @override
+  String get traceOpen => 'Ver trazabilidad';
+
+  @override
+  String traceTitle(String code) {
+    return 'Trazabilidad $code';
+  }
+
+  @override
+  String get traceStagesTitle => 'Línea de tiempo del lote';
+
+  @override
+  String traceProgress(int done, int total) {
+    return '$done de $total etapas';
+  }
+
+  @override
+  String get traceLotUnknown => 'Aún no vinculado a un lote';
+
+  @override
+  String get traceHarvested => 'Cosechado';
+
+  @override
+  String get traceInspected => 'Inspeccionado';
+
+  @override
+  String get traceLoaded => 'Cargado y despachado';
+
+  @override
+  String get traceReceived => 'Recibido';
+
+  @override
+  String get traceInvoiced => 'Facturado';
+
+  @override
+  String get tracePending => 'Por realizar';
+
+  @override
+  String get traceNoRecord => 'Sin registro';
+
+  @override
+  String get traceNoDate => 'Fecha no registrada';
+
+  @override
+  String traceResponsible(String name) {
+    return 'Responsable: $name';
+  }
+
+  @override
+  String get traceInspectionApproved => 'Aprobado';
+
+  @override
+  String get traceInspectionRejected => 'Rechazado';
+
+  @override
+  String get traceInvoiceIssuer => 'Distribuidor';
+
+  @override
+  String get traceNoRecordNote =>
+      '\"Sin registro\": la etapa ya ocurrió, pero la plataforma aún no tiene sus datos.';
+
+  @override
+  String get performanceTitle => 'Cumplimiento por productor';
+
+  @override
+  String get performanceOnTime => 'A tiempo';
+
+  @override
+  String get performanceLate => 'Con retraso';
+
+  @override
+  String get performanceGood => 'Cumple';
+
+  @override
+  String get performanceFair => 'Regular';
+
+  @override
+  String get performanceLow => 'Bajo';
+
+  @override
+  String performanceDetail(int onTime, int total, int late) {
+    return '$onTime de $total a tiempo · $late con retraso';
+  }
+
+  @override
+  String get performanceNote =>
+      'Pedidos entregados comparados con su fecha de entrega; los activos que ya pasaron su fecha cuentan como retraso.';
+
+  @override
+  String get performanceNoData =>
+      'Aún no hay estadísticas de cumplimiento. Aparecerán cuando se entreguen pedidos con productor asignado.';
+
+  @override
+  String ordersProducerFallback(int id) {
+    return 'Productor #$id';
+  }
 
   @override
   String orderDeliveryDate(String date) {
@@ -373,6 +578,64 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get trackingTransport => 'Transporte';
+
+  @override
+  String get trackingYourDeliveries => 'Tus entregas';
+
+  @override
+  String get trackingLoadError => 'No pudimos cargar tus entregas';
+
+  @override
+  String get trackingEtaUnknown => 'Por confirmar';
+
+  @override
+  String get trackingRoute => 'Ruta';
+
+  @override
+  String trackingRouteValue(String origin, String destination) {
+    return '$origin a $destination';
+  }
+
+  @override
+  String get trackingStatusScheduled => 'Programado';
+
+  @override
+  String get trackingStatusDispatched => 'Despachado';
+
+  @override
+  String get trackingStatusDelayed => 'Retrasado';
+
+  @override
+  String get trackingDriverSection => 'Conductor y vehículo';
+
+  @override
+  String get trackingDriverPending => 'Aún no se asigna un conductor';
+
+  @override
+  String get trackingVehicle => 'Vehículo';
+
+  @override
+  String get trackingPlate => 'Placa';
+
+  @override
+  String get trackingCallDriver => 'Llamar al conductor';
+
+  @override
+  String trackingCallDriverHint(String name) {
+    return 'Abre el teléfono para llamar a $name';
+  }
+
+  @override
+  String get trackingCallError => 'No pudimos abrir el teléfono';
+
+  @override
+  String get trackingNoReadings =>
+      'La unidad de frío aún no envía lecturas de temperatura.';
+
+  @override
+  String trackingLastReading(String time) {
+    return 'Última lectura: $time';
+  }
 
   @override
   String get trackingEvents => 'Puntos de control';
@@ -426,6 +689,61 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get receptionConfirmed => 'Recepción confirmada.';
+
+  @override
+  String get receptionRateSection => 'Calificación del servicio';
+
+  @override
+  String get receptionRateQuestion => '¿Cómo fue el servicio de entrega?';
+
+  @override
+  String get receptionRateOptional =>
+      'Opcional. Toca otra vez una estrella para quitarla.';
+
+  @override
+  String get receptionNotRated => 'Sin calificar';
+
+  @override
+  String receptionStars(int stars, int max) {
+    return '$stars de $max estrellas';
+  }
+
+  @override
+  String get receptionRating1 => 'Muy malo';
+
+  @override
+  String get receptionRating2 => 'Malo';
+
+  @override
+  String get receptionRating3 => 'Regular';
+
+  @override
+  String get receptionRating4 => 'Bueno';
+
+  @override
+  String get receptionRating5 => 'Excelente';
+
+  @override
+  String get receptionComment => 'Comentario (opcional)';
+
+  @override
+  String get receptionCommentHint =>
+      'Puntualidad, estado de la fruta, conductor…';
+
+  @override
+  String get receptionSending => 'Enviando recepción…';
+
+  @override
+  String get receptionSendError =>
+      'No pudimos registrar la recepción. Inténtalo de nuevo.';
+
+  @override
+  String get receptionYourRatingLabel => 'Tu calificación:';
+
+  @override
+  String receptionYourRating(String stars) {
+    return 'Tu calificación: $stars';
+  }
 
   @override
   String get paymentsInvoices => 'Facturas';
@@ -529,7 +847,7 @@ class AppLocalizationsEs extends AppLocalizations {
       'No se pudo guardar el perfil. Inténtalo nuevamente.';
 
   @override
-  String get profileLoadFailed => 'No se pudo cargar tu perfil local.';
+  String get profileLoadFailed => 'No se pudo cargar tu perfil.';
 
   @override
   String get profileRetry => 'Reintentar';
@@ -721,4 +1039,389 @@ class AppLocalizationsEs extends AppLocalizations {
   String proActiveSince(String date) {
     return 'Activo desde $date';
   }
+
+  @override
+  String get qmIncidentsTitle => 'Incidencias';
+
+  @override
+  String get qmKpiOpen => 'Abiertas';
+
+  @override
+  String get qmKpiInReview => 'En revisión';
+
+  @override
+  String get qmKpiClosed => 'Cerradas';
+
+  @override
+  String get qmReportIncident => 'Reportar una incidencia';
+
+  @override
+  String get qmNewIncidentTitle => 'Nueva incidencia';
+
+  @override
+  String get qmYourIncidents => 'Tus incidencias';
+
+  @override
+  String get qmFilterAll => 'Todas';
+
+  @override
+  String get qmStatusOpen => 'Abierta';
+
+  @override
+  String get qmStatusInReview => 'En revisión';
+
+  @override
+  String get qmStatusResolved => 'Resuelta';
+
+  @override
+  String get qmStatusRejected => 'Rechazada';
+
+  @override
+  String get qmEmptyTitle => 'No tienes incidencias';
+
+  @override
+  String get qmEmptyMessage =>
+      'Si un pedido llega con problemas, repórtalo aquí con fotos.';
+
+  @override
+  String get qmEmptyFilter => 'No hay incidencias con este estado';
+
+  @override
+  String get qmLoadError => 'No pudimos cargar tus incidencias';
+
+  @override
+  String get qmRetry => 'Reintentar';
+
+  @override
+  String get qmSessionExpired => 'Tu sesión venció. Vuelve a iniciar sesión.';
+
+  @override
+  String qmIncidentTitle(String code) {
+    return 'Incidencia $code';
+  }
+
+  @override
+  String get qmOrder => 'Pedido';
+
+  @override
+  String get qmLot => 'Lote';
+
+  @override
+  String get qmReportedAt => 'Reportada';
+
+  @override
+  String get qmDescription => 'Descripción';
+
+  @override
+  String get qmPhotos => 'Fotos';
+
+  @override
+  String qmPhotoCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count fotos',
+      one: '1 foto',
+      zero: 'Sin fotos',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String qmPhotoLabel(int number) {
+    return 'Foto $number';
+  }
+
+  @override
+  String get qmPhotosLocalNote =>
+      'Una copia de las fotos queda en este teléfono.';
+
+  @override
+  String get qmTargetLabel => 'Pedido';
+
+  @override
+  String get qmTargetRequired => 'Elige el pedido con el problema';
+
+  @override
+  String qmTargetValue(String order, String lot) {
+    return '$order · Lote $lot';
+  }
+
+  @override
+  String get qmDescriptionLabel => '¿Qué pasó?';
+
+  @override
+  String get qmDescriptionHint =>
+      'Fruta dañada, producto equivocado, temperatura…';
+
+  @override
+  String get qmDescriptionHelper =>
+      'Cuéntanos qué viste y cuántas cajas están afectadas.';
+
+  @override
+  String get qmDescriptionError =>
+      'Describe el problema (mínimo 10 caracteres)';
+
+  @override
+  String qmPhotosLabel(int max) {
+    return 'Fotos (opcional, hasta $max)';
+  }
+
+  @override
+  String get qmAddPhoto => 'Agregar foto';
+
+  @override
+  String get qmTakePhoto => 'Tomar foto';
+
+  @override
+  String get qmChooseGallery => 'Elegir de la galería';
+
+  @override
+  String qmRemovePhoto(int number) {
+    return 'Quitar foto $number';
+  }
+
+  @override
+  String get qmPhotoError => 'No pudimos obtener la foto';
+
+  @override
+  String get qmSend => 'Enviar reporte';
+
+  @override
+  String get qmSent => 'Incidencia reportada';
+
+  @override
+  String get qmSendError => 'No pudimos enviar el reporte. Inténtalo de nuevo.';
+
+  @override
+  String get arrivalsSection => 'Llegadas a tu almacén';
+
+  @override
+  String get arrivalsZoneTitle => 'Zona de tu almacén';
+
+  @override
+  String arrivalsZoneActive(String radius) {
+    return '$radius km alrededor de tu almacén · alertas activas';
+  }
+
+  @override
+  String get arrivalsZoneNotSet =>
+      'Sin configurar · defínela para recibir una alerta cuando llegue un camión';
+
+  @override
+  String get arrivalsEmptyTitle => 'Aún no hay llegadas';
+
+  @override
+  String get arrivalsEmptyMessage =>
+      'Te avisaremos cuando un camión entre a la zona de tu almacén.';
+
+  @override
+  String arrivalsDistance(String distance) {
+    return 'a $distance km';
+  }
+
+  @override
+  String get arrivalsSheetMessage =>
+      'Hazlo desde tu almacén: tu ubicación actual será el centro de la zona.';
+
+  @override
+  String get arrivalsRadiusLabel => 'Radio de alerta';
+
+  @override
+  String arrivalsRadiusValue(String radius) {
+    return '$radius km';
+  }
+
+  @override
+  String get arrivalsUseLocation => 'Usar mi ubicación actual';
+
+  @override
+  String get arrivalsUpdateLocation => 'Mover a mi ubicación actual';
+
+  @override
+  String get arrivalsSaveRadius => 'Guardar radio';
+
+  @override
+  String get arrivalsRemoveZone => 'Quitar zona';
+
+  @override
+  String get arrivalsZoneSaved => 'Zona del almacén guardada';
+
+  @override
+  String get arrivalsZoneRemoved => 'Zona quitada. Tus llegadas se conservan.';
+
+  @override
+  String get arrivalsLocationDisabled =>
+      'Activa la ubicación de tu teléfono e inténtalo de nuevo.';
+
+  @override
+  String get arrivalsLocationDenied =>
+      'FruitLogix necesita tu ubicación para definir la zona.';
+
+  @override
+  String get arrivalsLocationDeniedForever =>
+      'La ubicación está bloqueada para FruitLogix. Actívala en los ajustes del teléfono.';
+
+  @override
+  String get arrivalsLocationUnavailable =>
+      'No pudimos obtener tu ubicación. Inténtalo de nuevo en un momento.';
+
+  @override
+  String arrivalNotificationTitle(String order) {
+    return 'Llegada de camión · $order';
+  }
+
+  @override
+  String arrivalNotificationBody(String driver, String distance) {
+    return '$driver entró a la zona de tu almacén ($distance km).';
+  }
+
+  @override
+  String get authWrongRole =>
+      'Esta app es para clientes comerciales. Productores y distribuidores usan la app de operaciones de FruitLogix.';
+
+  @override
+  String get authSessionExpired => 'Tu sesión expiró. Vuelve a iniciar sesión.';
+
+  @override
+  String get orderStatusDeliveredWithIncidence => 'Entregado con incidencia';
+
+  @override
+  String get trackingStatusFailed => 'Con problema';
+
+  @override
+  String get receptionNotInTransit =>
+      'El pedido aún no está en tránsito: confirma la recepción cuando haya sido despachado.';
+
+  @override
+  String get trackingEventCreated => 'Entrega programada';
+
+  @override
+  String get trackingEventDispatched => 'Despachado';
+
+  @override
+  String get trackingEventDelayed => 'Retraso reportado';
+
+  @override
+  String get trackingEventCheckpoint => 'Punto de control';
+
+  @override
+  String trackingEventCheckpointAt(String place) {
+    return 'Punto de control: $place';
+  }
+
+  @override
+  String get trackingEventArrived => 'Llegó al almacén';
+
+  @override
+  String get trackingEventDelivered => 'Recepción confirmada';
+
+  @override
+  String get trackingEventOther => 'Actualización de la entrega';
+
+  @override
+  String get trackingDispatchedAt => 'Despachado';
+
+  @override
+  String get trackingArrivedAt => 'Llegó';
+
+  @override
+  String arrivalNotificationBodyNoDistance(String driver) {
+    return '$driver llegó a tu almacén.';
+  }
+
+  @override
+  String get arrivalsZoneSaveError =>
+      'No pudimos guardar la zona del almacén. Inténtalo de nuevo.';
+
+  @override
+  String get profileStoredOnPlatform =>
+      'Tu perfil se guarda en tu cuenta de FruitLogix.';
+
+  @override
+  String get catalogNotEnoughStock =>
+      'No hay stock suficiente para esa cantidad.';
+
+  @override
+  String get catalogOneProducer =>
+      'Un pedido solo puede tener productos de un productor. Haz este en otro pedido.';
+
+  @override
+  String get catalogLoadError => 'No pudimos cargar el catálogo.';
+
+  @override
+  String productMinOrder(int quantity, String unit) {
+    return 'Pedido mínimo: $quantity $unit';
+  }
+
+  @override
+  String get traceNotApplicable => 'No aplica';
+
+  @override
+  String get traceLoadError =>
+      'No pudimos cargar la trazabilidad de este pedido.';
+
+  @override
+  String get qmNoReportableOrders =>
+      'Ninguno de tus pedidos tiene un lote de cosecha vinculado todavía. Podrás reportar una incidencia cuando el productor lo vincule.';
+
+  @override
+  String get trackingDelayTitle => 'Retraso en tránsito';
+
+  @override
+  String get trackingDelayNoReason => 'El distribuidor reportó un retraso.';
+
+  @override
+  String trackingDelayEta(String eta) {
+    return 'Llegada estimada actual: $eta';
+  }
+
+  @override
+  String get coldChainOpenCertificate => 'Ver certificado de cadena de frío';
+
+  @override
+  String get coldChainCertificateTitle => 'Certificado de cadena de frío';
+
+  @override
+  String coldChainCompliance(String percent) {
+    return '$percent% en rango';
+  }
+
+  @override
+  String coldChainReadings(int inRange, int total) {
+    return '$inRange de $total lecturas dentro del rango objetivo';
+  }
+
+  @override
+  String get coldChainOrder => 'Pedido';
+
+  @override
+  String get coldChainTargetRange => 'Rango objetivo';
+
+  @override
+  String get coldChainMonitored => 'Monitoreado';
+
+  @override
+  String coldChainHours(String hours) {
+    return '$hours h';
+  }
+
+  @override
+  String get coldChainLastReading => 'Última lectura';
+
+  @override
+  String get coldChainMetrics => 'Temperaturas del viaje';
+
+  @override
+  String get coldChainAverage => 'Promedio';
+
+  @override
+  String get coldChainMinimum => 'Mínima';
+
+  @override
+  String get coldChainMaximum => 'Máxima';
+
+  @override
+  String get coldChainSource =>
+      'Calculado con las lecturas del equipo de frío de esta entrega.';
 }

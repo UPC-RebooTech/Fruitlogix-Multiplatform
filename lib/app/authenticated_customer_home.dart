@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../contexts/iam/domain/auth_session.dart';
+import '../contexts/profiles_management/domain/commercial_client_profile.dart';
 import '../contexts/profiles_management/domain/commercial_client_profile_repository.dart';
+import '../contexts/profiles_management/infrastructure/http_commercial_client_profile_repository.dart';
 import '../contexts/profiles_management/infrastructure/secure_local_commercial_client_profile_repository.dart';
 import '../l10n/app_localizations.dart';
 import '../shared/ui/components/components.dart';
@@ -15,12 +17,16 @@ class AuthenticatedCustomerHome extends StatefulWidget {
     required this.session,
     required this.localeController,
     required this.onSignOut,
+    this.onSessionExpired,
     super.key,
   });
 
   final AuthSession session;
   final LocaleController localeController;
   final VoidCallback onSignOut;
+
+  /// The platform rejected the token (401).
+  final VoidCallback? onSessionExpired;
 
   @override
   State<AuthenticatedCustomerHome> createState() =>
@@ -36,11 +42,34 @@ class _AuthenticatedCustomerHomeState extends State<AuthenticatedCustomerHome> {
     _loadProfile();
   }
 
+  /// The profile lives in the platform (`/profiles/me`). The copy this
+  /// phone kept before only prefills the form when the platform has none.
   void _loadProfile() {
-    _profileFuture = SecureLocalCommercialClientProfileRepository.open(
-      userId: widget.session.userId,
-      username: widget.session.username,
-    );
+    final session = widget.session;
+    _profileFuture = () async {
+      CommercialClientProfile? local;
+      try {
+        local = (await SecureLocalCommercialClientProfileRepository.open(
+          userId: session.userId,
+          username: session.username,
+        )).current;
+      } catch (_) {
+        local = null;
+      }
+      try {
+        return await HttpCommercialClientProfileRepository.open(
+          userId: session.userId,
+          username: session.username,
+          token: () => session.token,
+          fallback: local,
+        );
+      } on ProfileApiException catch (error) {
+        if (error.reason == ProfileApiFailure.unauthorized) {
+          widget.onSessionExpired?.call();
+        }
+        rethrow;
+      }
+    }();
   }
 
   @override
@@ -92,6 +121,7 @@ class _AuthenticatedCustomerHomeState extends State<AuthenticatedCustomerHome> {
         return CustomerShell(
           localeController: widget.localeController,
           onSignOut: widget.onSignOut,
+          onSessionExpired: widget.onSessionExpired ?? widget.onSignOut,
           profileRepository: snapshot.requireData,
           // Payment Management (US36/US70/US30) calls the API with this JWT.
           session: widget.session,
