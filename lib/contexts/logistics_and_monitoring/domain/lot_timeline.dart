@@ -12,6 +12,9 @@ enum TraceState {
 
   /// Happened (a later stage is done) but the platform has no record.
   noRecord,
+
+  /// Will not happen: the order was cancelled or rejected.
+  notApplicable,
 }
 
 enum InspectionResult { approved, rejected }
@@ -110,8 +113,21 @@ class LotTimeline {
   final List<TraceEvent> events;
 
   bool get isComplete => events.every((e) => e.state != TraceState.pending);
+
+  /// Stages that count for the progress (not the ones that do not apply).
+  int get applicableCount =>
+      events.where((e) => e.state != TraceState.notApplicable).length;
   bool get hasMissingRecords =>
       events.any((e) => e.state == TraceState.noRecord);
+}
+
+/// The platform's timeline of an order (`GET /orders/{id}/traceability`).
+abstract interface class TraceabilitySource {
+  Future<LotTimeline> timelineFor({
+    required int orderId,
+    required String orderCode,
+    String? productSummary,
+  });
 }
 
 /// Builds the timeline: stages with data are done; stages without data

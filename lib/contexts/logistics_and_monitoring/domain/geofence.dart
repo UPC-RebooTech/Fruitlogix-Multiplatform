@@ -71,7 +71,7 @@ class ArrivalRecord {
     required this.trackingNumber,
     required this.orderCode,
     required this.arrivedAt,
-    required this.distanceKm,
+    this.distanceKm,
     this.driverName,
     this.vehiclePlate,
   });
@@ -82,7 +82,8 @@ class ArrivalRecord {
 
   /// When the app detected it inside the zone.
   final DateTime arrivedAt;
-  final double distanceKm;
+  /// From the warehouse; null for a manual arrival without coordinates.
+  final double? distanceKm;
   final String? driverName;
   final String? vehiclePlate;
 
@@ -105,11 +106,42 @@ class ArrivalRecord {
       trackingNumber: '${json['trackingNumber'] ?? id}',
       orderCode: '${json['orderCode'] ?? ''}',
       arrivedAt: at.toLocal(),
-      distanceKm: (json['distanceKm'] as num?)?.toDouble() ?? 0,
+      distanceKm: (json['distanceKm'] as num?)?.toDouble(),
       driverName: json['driverName'] as String?,
       vehiclePlate: json['vehiclePlate'] as String?,
     );
   }
+}
+
+/// Finds the trucks that reached the warehouse zone.
+abstract interface class ArrivalDetector {
+  /// Every arrival known now, or only the new ones; the caller keeps each
+  /// delivery once.
+  Future<List<ArrivalRecord>> detect({
+    required WarehouseZone zone,
+    required List<DeliveryShipment> shipments,
+    required Set<String> alreadyRecorded,
+    required DateTime now,
+  });
+}
+
+/// On the phone: compares the latest truck positions with the zone (demo,
+/// tests).
+class GeofenceArrivalDetector implements ArrivalDetector {
+  const GeofenceArrivalDetector();
+
+  @override
+  Future<List<ArrivalRecord>> detect({
+    required WarehouseZone zone,
+    required List<DeliveryShipment> shipments,
+    required Set<String> alreadyRecorded,
+    required DateTime now,
+  }) async => detectArrivals(
+    zone: zone,
+    shipments: shipments,
+    alreadyRecorded: alreadyRecorded,
+    now: now,
+  );
 }
 
 /// Deliveries on their way whose latest position is inside [zone] and that
@@ -124,8 +156,7 @@ List<ArrivalRecord> detectArrivals({
     for (final shipment in shipments)
       if (!alreadyRecorded.contains(shipment.id) &&
           !shipment.isReceived &&
-          shipment.status != ShipmentStatus.delivered &&
-          shipment.status != ShipmentStatus.scheduled)
+          shipment.status.isOnTheWay)
         if (shipment.telemetry?.position case final position?)
           if (position.isValid && zone.contains(position))
             ArrivalRecord(

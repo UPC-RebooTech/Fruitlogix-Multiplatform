@@ -186,8 +186,8 @@ class _DeliveryTrackingPageState extends State<DeliveryTrackingPage> {
                       steps: [
                         for (final event in selected.events)
                           CosechaTimelineStep(
-                            time: event.time,
-                            description: event.description,
+                            time: _eventTime(context, event),
+                            description: _eventText(l10n, event),
                             completed: event.isCompleted,
                           ),
                       ],
@@ -225,8 +225,7 @@ class _DeliveryTrackingPageState extends State<DeliveryTrackingPage> {
                     ),
                   )
                 // Only once the goods left the warehouse.
-                else if (selected.status != ShipmentStatus.delivered &&
-                    selected.status != ShipmentStatus.scheduled)
+                else if (selected.status.isOnTheWay)
                   CosechaPrimaryButton(
                     label: l10n.trackingConfirmReception,
                     icon: Icons.fact_check_outlined,
@@ -245,6 +244,29 @@ class _DeliveryTrackingPageState extends State<DeliveryTrackingPage> {
         );
       },
     );
+  }
+
+  /// Platform events carry a type (labelled here); demo events, a text.
+  static String _eventText(AppLocalizations l10n, TrackingEventItem event) {
+    final place = event.place;
+    final label = switch (event.type) {
+      null => event.description,
+      DeliveryEventType.created => l10n.trackingEventCreated,
+      DeliveryEventType.dispatched => l10n.trackingEventDispatched,
+      DeliveryEventType.delayed => l10n.trackingEventDelayed,
+      DeliveryEventType.checkpoint =>
+        place == null ? l10n.trackingEventCheckpoint : l10n.trackingEventCheckpointAt(place),
+      DeliveryEventType.arrived => l10n.trackingEventArrived,
+      DeliveryEventType.delivered => l10n.trackingEventDelivered,
+      DeliveryEventType.other => place ?? l10n.trackingEventOther,
+    };
+    final note = event.note;
+    return event.type == null || note == null ? label : '$label · $note';
+  }
+
+  static String _eventTime(BuildContext context, TrackingEventItem event) {
+    final at = event.occurredAt;
+    return at == null ? event.time : _formatDateTime(context, at);
   }
 
   static String _errorMessage(Object? error, AppLocalizations l10n) =>
@@ -291,6 +313,10 @@ class _DeliveryTrackingPageState extends State<DeliveryTrackingPage> {
     ShipmentStatus.delivered => (
       label: l10n.orderStatusDelivered,
       status: CosechaStatus.success,
+    ),
+    ShipmentStatus.failed => (
+      label: l10n.trackingStatusFailed,
+      status: CosechaStatus.critical,
     ),
   };
 }
@@ -363,6 +389,18 @@ class _ShipmentOverview extends StatelessWidget {
               icon: Icons.route_outlined,
               label: l10n.trackingRoute,
               value: route,
+            ),
+          ],
+          if (shipment.arrivedAt ?? shipment.dispatchedAt case final at?) ...[
+            const SizedBox(height: CosechaSpace.xs),
+            CosechaInfoRow(
+              icon: shipment.arrivedAt != null
+                  ? Icons.warehouse_outlined
+                  : Icons.local_shipping_outlined,
+              label: shipment.arrivedAt != null
+                  ? l10n.trackingArrivedAt
+                  : l10n.trackingDispatchedAt,
+              value: _formatDateTime(context, at),
             ),
           ],
         ],

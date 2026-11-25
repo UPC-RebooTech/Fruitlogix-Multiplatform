@@ -7,6 +7,9 @@ class DemoCatalogRepository implements CatalogRepository {
   const DemoCatalogRepository();
 
   @override
+  Future<List<FruitProduct>> fetchProducts() async => getProducts();
+
+  /// The demo products, synchronously (demo orders, tests).
   List<FruitProduct> getProducts() => const [
     FruitProduct(
       id: 1,

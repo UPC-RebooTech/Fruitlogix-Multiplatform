@@ -55,13 +55,42 @@ class FakeDialer implements PhoneDialer {
 
 void main() {
   group('DeliveryJsonParser', () {
-    test('statuses in different spellings', () {
+    test('statuses as text; unknown or numeric values are a problem state', () {
+      expect(DeliveryJsonParser.parseStatus('PendingDispatch'), ShipmentStatus.scheduled);
+      expect(DeliveryJsonParser.parseStatus('Arrived'), ShipmentStatus.arrived);
+      expect(DeliveryJsonParser.parseStatus('Failed'), ShipmentStatus.failed);
+      expect(DeliveryJsonParser.parseStatus('SomethingNew'), ShipmentStatus.failed);
+      expect(DeliveryJsonParser.parseStatus(2), ShipmentStatus.failed);
       expect(DeliveryJsonParser.parseStatus('Scheduled'), ShipmentStatus.scheduled);
       expect(DeliveryJsonParser.parseStatus('DISPATCHED'), ShipmentStatus.dispatched);
       expect(DeliveryJsonParser.parseStatus('In_Transit'), ShipmentStatus.inTransit);
       expect(DeliveryJsonParser.parseStatus('Delayed'), ShipmentStatus.delayed);
       expect(DeliveryJsonParser.parseStatus('Entregado'), ShipmentStatus.delivered);
-      expect(DeliveryJsonParser.parseStatus(null), ShipmentStatus.scheduled);
+      expect(DeliveryJsonParser.parseStatus(null), ShipmentStatus.failed);
+    });
+
+    test('delivery events: labelled by type, in chronological order', () {
+      final events = DeliveryJsonParser.events([
+        {'id': 31, 'type': 'Checkpoint', 'name': 'Peaje Chicama', 'note': 'Sin novedad', 'occurredAt': '2026-11-25T13:10:00+00:00'},
+        {'id': 30, 'type': 'Dispatched', 'occurredAt': '2026-11-25T07:30:00+00:00'},
+        {'id': 32, 'type': 'Whatever', 'occurredAt': null},
+      ]);
+      expect(events.map((e) => e.type), [DeliveryEventType.dispatched, DeliveryEventType.checkpoint]);
+      expect(events.last.place, 'Peaje Chicama');
+      expect(events.last.note, 'Sin novedad');
+      expect(events.every((e) => e.isCompleted), isTrue);
+    });
+
+    test('dispatch and arrival times, and the rating of the order reception', () {
+      const rated = ShipmentOrderRef(orderId: 7, orderCode: 'ORD-0007', isDelivered: true, rating: 4);
+      final shipment = DeliveryJsonParser.parse(
+        {...delivery(12, 7, status: 'Arrived'), 'dispatchedAt': '2026-11-25T07:30:00+00:00', 'arrivedAt': '2026-11-26T09:58:00+00:00'},
+        order: rated,
+      );
+      expect(shipment.status, ShipmentStatus.arrived);
+      expect(shipment.dispatchedAt!.toUtc(), DateTime.utc(2026, 11, 25, 7, 30));
+      expect(shipment.arrivedAt!.toUtc(), DateTime.utc(2026, 11, 26, 9, 58));
+      expect(shipment.rating, 4);
     });
 
     test('DeliveryResource with the order code of Orders', () {
@@ -117,19 +146,24 @@ void main() {
       );
     }
 
-    test("keeps only the deliveries of the client's orders, with their reading", () async {
-      final repo = repository((request) async => request.url.path == '/api/v1/deliveries'
-          ? json([delivery(12, 7), delivery(13, 99)])
-          : http.Response(
-              jsonEncode([
-                {'deliveryId': 12, 'timestamp': '2026-11-24T12:00:00Z', 'temperature': 4.2, 'humidity': 86},
+    test("keeps only the deliveries of the client's orders, with their reading and events", () async {
+      final repo = repository((request) async => switch (request.url.path) {
+            '/api/v1/deliveries' => json([delivery(12, 7), delivery(13, 99)]),
+            '/api/v1/deliveries/12/events' => json([
+                {'type': 'Dispatched', 'occurredAt': '2026-11-24T07:00:00Z'},
               ]),
-              200,
-            ));
+            _ => http.Response(
+                jsonEncode([
+                  {'deliveryId': 12, 'timestamp': '2026-11-24T12:00:00Z', 'temperature': 4.2, 'humidity': 86},
+                ]),
+                200,
+              ),
+          });
       final shipments = await repo.fetchMyShipments();
       expect(shipments.map((s) => s.trackingNumber), ['TRK-0012']);
       expect(shipments.single.telemetry!.temperatureC, 4.2);
-      final logs = requests.last;
+      expect(shipments.single.events.single.type, DeliveryEventType.dispatched);
+      final logs = requests.firstWhere((r) => r.url.path == '/api/v1/tracking-logs');
       expect(logs.url.path, '/api/v1/tracking-logs');
       expect(logs.url.queryParameters, {'deliveryId': '12'});
       expect(logs.headers['Authorization'], 'Bearer jwt');
@@ -215,15 +249,20 @@ void main() {
       expect(sent.url.path, '/api/v1/orders/7/reception');
       expect(sent.headers['Authorization'], 'Bearer jwt');
       expect(sent.headers['Content-Type'], startsWith('application/json'));
-      expect(jsonDecode(sent.body), {'rating': 5, 'comment': 'Very punctual', 'hasIncidence': true});
+      expect(jsonDecode(sent.body), {
+        'rating': 5,
+        'comment': 'Very punctual',
+        'hasIncidence': true,
+        'sealAndTemperatureOk': true,
+      });
     });
 
-    test('scenario 2: without stars the rating is sent as 0 (not rated)', () {
+    test('scenario 2: without stars the rating is sent as null (not rated)', () {
       expect(
         HttpReceptionRepository.toBody(
-          const ReceptionReport(hasIncidence: false, sealAndTemperatureOk: true),
+          const ReceptionReport(hasIncidence: false, sealAndTemperatureOk: false),
         ),
-        {'rating': 0, 'comment': null, 'hasIncidence': false},
+        {'rating': null, 'comment': null, 'hasIncidence': false, 'sealAndTemperatureOk': false},
       );
       expect(
         const ReceptionReport(rating: 6, hasIncidence: false, sealAndTemperatureOk: true).isValid,

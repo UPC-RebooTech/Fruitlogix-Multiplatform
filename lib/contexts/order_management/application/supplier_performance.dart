@@ -62,7 +62,7 @@ SupplierPerformanceReport measureSupplierPerformance(
     if (producer == null) continue;
     final due = day(order.deliveryDate);
     bool? wasOnTime;
-    if (order.status == OrderStatus.delivered && order.completedAt != null) {
+    if (order.status.isDelivered && order.completedAt != null) {
       wasOnTime = !day(order.completedAt!).isAfter(due);
     } else if (order.status.isActive && due.isBefore(now)) {
       wasOnTime = false;

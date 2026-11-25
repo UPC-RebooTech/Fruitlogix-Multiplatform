@@ -8,16 +8,14 @@ class HttpReceptionRepository implements ReceptionRepository {
 
   final FruitLogixLogisticsApi api;
 
-  /// The API requires an integer rating; 0 means "not rated" (US35 · the
-  /// rating is optional).
-  static const int notRated = 0;
-
+  /// `rating` is optional (US35): null means "not rated".
   static Map<String, Object?> toBody(ReceptionReport report) {
     final comment = report.comment?.trim() ?? '';
     return {
-      'rating': report.rating ?? notRated,
+      'rating': report.rating,
       'comment': comment.isEmpty ? null : comment,
       'hasIncidence': report.hasIncidence,
+      'sealAndTemperatureOk': report.sealAndTemperatureOk,
     };
   }
 

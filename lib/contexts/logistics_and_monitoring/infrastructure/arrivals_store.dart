@@ -7,6 +7,8 @@ import '../domain/geofence.dart';
 /// Warehouse zone and arrivals list, kept on the device (the platform API
 /// has no geofence yet).
 abstract interface class ArrivalsStore {
+  /// False when the zone, once set, can only be moved or resized.
+  bool get canClearZone;
   Future<WarehouseZone?> loadZone();
   Future<void> saveZone(WarehouseZone? zone);
   Future<List<ArrivalRecord>> loadArrivals();
@@ -18,6 +20,9 @@ class InMemoryArrivalsStore implements ArrivalsStore {
 
   WarehouseZone? _zone;
   List<ArrivalRecord> _arrivals = const [];
+
+  @override
+  bool get canClearZone => true;
 
   @override
   Future<WarehouseZone?> loadZone() async => _zone;
@@ -48,6 +53,9 @@ class SharedPreferencesArrivalsStore implements ArrivalsStore {
 
   /// Keeps the list short: the latest arrivals are the useful ones.
   static const int maxArrivals = 50;
+
+  @override
+  bool get canClearZone => true;
 
   @override
   Future<WarehouseZone?> loadZone() async =>

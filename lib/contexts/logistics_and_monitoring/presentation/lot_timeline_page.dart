@@ -6,6 +6,56 @@ import '../../../shared/ui/formatters/date_format.dart';
 import '../../../shared/ui/theme/theme.dart';
 import '../domain/lot_timeline.dart';
 
+/// Loads the platform timeline, then shows [LotTimelinePage] (US72).
+class LotTimelineLoader extends StatefulWidget {
+  const LotTimelineLoader({
+    required this.orderCode,
+    required this.load,
+    super.key,
+  });
+
+  final String orderCode;
+  final Future<LotTimeline> Function() load;
+
+  @override
+  State<LotTimelineLoader> createState() => _LotTimelineLoaderState();
+}
+
+class _LotTimelineLoaderState extends State<LotTimelineLoader> {
+  late Future<LotTimeline> _timeline = widget.load();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return FutureBuilder<LotTimeline>(
+      future: _timeline,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) return LotTimelinePage(timeline: snapshot.data!);
+        return CosechaSubpageScaffold(
+          title: l10n.traceTitle(widget.orderCode),
+          body: Center(
+            child: snapshot.hasError
+                ? Padding(
+                    padding: const EdgeInsets.all(CosechaSpace.screenMargin),
+                    child: CosechaEmptyState(
+                      isError: true,
+                      title: l10n.traceLoadError,
+                      action: CosechaTextButton(
+                        label: l10n.qmRetry,
+                        icon: Icons.refresh,
+                        onPressed: () =>
+                            setState(() => _timeline = widget.load()),
+                      ),
+                    ),
+                  )
+                : const CircularProgressIndicator(),
+          ),
+        );
+      },
+    );
+  }
+}
+
 /// US72 — Traceability of an order's lot: harvested, inspected, loaded,
 /// received and invoiced, in chain (chronological) order, with date, time
 /// and the person responsible. Pending stages read "To do".
@@ -50,7 +100,7 @@ class LotTimelinePage extends StatelessWidget {
                       ),
                     ),
                     CosechaStatusTag(
-                      label: l10n.traceProgress(done, timeline.events.length),
+                      label: l10n.traceProgress(done, timeline.applicableCount),
                       status: timeline.isComplete
                           ? CosechaStatus.success
                           : CosechaStatus.info,
@@ -147,6 +197,7 @@ class _StageRow extends StatelessWidget {
       TraceState.done => (Icons.check_circle, success),
       TraceState.noRecord => (Icons.help_outline, scheme.onSurfaceVariant),
       TraceState.pending => (Icons.radio_button_unchecked, scheme.outline),
+      TraceState.notApplicable => (Icons.remove_circle_outline, scheme.outline),
     };
     final name = stageName(event.stage, l10n);
     final when = event.at == null
@@ -162,6 +213,7 @@ class _StageRow extends StatelessWidget {
       TraceState.done => null,
       TraceState.pending => l10n.tracePending,
       TraceState.noRecord => l10n.traceNoRecord,
+      TraceState.notApplicable => l10n.traceNotApplicable,
     };
 
     final semantics = [

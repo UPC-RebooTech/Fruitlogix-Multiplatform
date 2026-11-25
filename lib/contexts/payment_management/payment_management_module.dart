@@ -1,3 +1,5 @@
+import 'package:http/http.dart' as http;
+
 import '../iam/domain/auth_session.dart';
 import 'application/financial_overview_controller.dart';
 import 'application/invoice_reminder_service.dart';
@@ -23,8 +25,8 @@ class PaymentManagementModule {
     FruitLogixPaymentsApi? api,
   }) : _api = api;
 
-  factory PaymentManagementModule.remote(AuthSession session) {
-    final api = FruitLogixPaymentsApi(token: () => session.token);
+  factory PaymentManagementModule.remote(AuthSession session, {http.Client? client}) {
+    final api = FruitLogixPaymentsApi(token: () => session.token, client: client);
     final reminders = InvoiceReminderService(
       notifier: LocalInvoiceReminderNotifier.isSupported
           ? LocalInvoiceReminderNotifier()

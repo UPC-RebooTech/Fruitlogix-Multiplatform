@@ -25,6 +25,10 @@ StatusView orderStatusView(OrderStatus status, AppLocalizations l10n) =>
         label: l10n.orderStatusDelivered,
         status: CosechaStatus.success,
       ),
+      OrderStatus.deliveredWithIncidence => (
+        label: l10n.orderStatusDeliveredWithIncidence,
+        status: CosechaStatus.warning,
+      ),
       OrderStatus.cancelled => (
         label: l10n.orderStatusCancelled,
         status: CosechaStatus.neutral,
@@ -45,8 +49,9 @@ String orderErrorMessage(
   OrderApiException(reason: OrderApiFailure.unauthorized) =>
     l10n.qmSessionExpired,
   OrderApiException(reason: OrderApiFailure.server) => l10n.authServerError,
+  // 400 (validation) and 409 (stock): the platform explains why.
   OrderApiException(
-    reason: OrderApiFailure.invalid,
+    reason: OrderApiFailure.invalid || OrderApiFailure.conflict,
     message: final String message,
   )
       when message.isNotEmpty =>

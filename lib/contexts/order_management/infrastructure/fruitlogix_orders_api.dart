@@ -3,12 +3,20 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../../../shared/infrastructure/api_errors.dart';
 import '../../../shared/infrastructure/fruitlogix_api_config.dart';
 
 enum OrderApiFailure {
   network,
   unauthorized,
   notFound,
+
+  /// 409: the current state does not allow it (e.g. reception of an order
+  /// that is not in transit, not enough stock, too many photos).
+  conflict,
+
+  /// 403: the client's role cannot do this action.
+  forbidden,
   invalid,
   server,
   unexpectedResponse,
@@ -64,6 +72,17 @@ class FruitLogixOrdersApi {
     () => _client.get(_baseUri.resolve('/api/v1/producers'), headers: _headers),
   );
 
+  /// `GET /api/v1/products?available=true` — the catalog (active products
+  /// with stock).
+  Future<Object?> getProducts({bool available = true}) => _send(
+    () => _client.get(
+      _baseUri
+          .resolve('/api/v1/products')
+          .replace(queryParameters: {'available': '$available'}),
+      headers: _headers,
+    ),
+  );
+
   /// `POST /api/v1/orders` — `CreateOrderResource`.
   Future<Object?> createOrder(Map<String, Object?> body) => _send(
     () => _client.post(
@@ -88,20 +107,28 @@ class FruitLogixOrdersApi {
     }
 
     final code = response.statusCode;
-    if (code == 401 || code == 403) {
+    // 401: missing, invalid or expired token (the shell signs out).
+    if (code == 401) {
       throw const OrderApiException(OrderApiFailure.unauthorized);
     }
     // A client without orders may get a 404 instead of an empty list.
-    if (code == 404) throw const OrderApiException(OrderApiFailure.notFound);
-    // The IAM middleware throws on a missing/invalid token, which surfaces
-    // as a 500 with an "invalid token" message.
-    if (code >= 500 && response.body.toLowerCase().contains('token')) {
-      throw const OrderApiException(OrderApiFailure.unauthorized);
+    // 404: it does not exist or it is not the user's.
+    if (code == 409 || code == 403) {
+      throw OrderApiException(
+        code == 409 ? OrderApiFailure.conflict : OrderApiFailure.forbidden,
+        apiErrorMessage(response.body),
+      );
+    }
+    if (code == 404) {
+      throw OrderApiException(
+        OrderApiFailure.notFound,
+        apiErrorMessage(response.body),
+      );
     }
     if (code == 400 || code == 422) {
       throw OrderApiException(
         OrderApiFailure.invalid,
-        _messageOf(response.body),
+        apiErrorMessage(response.body),
       );
     }
     if (code < 200 || code >= 300) {
@@ -109,7 +136,7 @@ class FruitLogixOrdersApi {
         code >= 500
             ? OrderApiFailure.server
             : OrderApiFailure.unexpectedResponse,
-        _messageOf(response.body),
+        apiErrorMessage(response.body),
       );
     }
     if (response.body.trim().isEmpty) return null;
@@ -118,28 +145,6 @@ class FruitLogixOrdersApi {
     } on FormatException {
       throw const OrderApiException(OrderApiFailure.unexpectedResponse);
     }
-  }
-
-  /// `message`, the first validation error (more useful than the generic
-  /// ProblemDetails title "One or more validation errors occurred."),
-  /// then `detail`/`title`.
-  static String? _messageOf(String body) {
-    try {
-      final decoded = jsonDecode(body);
-      if (decoded is! Map) return null;
-      if (decoded['message'] is String) return decoded['message'] as String;
-      final errors = decoded['errors'];
-      if (errors is Map && errors.isNotEmpty) {
-        final first = errors.values.first;
-        if (first is List && first.isNotEmpty) return '${first.first}';
-      }
-      for (final key in ['detail', 'title']) {
-        if (decoded[key] is String) return decoded[key] as String;
-      }
-    } on FormatException {
-      return null;
-    }
-    return null;
   }
 
   void close() => _client.close();

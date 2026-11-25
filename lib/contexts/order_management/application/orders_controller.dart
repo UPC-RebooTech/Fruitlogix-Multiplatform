@@ -42,8 +42,14 @@ class OrdersController extends ChangeNotifier {
 
   Map<int, String> _producerNames = const {};
 
-  /// Producer id → name (empty if the API could not provide them).
-  Map<int, String> get producerNames => _producerNames;
+  /// Producer id → name: `producerName` of the orders first, then
+  /// `GET /producers` (empty if neither is available).
+  Map<int, String> get producerNames => {
+    ..._producerNames,
+    for (final order in _orders)
+      if (order.producerId != null && order.producerName != null)
+        order.producerId!: order.producerName!,
+  };
 
   int get activeCount => activeOrders.length;
   int get inTransitCount =>

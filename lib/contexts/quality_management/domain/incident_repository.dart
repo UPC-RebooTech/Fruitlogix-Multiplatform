@@ -15,6 +15,7 @@ abstract interface class IncidentTargetSource {
   /// Recent orders, newest first.
   Future<List<IncidentTarget>> reportableTargets();
 
-  /// The target of a known order (from reception or the order card).
-  IncidentTarget targetForOrder(String orderCode);
+  /// The target of a known order (from reception or the order card); null
+  /// when the order cannot get an incident yet (no lot linked).
+  IncidentTarget? targetForOrder(String orderCode);
 }

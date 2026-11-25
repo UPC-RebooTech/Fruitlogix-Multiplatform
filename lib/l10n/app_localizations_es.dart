@@ -847,7 +847,7 @@ class AppLocalizationsEs extends AppLocalizations {
       'No se pudo guardar el perfil. Inténtalo nuevamente.';
 
   @override
-  String get profileLoadFailed => 'No se pudo cargar tu perfil local.';
+  String get profileLoadFailed => 'No se pudo cargar tu perfil.';
 
   @override
   String get profileRetry => 'Reintentar';
@@ -1133,7 +1133,8 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get qmPhotosLocalNote => 'Las fotos se guardan en este teléfono.';
+  String get qmPhotosLocalNote =>
+      'Una copia de las fotos queda en este teléfono.';
 
   @override
   String get qmTargetLabel => 'Pedido';
@@ -1274,4 +1275,93 @@ class AppLocalizationsEs extends AppLocalizations {
   String arrivalNotificationBody(String driver, String distance) {
     return '$driver entró a la zona de tu almacén ($distance km).';
   }
+
+  @override
+  String get authWrongRole =>
+      'Esta app es para clientes comerciales. Productores y distribuidores usan la app de operaciones de FruitLogix.';
+
+  @override
+  String get authSessionExpired => 'Tu sesión expiró. Vuelve a iniciar sesión.';
+
+  @override
+  String get orderStatusDeliveredWithIncidence => 'Entregado con incidencia';
+
+  @override
+  String get trackingStatusFailed => 'Con problema';
+
+  @override
+  String get receptionNotInTransit =>
+      'El pedido aún no está en tránsito: confirma la recepción cuando haya sido despachado.';
+
+  @override
+  String get trackingEventCreated => 'Entrega programada';
+
+  @override
+  String get trackingEventDispatched => 'Despachado';
+
+  @override
+  String get trackingEventDelayed => 'Retraso reportado';
+
+  @override
+  String get trackingEventCheckpoint => 'Punto de control';
+
+  @override
+  String trackingEventCheckpointAt(String place) {
+    return 'Punto de control: $place';
+  }
+
+  @override
+  String get trackingEventArrived => 'Llegó al almacén';
+
+  @override
+  String get trackingEventDelivered => 'Recepción confirmada';
+
+  @override
+  String get trackingEventOther => 'Actualización de la entrega';
+
+  @override
+  String get trackingDispatchedAt => 'Despachado';
+
+  @override
+  String get trackingArrivedAt => 'Llegó';
+
+  @override
+  String arrivalNotificationBodyNoDistance(String driver) {
+    return '$driver llegó a tu almacén.';
+  }
+
+  @override
+  String get arrivalsZoneSaveError =>
+      'No pudimos guardar la zona del almacén. Inténtalo de nuevo.';
+
+  @override
+  String get profileStoredOnPlatform =>
+      'Tu perfil se guarda en tu cuenta de FruitLogix.';
+
+  @override
+  String get catalogNotEnoughStock =>
+      'No hay stock suficiente para esa cantidad.';
+
+  @override
+  String get catalogOneProducer =>
+      'Un pedido solo puede tener productos de un productor. Haz este en otro pedido.';
+
+  @override
+  String get catalogLoadError => 'No pudimos cargar el catálogo.';
+
+  @override
+  String productMinOrder(int quantity, String unit) {
+    return 'Pedido mínimo: $quantity $unit';
+  }
+
+  @override
+  String get traceNotApplicable => 'No aplica';
+
+  @override
+  String get traceLoadError =>
+      'No pudimos cargar la trazabilidad de este pedido.';
+
+  @override
+  String get qmNoReportableOrders =>
+      'Ninguno de tus pedidos tiene un lote de cosecha vinculado todavía. Podrás reportar una incidencia cuando el productor lo vincule.';
 }

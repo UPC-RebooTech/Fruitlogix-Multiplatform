@@ -72,6 +72,9 @@ class _ConfirmReceptionPageState extends State<ConfirmReceptionPage> {
           l10n.authNetworkError,
         LogisticsApiException(reason: LogisticsApiFailure.unauthorized) =>
           l10n.qmSessionExpired,
+        // The order is not in transit yet (dispatch pending).
+        LogisticsApiException(reason: LogisticsApiFailure.conflict) =>
+          l10n.receptionNotInTransit,
         LogisticsApiException(message: final String message)
             when message.isNotEmpty =>
           message,

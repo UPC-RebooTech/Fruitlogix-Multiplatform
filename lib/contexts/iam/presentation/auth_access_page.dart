@@ -40,6 +40,16 @@ class _AuthAccessPageState extends State<AuthAccessPage> {
   bool _busy = false;
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.controller.consumeExpiredNotice()) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _showError(AppLocalizations.of(context).authSessionExpired);
+      });
+    }
+  }
+
+  @override
   void dispose() {
     _username.dispose();
     _password.dispose();
@@ -74,6 +84,7 @@ class _AuthAccessPageState extends State<AuthAccessPage> {
     return switch (failure) {
       AuthFailure.invalidCredentials => l10n.authInvalidCredentials,
       AuthFailure.usernameTakenOrInvalid => l10n.authUsernameUnavailable,
+      AuthFailure.wrongRole => l10n.authWrongRole,
       AuthFailure.network => l10n.authNetworkError,
       AuthFailure.server => l10n.authServerError,
       AuthFailure.unexpectedResponse => l10n.authUnexpectedResponse,

@@ -2,7 +2,7 @@ import 'geofence.dart';
 
 /// Lifecycle of a delivery as seen by the Commercial Client.
 enum ShipmentStatus {
-  /// Created, waiting for dispatch.
+  /// Created, waiting for dispatch (`PendingDispatch`).
   scheduled,
 
   /// Left the warehouse.
@@ -18,10 +18,18 @@ enum ShipmentStatus {
   arrived,
 
   /// Received.
-  delivered;
+  delivered,
+
+  /// `Failed` (reserved by the platform) or a status this app does not know.
+  failed;
 
   /// Still on its way or waiting at the dock.
-  bool get isActive => this != delivered;
+  bool get isActive => this != delivered && this != failed;
+
+  /// Left the warehouse and not received yet: the client can confirm the
+  /// reception once it arrives.
+  bool get isOnTheWay =>
+      this == dispatched || this == inTransit || this == delayed || this == arrived;
 
   /// Rough progress for the progress bar (the API has no position-based
   /// progress yet).
@@ -32,6 +40,7 @@ enum ShipmentStatus {
     delayed => 0.6,
     arrived => 0.9,
     delivered => 1,
+    failed => 0,
   };
 }
 
@@ -56,17 +65,33 @@ class TelemetryLog {
   final GeoPoint? position;
 }
 
-/// Route checkpoint (demo only: the API has no named checkpoints yet).
+/// `deliveryEvent.type` of `GET /deliveries/{id}/events`.
+enum DeliveryEventType { created, dispatched, delayed, checkpoint, arrived, delivered, other }
+
+/// Route checkpoint or delivery milestone. Platform events carry a [type]
+/// (labelled by the UI) and [occurredAt]; demo events carry fixed texts.
 class TrackingEventItem {
   const TrackingEventItem({
     required this.time,
     required this.description,
     required this.isCompleted,
+    this.type,
+    this.occurredAt,
+    this.place,
+    this.note,
   });
 
   final String time;
   final String description;
   final bool isCompleted;
+  final DeliveryEventType? type;
+  final DateTime? occurredAt;
+
+  /// Checkpoint name (`Peaje Chicama`).
+  final String? place;
+
+  /// Delay reason or distributor note.
+  final String? note;
 }
 
 /// One of the client's orders, used to match deliveries (the deliveries
@@ -77,6 +102,7 @@ class ShipmentOrderRef {
     required this.orderCode,
     this.itemsSummary,
     this.isDelivered = false,
+    this.rating,
   });
 
   final int orderId;
@@ -87,6 +113,9 @@ class ShipmentOrderRef {
 
   /// The order is already delivered: its reception was confirmed.
   final bool isDelivered;
+
+  /// Stars the client gave at reception (`order.reception.rating`).
+  final int? rating;
 }
 
 /// The client's orders (provided by Order Management).
@@ -107,6 +136,8 @@ class DeliveryShipment {
     this.routeOrigin,
     this.routeDestination,
     this.routeDistanceKm,
+    this.dispatchedAt,
+    this.arrivedAt,
     this.telemetry,
     this.events = const [],
     this.itemsSummary,
@@ -141,6 +172,10 @@ class DeliveryShipment {
   final String? routeOrigin;
   final String? routeDestination;
   final double? routeDistanceKm;
+
+  /// When the truck left (`start-dispatch`) and reached the warehouse.
+  final DateTime? dispatchedAt;
+  final DateTime? arrivedAt;
 
   /// Latest reading; null when the reefer has not reported yet.
   final TelemetryLog? telemetry;
@@ -180,7 +215,7 @@ class ReceptionReport {
   final String? comment;
   final bool hasIncidence;
 
-  /// Kept on the device: the platform API has no field for it yet.
+  /// Seal intact and temperature within range at the dock.
   final bool sealAndTemperatureOk;
 
   bool get isValid => rating == null || (rating! >= 1 && rating! <= maxRating);

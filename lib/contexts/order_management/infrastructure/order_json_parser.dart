@@ -72,13 +72,12 @@ abstract final class OrderJsonParser {
     final status = parseStatus(
       json['status'] ?? json['orderStatus'] ?? json['currentStatus'],
     );
-    // US24: the API has no delivery timestamp yet; a delivered order's last
-    // update is the closest value.
-    final completed =
-        _date(
-          json['deliveredAt'] ?? json['receivedAt'] ?? json['completedAt'],
-        ) ??
-        (status == OrderStatus.delivered ? _date(json['updatedAt']) : null);
+    // US24: set by the platform when the client confirms the reception.
+    final completed = _date(
+      json['deliveredAt'] ?? json['receivedAt'] ?? json['completedAt'],
+    );
+    final reason = (json['cancellationReason'] ?? '').toString().trim();
+    final producerName = (json['producerName'] ?? '').toString().trim();
     return CommercialOrder(
       id: '$id',
       lines: [
@@ -95,7 +94,27 @@ abstract final class OrderJsonParser {
       notes: notes.isEmpty ? null : notes,
       producerId: _int(json['producerId']),
       completedAt: completed,
+      producerName: producerName.isEmpty ? null : producerName,
+      batchId: _int(json['batchId']),
+      cancellationReason: reason.isEmpty ? null : reason,
+      reception: parseReception(json['reception']),
       totalAmount: _double(json['totalAmount'] ?? json['total']),
+    );
+  }
+
+  /// `OrderReceptionResource` (in `order.reception` or
+  /// `GET /orders/{id}/reception`). `rating` null or 0 = not rated.
+  static OrderReception? parseReception(Object? json) {
+    if (json is! Map) return null;
+    final rating = _int(json['rating']);
+    final comment = (json['comment'] ?? '').toString().trim();
+    final seal = json['sealAndTemperatureOk'];
+    return OrderReception(
+      rating: rating != null && rating >= 1 && rating <= 5 ? rating : null,
+      comment: comment.isEmpty ? null : comment,
+      hasIncidence: json['hasIncidence'] == true,
+      sealAndTemperatureOk: seal is bool ? seal : null,
+      receivedAt: _date(json['receivedAt']),
     );
   }
 
@@ -187,6 +206,10 @@ abstract final class OrderJsonParser {
       'entransito',
       'entránsito',
     ];
+    const withIncidence = [
+      'deliveredwithincidence',
+      'entregadoconincidencia',
+    ];
     const delivered = [
       'delivered',
       'received',
@@ -199,6 +222,9 @@ abstract final class OrderJsonParser {
     const rejected = ['rejected', 'rechazado'];
     if (preparing.contains(value)) return OrderStatus.preparing;
     if (inTransit.contains(value)) return OrderStatus.inTransit;
+    if (withIncidence.contains(value)) {
+      return OrderStatus.deliveredWithIncidence;
+    }
     if (delivered.contains(value)) return OrderStatus.delivered;
     if (cancelled.contains(value)) return OrderStatus.cancelled;
     if (rejected.contains(value)) return OrderStatus.rejected;

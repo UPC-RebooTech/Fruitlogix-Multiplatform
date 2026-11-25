@@ -17,8 +17,8 @@ enum IncidentStatus {
   bool get isClosed => this == resolved || this == rejected;
 }
 
-/// A photo attached as evidence (US11). Kept on the device until the
-/// platform API offers file uploads.
+/// A photo attached as evidence (US11). The platform keeps its URL; this
+/// phone also keeps the bytes of the photos it took.
 class EvidencePhoto {
   const EvidencePhoto({required this.id, required this.bytes});
 
@@ -28,17 +28,21 @@ class EvidencePhoto {
 
 /// What an incident is about: one order and the harvest lot it came from.
 ///
-/// The platform API links incidents to a lot (`batchId`). While Order
-/// Management uses demo data, lots are demo values too.
+/// The platform links incidents to a lot (`batchId`, linked to the order by
+/// the producer) and, optionally, to the order (`orderId`).
 class IncidentTarget {
   const IncidentTarget({
     required this.orderCode,
     required this.batchId,
+    this.orderId,
     this.productSummary,
   });
 
   final String orderCode;
   final int batchId;
+
+  /// Platform order id; null for demo orders.
+  final int? orderId;
 
   /// Short description of the goods (e.g. "Mango Kent · 2 kg").
   final String? productSummary;
@@ -65,6 +69,7 @@ class Incident {
     required this.status,
     this.orderCode,
     this.evidence = const [],
+    this.evidenceUrls = const [],
   });
 
   final String id;
@@ -76,6 +81,9 @@ class Incident {
   /// Known only for incidents reported from this app (the API stores lots).
   final String? orderCode;
   final List<EvidencePhoto> evidence;
+
+  /// Photos stored by the platform (`evidenceUrls`).
+  final List<String> evidenceUrls;
 
   /// Display code: `INC-0007`.
   String get code {
@@ -98,6 +106,7 @@ class Incident {
         status: status ?? this.status,
         orderCode: orderCode ?? this.orderCode,
         evidence: evidence ?? this.evidence,
+        evidenceUrls: evidenceUrls,
       );
 }
 
@@ -113,6 +122,7 @@ class NewIncident {
   });
 
   static const int minDescriptionLength = 10;
+  /// The platform accepts up to 5 images of 5 MB per incident.
   static const int maxPhotos = 4;
 
   final IncidentTarget? target;

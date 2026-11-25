@@ -3,12 +3,20 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../../../shared/infrastructure/api_errors.dart';
 import '../../../shared/infrastructure/fruitlogix_api_config.dart';
 
 enum LogisticsApiFailure {
   network,
   unauthorized,
   notFound,
+
+  /// 409: the current state does not allow it (e.g. reception of an order
+  /// that is not in transit, not enough stock, too many photos).
+  conflict,
+
+  /// 403: the client's role cannot do this action.
+  forbidden,
   server,
   unexpectedResponse,
 }
@@ -47,7 +55,8 @@ class FruitLogixLogisticsApi {
     'Authorization': 'Bearer ${_token()}',
   };
 
-  /// `GET /api/v1/deliveries` — every delivery (not filtered by client).
+  /// `GET /api/v1/deliveries` — the client's deliveries (filtered by the
+  /// platform with the JWT).
   Future<Object?> getDeliveries() => _send(
     () =>
         _client.get(_baseUri.resolve('/api/v1/deliveries'), headers: _headers),
@@ -63,8 +72,55 @@ class FruitLogixLogisticsApi {
     ),
   );
 
+  /// `GET /api/v1/deliveries/{id}/events` — milestones and checkpoints.
+  Future<Object?> getDeliveryEvents(int deliveryId) => _send(
+    () => _client.get(
+      _baseUri.resolve('/api/v1/deliveries/$deliveryId/events'),
+      headers: _headers,
+    ),
+  );
+
+  /// `GET /api/v1/deliveries/arrivals?since=` — arrivals at the client's
+  /// warehouse (geofence or manual), newest first.
+  Future<Object?> getArrivals({DateTime? since}) => _send(
+    () => _client.get(
+      _baseUri
+          .resolve('/api/v1/deliveries/arrivals')
+          .replace(
+            queryParameters: since == null
+                ? null
+                : {'since': since.toUtc().toIso8601String()},
+          ),
+      headers: _headers,
+    ),
+  );
+
+  /// `GET /api/v1/orders/{id}/traceability` — harvest → inspection →
+  /// dispatch → reception → invoice (US72).
+  Future<Object?> getTraceability(int orderId) => _send(
+    () => _client.get(
+      _baseUri.resolve('/api/v1/orders/$orderId/traceability'),
+      headers: _headers,
+    ),
+  );
+
+  /// `GET /api/v1/profiles/me` — the client's profile, with `warehouse`
+  /// (US65). 404 while the client has not created it.
+  Future<Object?> getMyProfile() => _send(
+    () => _client.get(_baseUri.resolve('/api/v1/profiles/me'), headers: _headers),
+  );
+
+  /// `PUT /api/v1/profiles/me/warehouse` — `{ latitude, longitude, radiusKm }`.
+  Future<Object?> putWarehouse(Map<String, Object?> body) => _send(
+    () => _client.put(
+      _baseUri.resolve('/api/v1/profiles/me/warehouse'),
+      headers: {..._headers, 'Content-Type': 'application/json'},
+      body: jsonEncode(body),
+    ),
+  );
+
   /// `POST /api/v1/orders/{orderId}/reception` —
-  /// `ConfirmOrderReceptionResource { rating, comment, hasIncidence }`.
+  /// `{ rating?, comment, hasIncidence, sealAndTemperatureOk }`.
   Future<Object?> confirmReception(int orderId, Map<String, Object?> body) =>
       _send(
         () => _client.post(
@@ -88,22 +144,29 @@ class FruitLogixLogisticsApi {
     }
 
     final code = response.statusCode;
-    if (code == 401 || code == 403) {
+    // 401: missing, invalid or expired token (the shell signs out).
+    if (code == 401) {
       throw const LogisticsApiException(LogisticsApiFailure.unauthorized);
+    }
+    // 404: it does not exist or it is not the user's.
+    if (code == 409 || code == 403) {
+      throw LogisticsApiException(
+        code == 409 ? LogisticsApiFailure.conflict : LogisticsApiFailure.forbidden,
+        apiErrorMessage(response.body),
+      );
     }
     if (code == 404) {
-      throw const LogisticsApiException(LogisticsApiFailure.notFound);
-    }
-    // The IAM middleware throws on a missing/invalid token (500 + "token").
-    if (code >= 500 && response.body.toLowerCase().contains('token')) {
-      throw const LogisticsApiException(LogisticsApiFailure.unauthorized);
+      throw LogisticsApiException(
+        LogisticsApiFailure.notFound,
+        apiErrorMessage(response.body),
+      );
     }
     if (code < 200 || code >= 300) {
       throw LogisticsApiException(
         code >= 500
             ? LogisticsApiFailure.server
             : LogisticsApiFailure.unexpectedResponse,
-        _messageOf(response.body),
+        apiErrorMessage(response.body),
       );
     }
     if (response.body.trim().isEmpty) return null;
@@ -112,26 +175,6 @@ class FruitLogixLogisticsApi {
     } on FormatException {
       throw const LogisticsApiException(LogisticsApiFailure.unexpectedResponse);
     }
-  }
-
-  /// `message`, the first validation error, or ProblemDetails `detail`/`title`.
-  static String? _messageOf(String body) {
-    try {
-      final decoded = jsonDecode(body);
-      if (decoded is! Map) return null;
-      if (decoded['message'] is String) return decoded['message'] as String;
-      final errors = decoded['errors'];
-      if (errors is Map && errors.isNotEmpty) {
-        final first = errors.values.first;
-        if (first is List && first.isNotEmpty) return '${first.first}';
-      }
-      for (final key in ['detail', 'title']) {
-        if (decoded[key] is String) return decoded[key] as String;
-      }
-    } on FormatException {
-      return null;
-    }
-    return null;
   }
 
   void close() => _client.close();

@@ -1595,7 +1595,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileLoadFailed.
   ///
   /// In en, this message translates to:
-  /// **'Could not load your local profile.'**
+  /// **'Could not load your profile.'**
   String get profileLoadFailed;
 
   /// No description provided for @profileRetry.
@@ -2063,7 +2063,7 @@ abstract class AppLocalizations {
   /// No description provided for @qmPhotosLocalNote.
   ///
   /// In en, this message translates to:
-  /// **'Photos are saved on this phone.'**
+  /// **'A copy of the photos stays on this phone.'**
   String get qmPhotosLocalNote;
 
   /// No description provided for @qmTargetLabel.
@@ -2293,6 +2293,156 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{driver} entered your warehouse zone ({distance} km).'**
   String arrivalNotificationBody(String driver, String distance);
+
+  /// No description provided for @authWrongRole.
+  ///
+  /// In en, this message translates to:
+  /// **'This app is for commercial clients. Producers and distributors use the FruitLogix operations app.'**
+  String get authWrongRole;
+
+  /// No description provided for @authSessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session expired. Sign in again.'**
+  String get authSessionExpired;
+
+  /// No description provided for @orderStatusDeliveredWithIncidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered with incidence'**
+  String get orderStatusDeliveredWithIncidence;
+
+  /// No description provided for @trackingStatusFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'With a problem'**
+  String get trackingStatusFailed;
+
+  /// No description provided for @receptionNotInTransit.
+  ///
+  /// In en, this message translates to:
+  /// **'The order isn\'t in transit yet: confirm the reception once it has been dispatched.'**
+  String get receptionNotInTransit;
+
+  /// No description provided for @trackingEventCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery scheduled'**
+  String get trackingEventCreated;
+
+  /// No description provided for @trackingEventDispatched.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatched'**
+  String get trackingEventDispatched;
+
+  /// No description provided for @trackingEventDelayed.
+  ///
+  /// In en, this message translates to:
+  /// **'Delay reported'**
+  String get trackingEventDelayed;
+
+  /// No description provided for @trackingEventCheckpoint.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkpoint'**
+  String get trackingEventCheckpoint;
+
+  /// No description provided for @trackingEventCheckpointAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkpoint: {place}'**
+  String trackingEventCheckpointAt(String place);
+
+  /// No description provided for @trackingEventArrived.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrived at the warehouse'**
+  String get trackingEventArrived;
+
+  /// No description provided for @trackingEventDelivered.
+  ///
+  /// In en, this message translates to:
+  /// **'Reception confirmed'**
+  String get trackingEventDelivered;
+
+  /// No description provided for @trackingEventOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery update'**
+  String get trackingEventOther;
+
+  /// No description provided for @trackingDispatchedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatched'**
+  String get trackingDispatchedAt;
+
+  /// No description provided for @trackingArrivedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrived'**
+  String get trackingArrivedAt;
+
+  /// No description provided for @arrivalNotificationBodyNoDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'{driver} arrived at your warehouse.'**
+  String arrivalNotificationBodyNoDistance(String driver);
+
+  /// No description provided for @arrivalsZoneSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t save the warehouse zone. Try again.'**
+  String get arrivalsZoneSaveError;
+
+  /// No description provided for @profileStoredOnPlatform.
+  ///
+  /// In en, this message translates to:
+  /// **'Your profile is saved in your FruitLogix account.'**
+  String get profileStoredOnPlatform;
+
+  /// No description provided for @catalogNotEnoughStock.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough stock for that quantity.'**
+  String get catalogNotEnoughStock;
+
+  /// No description provided for @catalogOneProducer.
+  ///
+  /// In en, this message translates to:
+  /// **'An order can only have products of one producer. Place this one in another order.'**
+  String get catalogOneProducer;
+
+  /// No description provided for @catalogLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load the catalog.'**
+  String get catalogLoadError;
+
+  /// No description provided for @productMinOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum order: {quantity} {unit}'**
+  String productMinOrder(int quantity, String unit);
+
+  /// No description provided for @traceNotApplicable.
+  ///
+  /// In en, this message translates to:
+  /// **'Does not apply'**
+  String get traceNotApplicable;
+
+  /// No description provided for @traceLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load the traceability of this order.'**
+  String get traceLoadError;
+
+  /// No description provided for @qmNoReportableOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'None of your orders has a harvest lot linked yet. You can report an incident once the producer links it.'**
+  String get qmNoReportableOrders;
 }
 
 class _AppLocalizationsDelegate

@@ -5,7 +5,9 @@ import 'fruitlogix_quality_api.dart';
 import 'incident_json_parser.dart';
 import 'local_incident_index.dart';
 
-/// Incidents in the platform API, with their photos kept on the device.
+/// Incidents in the platform API (already filtered to the client). Photos
+/// are uploaded first (`POST /files`), so nothing is created when an upload
+/// fails; a copy stays on the phone to show them without downloading.
 class HttpIncidentRepository implements IncidentRepository {
   HttpIncidentRepository({
     required this.api,
@@ -26,14 +28,15 @@ class HttpIncidentRepository implements IncidentRepository {
     } on FormatException {
       throw const QualityApiException(QualityApiFailure.unexpectedResponse);
     }
+    // The order code is known for incidents reported from this phone (the
+    // response carries the lot, not the order).
     final mine = await index.load();
     return [
       for (final incident in all)
-        if (mine.containsKey(incident.id))
-          incident.copyWith(
-            orderCode: mine[incident.id]!.orderCode,
-            evidence: await evidence.load(incident.id),
-          ),
+        incident.copyWith(
+          orderCode: mine[incident.id]?.orderCode,
+          evidence: await evidence.load(incident.id),
+        ),
     ];
   }
 
@@ -44,9 +47,24 @@ class HttpIncidentRepository implements IncidentRepository {
     final target = incident.target!;
     final description = incident.description.trim();
 
+    final urls = <String>[];
+    for (final (i, photo) in incident.photos.indexed) {
+      final uploaded = await api.uploadImage(
+        photo,
+        fileName: 'evidence-${i + 1}',
+      );
+      final url = uploaded is Map ? uploaded['url'] : null;
+      if (url is! String || url.isEmpty) {
+        throw const QualityApiException(QualityApiFailure.unexpectedResponse);
+      }
+      urls.add(url);
+    }
+
     final body = await api.createIncident(
       batchId: target.batchId,
+      orderId: target.orderId,
       description: description,
+      evidenceUrls: urls,
     );
 
     var id = IncidentJsonParser.createdId(body);

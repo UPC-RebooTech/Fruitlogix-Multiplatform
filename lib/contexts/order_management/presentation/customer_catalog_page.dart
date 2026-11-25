@@ -5,31 +5,20 @@ import '../../../shared/ui/components/components.dart';
 import '../../../shared/ui/formatters/money_format.dart';
 import '../../../shared/ui/theme/theme.dart';
 import '../application/cart_controller.dart';
+import '../application/catalog_controller.dart';
 import '../application/orders_controller.dart';
-import '../domain/catalog_repository.dart';
 import '../domain/commercial_order.dart';
 import '../domain/fruit_product.dart';
 import 'order_status_view.dart';
 
-/// Category filters. [key] matches `FruitProduct.category` (domain data);
-/// the label comes from the ARB files.
-enum _CatalogFilter {
-  all(null),
-  fruits('Fruits'),
-  vegetables('Vegetables');
-
-  const _CatalogFilter(this.key);
-
-  final String? key;
-
-  bool matches(FruitProduct product) => key == null || product.category == key;
-
-  String label(AppLocalizations l10n) => switch (this) {
-    _CatalogFilter.all => l10n.catalogFilterAll,
-    _CatalogFilter.fruits => l10n.catalogFilterFruits,
-    _CatalogFilter.vegetables => l10n.catalogFilterVegetables,
-  };
-}
+/// Label of a category filter: the fruit type of the platform as it comes,
+/// the demo groups translated.
+String _categoryLabel(String category, AppLocalizations l10n) =>
+    switch (category) {
+      'Fruits' => l10n.catalogFilterFruits,
+      'Vegetables' => l10n.catalogFilterVegetables,
+      _ => category,
+    };
 
 class CustomerCatalogPage extends StatefulWidget {
   const CustomerCatalogPage({
@@ -39,8 +28,8 @@ class CustomerCatalogPage extends StatefulWidget {
     super.key,
   });
 
-  /// Demo products (the platform API has no products endpoint yet).
-  final CatalogRepository catalog;
+  /// Products: `GET /products` with a session, demo products without one.
+  final CatalogController catalog;
 
   /// Places the order in the platform API (demo without session).
   final OrdersController orders;
@@ -52,18 +41,42 @@ class CustomerCatalogPage extends StatefulWidget {
 
 class _CustomerCatalogPageState extends State<CustomerCatalogPage> {
   late final CartController _cart;
-  _CatalogFilter _filter = _CatalogFilter.all;
+
+  /// Selected fruit type; null shows every product.
+  String? _category;
 
   @override
   void initState() {
     super.initState();
-    _cart = CartController(widget.catalog.getProducts());
+    _cart = CartController(widget.catalog.products);
+    widget.catalog.addListener(_syncProducts);
+    if (widget.catalog.status == CatalogStatus.idle) widget.catalog.load();
+  }
+
+  void _syncProducts() {
+    if (!identical(_cart.products, widget.catalog.products)) {
+      _cart.replaceProducts(widget.catalog.products);
+    }
   }
 
   @override
   void dispose() {
+    widget.catalog.removeListener(_syncProducts);
     _cart.dispose();
     super.dispose();
+  }
+
+  void _add(FruitProduct product) {
+    final l10n = AppLocalizations.of(context);
+    final message = switch (_cart.add(product)) {
+      CartAddResult.added => null,
+      CartAddResult.outOfStock => l10n.catalogNotEnoughStock,
+      CartAddResult.otherProducer => l10n.catalogOneProducer,
+    };
+    if (message == null) return;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
   }
 
   Future<void> _reviewOrder() async {
@@ -100,6 +113,8 @@ class _CustomerCatalogPageState extends State<CustomerCatalogPage> {
     if (!mounted) return;
     messenger.showSnackBar(SnackBar(content: Text(l10n.orderPlaced)));
     _cart.clear();
+    // Stock changed with the order.
+    widget.catalog.load();
     widget.onOrderCreated();
   }
 
@@ -107,9 +122,16 @@ class _CustomerCatalogPageState extends State<CustomerCatalogPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return ListenableBuilder(
-      listenable: Listenable.merge([_cart, widget.orders]),
+      listenable: Listenable.merge([_cart, widget.orders, widget.catalog]),
       builder: (context, _) {
-        final visible = _cart.products.where(_filter.matches).toList();
+        final catalog = widget.catalog;
+        final categories = {
+          for (final product in _cart.products)
+            if (product.category.isNotEmpty) product.category,
+        }.toList();
+        final visible = _cart.products
+            .where((p) => _category == null || p.category == _category)
+            .toList();
         return Column(
           children: [
             Expanded(
@@ -130,16 +152,43 @@ class _CustomerCatalogPageState extends State<CustomerCatalogPage> {
                     spacing: CosechaSpace.xs,
                     runSpacing: CosechaSpace.xs,
                     children: [
-                      for (final filter in _CatalogFilter.values)
+                      CosechaFilterChip(
+                        label: l10n.catalogFilterAll,
+                        selected: _category == null,
+                        onSelected: (_) => setState(() => _category = null),
+                      ),
+                      for (final category in categories)
                         CosechaFilterChip(
-                          label: filter.label(l10n),
-                          selected: _filter == filter,
-                          onSelected: (_) => setState(() => _filter = filter),
+                          label: _categoryLabel(category, l10n),
+                          selected: _category == category,
+                          onSelected: (_) =>
+                              setState(() => _category = category),
                         ),
                     ],
                   ),
                   const SizedBox(height: CosechaSpace.sm),
-                  if (visible.isEmpty)
+                  if (catalog.status == CatalogStatus.loading &&
+                      _cart.products.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.all(CosechaSpace.md),
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  else if (catalog.status == CatalogStatus.failure &&
+                      _cart.products.isEmpty)
+                    CosechaEmptyState(
+                      isError: true,
+                      title: orderErrorMessage(
+                        catalog.error,
+                        l10n,
+                        fallback: l10n.catalogLoadError,
+                      ),
+                      action: CosechaTextButton(
+                        label: l10n.qmRetry,
+                        icon: Icons.refresh,
+                        onPressed: catalog.load,
+                      ),
+                    )
+                  else if (visible.isEmpty)
                     CosechaEmptyState(
                       icon: Icons.inventory_2_outlined,
                       title: l10n.catalogEmptyTitle,
@@ -149,7 +198,7 @@ class _CustomerCatalogPageState extends State<CustomerCatalogPage> {
                     _ProductCard(
                       product: product,
                       quantity: _cart.quantityFor(product.id),
-                      onAdd: () => _cart.add(product),
+                      onAdd: () => _add(product),
                       onRemove: () => _cart.remove(product),
                     ),
                     const SizedBox(height: CosechaSpace.xs),
@@ -216,6 +265,13 @@ class _ProductCard extends StatelessWidget {
                         color: context.cosechaContentSecondary,
                       ),
                     ),
+                    if (product.producerName case final producer?)
+                      Text(
+                        producer,
+                        style: textTheme.bodySmall?.copyWith(
+                          color: context.cosechaContentSecondary,
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -241,6 +297,13 @@ class _ProductCard extends StatelessWidget {
                         color: context.cosechaContentSecondary,
                       ),
                     ),
+                    if (product.minQuantity > 1)
+                      Text(
+                        l10n.productMinOrder(product.minQuantity, product.unit),
+                        style: data.dataMonoSmall.copyWith(
+                          color: context.cosechaContentSecondary,
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -248,7 +311,8 @@ class _ProductCard extends StatelessWidget {
               _QuantityStepper(
                 quantity: quantity,
                 unit: product.unit,
-                canAdd: quantity < product.stock,
+                canAdd: (quantity == 0 ? product.minQuantity : quantity + 1) <=
+                    product.stock,
                 addTooltip: l10n.productAddTooltip(product.name),
                 removeTooltip: l10n.productRemoveTooltip(product.name),
                 onAdd: onAdd,

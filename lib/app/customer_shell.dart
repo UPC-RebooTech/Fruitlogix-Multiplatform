@@ -21,6 +21,7 @@ import '../contexts/order_management/domain/commercial_order.dart';
 import '../contexts/order_management/order_management_module.dart';
 import '../contexts/quality_management/domain/incident.dart';
 import '../contexts/quality_management/infrastructure/demo_quality_repositories.dart';
+import '../contexts/quality_management/infrastructure/order_incident_targets.dart';
 import '../contexts/quality_management/presentation/incident_detail_page.dart';
 import '../contexts/quality_management/presentation/incidents_page.dart';
 import '../contexts/quality_management/presentation/report_incident_page.dart';
@@ -29,6 +30,7 @@ import '../contexts/profiles_management/infrastructure/in_memory_commercial_clie
 import '../contexts/profiles_management/presentation/customer_profile_page.dart';
 import '../dashboard/presentation/customer_dashboard_page.dart';
 import '../l10n/app_localizations.dart';
+import '../shared/infrastructure/api_errors.dart';
 import '../shared/ui/components/components.dart';
 import '../shared/ui/formatters/date_format.dart';
 import '../shared/ui/formatters/initials.dart';
@@ -60,6 +62,7 @@ class CustomerShell extends StatefulWidget {
   const CustomerShell({
     required this.localeController,
     this.onSignOut,
+    this.onSessionExpired,
     this.session,
     this.paymentModule,
     this.qualityModule,
@@ -71,6 +74,9 @@ class CustomerShell extends StatefulWidget {
 
   final LocaleController localeController;
   final VoidCallback? onSignOut;
+
+  /// Called once when the platform answers 401 (expired or revoked token).
+  final VoidCallback? onSessionExpired;
   final CommercialClientProfileRepository? profileRepository;
 
   /// Signed-in user. Without it (tests, previews) payments use demo data.
@@ -112,6 +118,14 @@ class _CustomerShellState extends State<CustomerShell>
   /// Detail screens opened inside the current section, innermost last.
   final List<_DetailPage> _details = [];
 
+  /// One HTTP client for every bounded context of the session: a 401 from
+  /// any of them signs out (back to the login).
+  late final SessionGuardClient _http = SessionGuardClient(
+    onUnauthorized: () => scheduleMicrotask(
+      () => (widget.onSessionExpired ?? widget.onSignOut)?.call(),
+    ),
+  );
+
   late final CommercialClientProfileRepository _profileRepository =
       widget.profileRepository ??
           InMemoryCommercialClientProfileRepository();
@@ -122,6 +136,7 @@ class _CustomerShellState extends State<CustomerShell>
           : LogisticsModule.remote(
               widget.session!,
               clientOrders: _clientOrderRefs,
+              client: _http,
             ));
 
   /// The client's orders, to keep only their deliveries.
@@ -135,7 +150,8 @@ class _CustomerShellState extends State<CustomerShell>
             orderId: id,
             orderCode: order.code,
             itemsSummary: order.productSummary.isEmpty ? null : order.productSummary,
-            isDelivered: order.status == OrderStatus.delivered,
+            isDelivered: order.status.isDelivered,
+            rating: order.reception?.rating,
           ),
     ];
   }
@@ -143,23 +159,42 @@ class _CustomerShellState extends State<CustomerShell>
   late final PaymentManagementModule _payments = widget.paymentModule ??
       (widget.session == null
           ? PaymentManagementModule.demo()
-          : PaymentManagementModule.remote(widget.session!));
+          : PaymentManagementModule.remote(widget.session!, client: _http));
   bool _paymentsStarted = false;
   ProCheckoutStage _lastProStage = ProCheckoutStage.idle;
 
-  /// Quality Management (EP02 · US11). Demo lots until Order Management
-  /// reads real orders; see `qualityRemoteEnabled`.
+  /// Quality Management (EP02 · US11): the platform with a session (orders
+  /// with a lot linked), demo lots without one.
   late final QualityManagementModule _quality = widget.qualityModule ??
-      (qualityRemoteEnabled && widget.session != null
-          ? QualityManagementModule.remote(widget.session!, targets: _incidentTargets)
+      (widget.session != null
+          ? QualityManagementModule.remote(
+              widget.session!,
+              targets: OrderIncidentTargets(orders: _ordersWithLot),
+              client: _http,
+            )
           : QualityManagementModule.demo(targets: _incidentTargets));
+
+  /// The client's orders whose producer linked the harvest lot (the
+  /// platform needs it for an incident), newest first.
+  List<IncidentTarget> _ordersWithLot() => [
+    for (final order in _orders.orders.orders)
+      if (order.batchId case final batchId?)
+        if (order.status != OrderStatus.cancelled &&
+            order.status != OrderStatus.rejected)
+          IncidentTarget(
+            orderCode: order.code,
+            batchId: batchId,
+            orderId: int.tryParse(order.id),
+            productSummary: order.productSummary,
+          ),
+  ];
 
   /// Order Management: the signed-in client's orders from the platform API
   /// (demo without session).
   late final OrderManagementModule _orders = widget.orderModule ??
       (widget.session == null
           ? OrderManagementModule.demo()
-          : OrderManagementModule.remote(widget.session!));
+          : OrderManagementModule.remote(widget.session!, client: _http));
 
   /// Orders the client can report about: their orders (newest first). Lots
   /// are demo values until the API links orders to harvest lots.
@@ -195,10 +230,15 @@ class _CustomerShellState extends State<CustomerShell>
         );
     _logistics.arrivals.textBuilder = (arrival) => (
           title: l10n.arrivalNotificationTitle(arrival.orderCode),
-          body: l10n.arrivalNotificationBody(
-            arrival.driverName ?? arrival.trackingNumber,
-            arrival.distanceKm.toStringAsFixed(1),
-          ),
+          body: switch (arrival.distanceKm) {
+            final km? => l10n.arrivalNotificationBody(
+              arrival.driverName ?? arrival.trackingNumber,
+              km.toStringAsFixed(1),
+            ),
+            null => l10n.arrivalNotificationBodyNoDistance(
+              arrival.driverName ?? arrival.trackingNumber,
+            ),
+          },
         );
     if (!_paymentsStarted) {
       _paymentsStarted = true;
@@ -255,6 +295,7 @@ class _CustomerShellState extends State<CustomerShell>
     if (widget.orderModule == null) _orders.dispose();
     if (widget.logisticsModule == null) _logistics.dispose();
     if (widget.qualityModule == null) _quality.dispose();
+    _http.dispose();
     super.dispose();
   }
 
@@ -301,10 +342,25 @@ class _CustomerShellState extends State<CustomerShell>
   /// Payments and the lot records.
   void _openTraceability(CommercialOrder order) {
     final l10n = AppLocalizations.of(context);
+    final orderNumber = int.tryParse(order.id);
+    final summary = order.productSummary.isEmpty ? null : order.productSummary;
+    // With a session the platform assembles the timeline.
+    if (_logistics.traceability case final source? when orderNumber != null) {
+      Navigator.of(context).push(MaterialPageRoute<void>(
+        builder: (_) => LotTimelineLoader(
+          orderCode: order.code,
+          load: () => source.timelineFor(
+            orderId: orderNumber,
+            orderCode: order.code,
+            productSummary: summary,
+          ),
+        ),
+      ));
+      return;
+    }
     final shipment = _logistics.shipments.shipments
         .where((s) => s.orderId == order.code)
         .firstOrNull;
-    final orderNumber = int.tryParse(order.id);
     final invoice = orderNumber == null
         ? null
         : _payments.overview.invoices
@@ -320,10 +376,12 @@ class _CustomerShellState extends State<CustomerShell>
       productSummary: order.productSummary.isEmpty ? null : order.productSummary,
       lot: _logistics.lots.forOrder(order.code),
       loaded: order.status == OrderStatus.inTransit ||
-          order.status == OrderStatus.delivered ||
-          (shipment != null && shipment.status != ShipmentStatus.scheduled),
+          order.status.isDelivered ||
+          (shipment != null &&
+              (shipment.status.isOnTheWay ||
+                  shipment.status == ShipmentStatus.delivered)),
       loadedBy: driver,
-      received: order.status == OrderStatus.delivered ||
+      received: order.status.isDelivered ||
           (shipment?.isReceived ?? false),
       receivedAt: order.completedAt,
       receivedBy: profile.businessName.trim().isEmpty

@@ -5,5 +5,8 @@ abstract class CommercialClientProfileRepository {
 
   bool get isPersistent;
 
+  /// Saved in the platform (/profiles/me), not only on this phone.
+  bool get syncsWithPlatform;
+
   Future<void> save(CommercialClientProfile profile);
 }

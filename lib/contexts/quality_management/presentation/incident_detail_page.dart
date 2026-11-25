@@ -91,7 +91,31 @@ class IncidentDetailPage extends StatelessWidget {
         const SizedBox(height: CosechaSpace.md),
         CosechaOverline(l10n.qmPhotos),
         const SizedBox(height: CosechaSpace.xs),
-        if (incident.evidence.isEmpty)
+        if (incident.evidence.isEmpty && incident.evidenceUrls.isNotEmpty)
+          // Photos taken on another phone: shown from the platform.
+          Wrap(
+            spacing: CosechaSpace.xs,
+            runSpacing: CosechaSpace.xs,
+            children: [
+              for (final (i, url) in incident.evidenceUrls.indexed)
+                ClipRRect(
+                  borderRadius: CosechaRadius.cardAll,
+                  child: Image.network(
+                    url,
+                    width: 96,
+                    height: 96,
+                    fit: BoxFit.cover,
+                    semanticLabel: l10n.qmPhotoLabel(i + 1),
+                    errorBuilder: (_, _, _) => const SizedBox(
+                      width: 96,
+                      height: 96,
+                      child: Icon(Icons.broken_image_outlined),
+                    ),
+                  ),
+                ),
+            ],
+          )
+        else if (incident.evidence.isEmpty)
           Text(
             l10n.qmPhotoCount(0),
             style: textTheme.bodyMedium

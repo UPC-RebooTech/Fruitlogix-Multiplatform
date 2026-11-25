@@ -1,8 +1,10 @@
 import '../domain/geofence.dart';
 import '../domain/shipment.dart';
 
-/// Reads `DeliveryResource` and `TrackingLogResource` from the platform API.
-/// Status spellings are not documented, so it accepts common variants.
+/// Reads `DeliveryResource`, `TrackingLogResource` and
+/// `DeliveryEventResource` from the platform API. Statuses always come as
+/// text (`PendingDispatch`, `InTransit`, `Delayed`, `Arrived`,
+/// `Delivered`, `Failed`); unknown values never break the screen.
 abstract final class DeliveryJsonParser {
   static List<Map<dynamic, dynamic>> list(Object? body) {
     final raw = switch (body) {
@@ -25,6 +27,7 @@ abstract final class DeliveryJsonParser {
     Map<dynamic, dynamic> json, {
     required ShipmentOrderRef order,
     TelemetryLog? telemetry,
+    List<TrackingEventItem> events = const [],
   }) {
     final id = _int(json['id']);
     if (id == null) throw const FormatException('Delivery without id');
@@ -46,9 +49,45 @@ abstract final class DeliveryJsonParser {
       routeOrigin: _text(json['routeOrigin']),
       routeDestination: _text(json['routeDestination']),
       routeDistanceKm: _double(json['routeDistanceKm']),
+      dispatchedAt: _date(json['dispatchedAt']),
+      arrivedAt: _date(json['arrivedAt']),
       telemetry: telemetry,
+      events: events,
+      rating: order.rating,
     );
   }
+
+  /// `GET /deliveries/{id}/events` (chronological). Malformed items are
+  /// skipped. Every event already happened, so all are completed.
+  static List<TrackingEventItem> events(Object? body) {
+    final parsed = <TrackingEventItem>[];
+    for (final json in list(body)) {
+      final at = _date(json['occurredAt']);
+      if (at == null) continue;
+      parsed.add(TrackingEventItem(
+        time: '',
+        description: _text(json['name']) ?? '',
+        isCompleted: true,
+        type: eventType(json['type']),
+        occurredAt: at,
+        place: _text(json['name']),
+        note: _text(json['note']),
+      ));
+    }
+    parsed.sort((a, b) => a.occurredAt!.compareTo(b.occurredAt!));
+    return parsed;
+  }
+
+  static DeliveryEventType eventType(Object? raw) =>
+      switch ((raw ?? '').toString().trim().toLowerCase()) {
+        'created' => DeliveryEventType.created,
+        'dispatched' => DeliveryEventType.dispatched,
+        'delayed' => DeliveryEventType.delayed,
+        'checkpoint' => DeliveryEventType.checkpoint,
+        'arrived' => DeliveryEventType.arrived,
+        'delivered' => DeliveryEventType.delivered,
+        _ => DeliveryEventType.other,
+      };
 
   /// The most recent `TrackingLogResource`, or null without readings.
   static TelemetryLog? latestReading(Object? body) {
@@ -76,21 +115,19 @@ abstract final class DeliveryJsonParser {
     return latest;
   }
 
+  /// Text only: the platform never sends numbers (their order differs).
   static ShipmentStatus parseStatus(Object? raw) {
-    if (raw is num) {
-      return switch (raw.toInt()) {
-        1 => ShipmentStatus.dispatched,
-        2 => ShipmentStatus.inTransit,
-        3 => ShipmentStatus.delayed,
-        4 => ShipmentStatus.arrived,
-        5 => ShipmentStatus.delivered,
-        _ => ShipmentStatus.scheduled,
-      };
-    }
-    final value = (raw ?? '').toString().trim().toLowerCase().replaceAll(
+    if (raw is! String) return ShipmentStatus.failed;
+    final value = raw.trim().toLowerCase().replaceAll(
       RegExp(r'[\s_-]+'),
       '',
     );
+    const scheduled = [
+      'pendingdispatch',
+      'scheduled',
+      'pending',
+      'programado',
+    ];
     const dispatched = [
       'dispatched',
       'dispatchstarted',
@@ -122,12 +159,14 @@ abstract final class DeliveryJsonParser {
       'entregado',
       'recibido',
     ];
+    if (scheduled.contains(value)) return ShipmentStatus.scheduled;
     if (dispatched.contains(value)) return ShipmentStatus.dispatched;
     if (inTransit.contains(value)) return ShipmentStatus.inTransit;
     if (delayed.contains(value)) return ShipmentStatus.delayed;
     if (arrived.contains(value)) return ShipmentStatus.arrived;
     if (delivered.contains(value)) return ShipmentStatus.delivered;
-    return ShipmentStatus.scheduled;
+    // `Failed` and any status this version does not know yet.
+    return ShipmentStatus.failed;
   }
 
   static String? _text(Object? raw) {

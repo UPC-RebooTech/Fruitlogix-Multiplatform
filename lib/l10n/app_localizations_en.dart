@@ -843,7 +843,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Could not save your profile. Please try again.';
 
   @override
-  String get profileLoadFailed => 'Could not load your local profile.';
+  String get profileLoadFailed => 'Could not load your profile.';
 
   @override
   String get profileRetry => 'Try again';
@@ -1129,7 +1129,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get qmPhotosLocalNote => 'Photos are saved on this phone.';
+  String get qmPhotosLocalNote => 'A copy of the photos stays on this phone.';
 
   @override
   String get qmTargetLabel => 'Order';
@@ -1269,4 +1269,92 @@ class AppLocalizationsEn extends AppLocalizations {
   String arrivalNotificationBody(String driver, String distance) {
     return '$driver entered your warehouse zone ($distance km).';
   }
+
+  @override
+  String get authWrongRole =>
+      'This app is for commercial clients. Producers and distributors use the FruitLogix operations app.';
+
+  @override
+  String get authSessionExpired => 'Your session expired. Sign in again.';
+
+  @override
+  String get orderStatusDeliveredWithIncidence => 'Delivered with incidence';
+
+  @override
+  String get trackingStatusFailed => 'With a problem';
+
+  @override
+  String get receptionNotInTransit =>
+      'The order isn\'t in transit yet: confirm the reception once it has been dispatched.';
+
+  @override
+  String get trackingEventCreated => 'Delivery scheduled';
+
+  @override
+  String get trackingEventDispatched => 'Dispatched';
+
+  @override
+  String get trackingEventDelayed => 'Delay reported';
+
+  @override
+  String get trackingEventCheckpoint => 'Checkpoint';
+
+  @override
+  String trackingEventCheckpointAt(String place) {
+    return 'Checkpoint: $place';
+  }
+
+  @override
+  String get trackingEventArrived => 'Arrived at the warehouse';
+
+  @override
+  String get trackingEventDelivered => 'Reception confirmed';
+
+  @override
+  String get trackingEventOther => 'Delivery update';
+
+  @override
+  String get trackingDispatchedAt => 'Dispatched';
+
+  @override
+  String get trackingArrivedAt => 'Arrived';
+
+  @override
+  String arrivalNotificationBodyNoDistance(String driver) {
+    return '$driver arrived at your warehouse.';
+  }
+
+  @override
+  String get arrivalsZoneSaveError =>
+      'We couldn\'t save the warehouse zone. Try again.';
+
+  @override
+  String get profileStoredOnPlatform =>
+      'Your profile is saved in your FruitLogix account.';
+
+  @override
+  String get catalogNotEnoughStock => 'Not enough stock for that quantity.';
+
+  @override
+  String get catalogOneProducer =>
+      'An order can only have products of one producer. Place this one in another order.';
+
+  @override
+  String get catalogLoadError => 'We couldn\'t load the catalog.';
+
+  @override
+  String productMinOrder(int quantity, String unit) {
+    return 'Minimum order: $quantity $unit';
+  }
+
+  @override
+  String get traceNotApplicable => 'Does not apply';
+
+  @override
+  String get traceLoadError =>
+      'We couldn\'t load the traceability of this order.';
+
+  @override
+  String get qmNoReportableOrders =>
+      'None of your orders has a harvest lot linked yet. You can report an incident once the producer links it.';
 }

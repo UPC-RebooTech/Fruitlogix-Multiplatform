@@ -6,10 +6,11 @@ import '../../../shared/ui/formatters/initials.dart';
 import '../../../shared/ui/theme/theme.dart';
 import '../domain/commercial_client_profile.dart';
 import '../domain/commercial_client_profile_repository.dart';
+import '../infrastructure/http_commercial_client_profile_repository.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-/// Read/edit commercial client information with local demo persistence.
-/// Production profile verification and backend persistence are out of scope.
+/// Read/edit commercial client information: in the platform
+/// (`/profiles/me`) with a session, in memory in the demo.
 ///
 /// View mode shows read-only data rows; edit mode shows fields with the
 /// label above, validated when tapping Save.
@@ -132,12 +133,21 @@ class _CustomerProfilePageState extends State<CustomerProfilePage> {
           content: Text(AppLocalizations.of(context).profileSaved),
         ),
       );
-    } catch (_) {
+    } catch (error) {
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context);
+      // The platform explains a rejected value (e.g. RUC, email).
+      final message = switch (error) {
+        ProfileApiException(reason: ProfileApiFailure.network) =>
+          l10n.authNetworkError,
+        ProfileApiException(message: final String text) when text.isNotEmpty =>
+          text,
+        _ => l10n.profileSaveFailed,
+      };
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context).profileSaveFailed),
+          content: Text(message),
         ),
       );
     } finally {
@@ -175,7 +185,9 @@ class _CustomerProfilePageState extends State<CustomerProfilePage> {
         ),
         const SizedBox(height: CosechaSpace.xs),
         Text(
-          widget.repository.isPersistent
+          widget.repository.syncsWithPlatform
+              ? l10n.profileStoredOnPlatform
+              : widget.repository.isPersistent
               ? l10n.profileStoredOnDevice
               : l10n.profileDemoNote,
           style: textTheme.bodySmall?.copyWith(

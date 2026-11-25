@@ -39,6 +39,11 @@ abstract final class IncidentJsonParser {
       batchId: batchId,
       description: (json['description'] ?? '').toString().trim(),
       status: parseStatus(json['status'] ?? json['currentStatus']),
+      evidenceUrls: [
+        if (json['evidenceUrls'] case final List<dynamic> urls)
+          for (final url in urls)
+            if (url is String && url.startsWith('http')) url,
+      ],
       reportedAt: _date(
             json['reportedAt'] ?? json['createdAt'] ?? json['reportDate'] ?? json['date'],
           ) ??

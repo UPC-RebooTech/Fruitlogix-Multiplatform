@@ -43,6 +43,7 @@ class _CustomerOrdersPageState extends State<CustomerOrdersPage> {
   /// Statuses a finished order can have.
   static const List<OrderStatus> _historyStatuses = [
     OrderStatus.delivered,
+    OrderStatus.deliveredWithIncidence,
     OrderStatus.cancelled,
     OrderStatus.rejected,
   ];

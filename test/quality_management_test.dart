@@ -20,7 +20,7 @@ import 'package:fruitlogix_multiplatform/shared/ui/theme/theme.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
-const target = IncidentTarget(orderCode: 'ORD-1042', batchId: 2391);
+const target = IncidentTarget(orderCode: 'ORD-1042', batchId: 2391, orderId: 42);
 final photo = Uint8List.fromList([1, 2, 3]);
 
 /// Returns fixed bytes instead of opening the camera.
@@ -130,23 +130,27 @@ void main() {
       );
     }
 
-    test('reports with the JWT and keeps the photos on the device', () async {
-      final repo = repository((request) async => http.Response(
-            jsonEncode({'id': 12, 'batchId': 2391, 'description': 'Bruised fruit on top', 'status': 'OPEN'}),
-            200,
-          ));
+    test('uploads the photos, then reports with their URLs (copy kept on the device)', () async {
+      final repo = repository((request) async => request.url.path == '/api/v1/files'
+          ? http.Response(jsonEncode({'url': 'https://cdn.test/a.jpg'}), 201)
+          : http.Response(
+              jsonEncode({'id': 12, 'batchId': 2391, 'description': 'Bruised fruit on top', 'status': 'OPEN'}),
+              200,
+            ));
       final created = await repo.report(
         NewIncident(target: target, description: '  Bruised fruit on top ', photos: [photo]),
       );
 
-      final sent = requests.single;
+      expect(requests.map((r) => r.url.path), ['/api/v1/files', '/api/v1/incidents']);
+      expect(requests.first.headers['Content-Type'], startsWith('multipart/form-data'));
+      final sent = requests.last;
       expect(sent.method, 'POST');
-      expect(sent.url.path, '/api/v1/incidents');
       expect(sent.headers['Authorization'], 'Bearer jwt');
       expect(jsonDecode(sent.body), {
         'batchId': 2391,
+        'orderId': 42,
         'description': 'Bruised fruit on top',
-        'evidenceUrls': <String>[],
+        'evidenceUrls': ['https://cdn.test/a.jpg'],
       });
       expect(created.id, '12');
       expect(created.orderCode, 'ORD-1042');
@@ -171,7 +175,7 @@ void main() {
       expect(created.id, '6');
     });
 
-    test('only lists the incidents this client reported', () async {
+    test('lists what the platform returns (already filtered), with the order code known here', () async {
       final repo = repository((request) async => http.Response(
             jsonEncode([
               {'id': 5, 'batchId': 1, 'description': 'Other client', 'status': 'OPEN'},
@@ -181,9 +185,10 @@ void main() {
           ));
       await index.remember('6', const IncidentLocalMeta(orderCode: 'ORD-1042'));
       final mine = await repo.fetchMyIncidents();
-      expect(mine.map((i) => i.id), ['6']);
-      expect(mine.single.status, IncidentStatus.inReview);
-      expect(mine.single.orderCode, 'ORD-1042');
+      expect(mine.map((i) => i.id), ['5', '6']);
+      expect(mine.last.status, IncidentStatus.inReview);
+      expect(mine.last.orderCode, 'ORD-1042');
+      expect(mine.first.orderCode, isNull);
     });
 
     test('maps HTTP failures', () async {

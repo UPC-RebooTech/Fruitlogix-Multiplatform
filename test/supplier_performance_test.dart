@@ -87,14 +87,15 @@ void main() {
     });
   });
 
-  test('completion date from the API: deliveredAt, or updatedAt of a delivered order', () {
+  test('completion date from the API: deliveredAt only (not updatedAt)', () {
     final delivered = OrderJsonParser.parse({
       'id': 3,
       'status': 'Delivered',
       'deliveryDueDate': '2026-11-30',
       'updatedAt': '2026-11-29T15:00:00+00:00',
     });
-    expect(delivered.completedAt!.toUtc(), DateTime.utc(2026, 11, 29, 15));
+    // Without deliveredAt there is no completion date.
+    expect(delivered.completedAt, isNull);
 
     final pending = OrderJsonParser.parse({
       'id': 4,

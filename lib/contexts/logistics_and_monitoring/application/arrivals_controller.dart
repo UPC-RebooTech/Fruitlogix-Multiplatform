@@ -14,8 +14,10 @@ class ArrivalsController extends ChangeNotifier {
     required ArrivalsStore store,
     required ArrivalNotifier notifier,
     required WarehouseLocator locator,
+    ArrivalDetector detector = const GeofenceArrivalDetector(),
     DateTime Function()? clock,
   })  : _store = store,
+        _detector = detector,
         _notifier = notifier,
         _locator = locator,
         _clock = clock ?? DateTime.now;
@@ -23,7 +25,12 @@ class ArrivalsController extends ChangeNotifier {
   final ArrivalsStore _store;
   final ArrivalNotifier _notifier;
   final WarehouseLocator _locator;
+  final ArrivalDetector _detector;
   final DateTime Function() _clock;
+
+  /// Older arrivals are listed but not notified (e.g. the first sync on a
+  /// new phone brings past arrivals from the platform).
+  static const Duration notifyWindow = Duration(hours: 2);
 
   WarehouseZone? _zone;
   List<ArrivalRecord> _arrivals = const [];
@@ -37,6 +44,9 @@ class ArrivalsController extends ChangeNotifier {
   ArrivalText Function(ArrivalRecord arrival)? textBuilder;
 
   WarehouseZone? get zone => _zone;
+
+  /// The platform keeps the warehouse once set; only the demo can remove it.
+  bool get canClearZone => _store.canClearZone;
 
   /// Newest first.
   List<ArrivalRecord> get arrivals => _arrivals;
@@ -90,11 +100,12 @@ class ArrivalsController extends ChangeNotifier {
     await _store.saveZone(null);
   }
 
+  /// The zone changes only once the store (the platform) accepted it.
   Future<void> _saveZone(WarehouseZone zone) async {
     await load();
+    await _store.saveZone(zone);
     _zone = zone;
     _notify();
-    await _store.saveZone(zone);
   }
 
   /// Records and notifies the deliveries that entered the zone. Calls run
@@ -110,19 +121,26 @@ class ArrivalsController extends ChangeNotifier {
     await load();
     final zone = _zone;
     if (zone == null || _disposed) return const [];
-    final found = detectArrivals(
-      zone: zone,
-      shipments: shipments,
-      alreadyRecorded: {for (final a in _arrivals) a.deliveryId},
-      now: _clock(),
-    );
-    if (found.isEmpty) return const [];
-    _arrivals = List.unmodifiable([...found, ..._arrivals]);
+    final known = {for (final a in _arrivals) a.deliveryId};
+    final now = _clock();
+    final found = [
+      for (final arrival in await _detector.detect(
+        zone: zone,
+        shipments: shipments,
+        alreadyRecorded: known,
+        now: now,
+      ))
+        if (known.add(arrival.deliveryId)) arrival,
+    ];
+    if (found.isEmpty || _disposed) return const [];
+    final merged = [...found, ..._arrivals]..sort(_newestFirst);
+    _arrivals = List.unmodifiable(merged);
     _notify();
     await _store.saveArrivals(_arrivals);
     final text = textBuilder;
     if (text != null) {
       for (final arrival in found) {
+        if (now.difference(arrival.arrivedAt) > notifyWindow) continue;
         try {
           await _notifier.show(arrival, text(arrival));
         } catch (error) {

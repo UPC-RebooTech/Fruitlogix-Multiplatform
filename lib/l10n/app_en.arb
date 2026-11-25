@@ -367,7 +367,7 @@
   "profileSaved": "Profile updated successfully",
   "profileStoredOnDevice": "Profile information is stored on this device only.",
   "profileSaveFailed": "Could not save your profile. Please try again.",
-  "profileLoadFailed": "Could not load your local profile.",
+  "profileLoadFailed": "Could not load your profile.",
   "profileRetry": "Try again",
 
   "featurePending": "Implementation pending",
@@ -478,7 +478,7 @@
   "@qmPhotoLabel": {
     "placeholders": { "number": { "type": "int", "example": "1" } }
   },
-  "qmPhotosLocalNote": "Photos are saved on this phone.",
+  "qmPhotosLocalNote": "A copy of the photos stays on this phone.",
   "qmTargetLabel": "Order",
   "qmTargetRequired": "Choose the order with the problem",
   "qmTargetValue": "{order} · Lot {lot}",
@@ -546,5 +546,39 @@
       "driver": { "type": "String", "example": "Luis Ramírez" },
       "distance": { "type": "String", "example": "1.4" }
     }
-  }
+  },
+  "authWrongRole": "This app is for commercial clients. Producers and distributors use the FruitLogix operations app.",
+  "authSessionExpired": "Your session expired. Sign in again.",
+  "orderStatusDeliveredWithIncidence": "Delivered with incidence",
+  "trackingStatusFailed": "With a problem",
+  "receptionNotInTransit": "The order isn't in transit yet: confirm the reception once it has been dispatched.",
+  "trackingEventCreated": "Delivery scheduled",
+  "trackingEventDispatched": "Dispatched",
+  "trackingEventDelayed": "Delay reported",
+  "trackingEventCheckpoint": "Checkpoint",
+  "trackingEventCheckpointAt": "Checkpoint: {place}",
+  "@trackingEventCheckpointAt": {
+    "placeholders": { "place": { "type": "String", "example": "Peaje Chicama" } }
+  },
+  "trackingEventArrived": "Arrived at the warehouse",
+  "trackingEventDelivered": "Reception confirmed",
+  "trackingEventOther": "Delivery update",
+  "trackingDispatchedAt": "Dispatched",
+  "trackingArrivedAt": "Arrived",
+  "arrivalNotificationBodyNoDistance": "{driver} arrived at your warehouse.",
+  "@arrivalNotificationBodyNoDistance": {
+    "placeholders": { "driver": { "type": "String", "example": "Luis Ramírez" } }
+  },
+  "arrivalsZoneSaveError": "We couldn't save the warehouse zone. Try again.",
+  "profileStoredOnPlatform": "Your profile is saved in your FruitLogix account.",
+  "catalogNotEnoughStock": "Not enough stock for that quantity.",
+  "catalogOneProducer": "An order can only have products of one producer. Place this one in another order.",
+  "catalogLoadError": "We couldn't load the catalog.",
+  "productMinOrder": "Minimum order: {quantity} {unit}",
+  "@productMinOrder": {
+    "placeholders": { "quantity": { "type": "int", "example": "50" }, "unit": { "type": "String", "example": "kg" } }
+  },
+  "traceNotApplicable": "Does not apply",
+  "traceLoadError": "We couldn't load the traceability of this order.",
+  "qmNoReportableOrders": "None of your orders has a harvest lot linked yet. You can report an incident once the producer links it."
 }

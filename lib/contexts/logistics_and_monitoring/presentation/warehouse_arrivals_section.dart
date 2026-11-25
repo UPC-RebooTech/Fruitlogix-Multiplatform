@@ -6,6 +6,7 @@ import '../../../shared/ui/formatters/date_format.dart';
 import '../../../shared/ui/theme/theme.dart';
 import '../application/arrivals_controller.dart';
 import '../domain/geofence.dart';
+import '../infrastructure/fruitlogix_logistics_api.dart';
 import '../infrastructure/warehouse_locator.dart';
 
 String _km(double value) =>
@@ -136,11 +137,12 @@ class _ArrivalRow extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(when, style: data.dataMonoSmall),
-              Text(
-                l10n.arrivalsDistance(arrival.distanceKm.toStringAsFixed(1)),
-                style: textTheme.bodySmall
-                    ?.copyWith(color: context.cosechaContentSecondary),
-              ),
+              if (arrival.distanceKm case final km?)
+                Text(
+                  l10n.arrivalsDistance(km.toStringAsFixed(1)),
+                  style: textTheme.bodySmall
+                      ?.copyWith(color: context.cosechaContentSecondary),
+                ),
             ],
           ),
         ],
@@ -195,6 +197,9 @@ class _WarehouseZoneSheetState extends State<_WarehouseZoneSheet> {
     } on LocationException catch (error) {
       if (mounted) setState(() => _error = _locationMessage(error.reason, l10n));
       return;
+    } catch (error) {
+      _showSaveError(error, l10n);
+      return;
     }
     widget.onZoneChanged?.call();
     _close(l10n.arrivalsZoneSaved);
@@ -202,9 +207,29 @@ class _WarehouseZoneSheetState extends State<_WarehouseZoneSheet> {
 
   Future<void> _saveRadius() async {
     final l10n = AppLocalizations.of(context);
-    await _controller.changeRadius(_radius);
+    try {
+      await _controller.changeRadius(_radius);
+    } catch (error) {
+      _showSaveError(error, l10n);
+      return;
+    }
     widget.onZoneChanged?.call();
     _close(l10n.arrivalsZoneSaved);
+  }
+
+  /// The platform rejected the warehouse (e.g. coordinates) or is offline.
+  void _showSaveError(Object error, AppLocalizations l10n) {
+    if (!mounted) return;
+    setState(() {
+      _error = switch (error) {
+        LogisticsApiException(reason: LogisticsApiFailure.network) =>
+          l10n.authNetworkError,
+        LogisticsApiException(message: final String message)
+            when message.isNotEmpty =>
+          message,
+        _ => l10n.arrivalsZoneSaveError,
+      };
+    });
   }
 
   Future<void> _remove() async {
@@ -299,7 +324,7 @@ class _WarehouseZoneSheetState extends State<_WarehouseZoneSheet> {
                       icon: Icons.my_location,
                       onPressed: _useCurrentLocation,
                     ),
-                  if (zone != null) ...[
+                  if (zone != null && _controller.canClearZone) ...[
                     const SizedBox(height: CosechaSpace.xs),
                     CosechaTextButton(
                       label: l10n.arrivalsRemoveZone,

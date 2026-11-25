@@ -277,6 +277,14 @@ class _TargetField extends StatelessWidget {
                   child: Center(child: CircularProgressIndicator()),
                 );
               }
+              if (snapshot.requireData.isEmpty) {
+                // The producer has not linked a harvest lot to any order.
+                return Text(
+                  l10n.qmNoReportableOrders,
+                  style: Theme.of(context).textTheme.bodyMedium
+                      ?.copyWith(color: context.cosechaContentSecondary),
+                );
+              }
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [

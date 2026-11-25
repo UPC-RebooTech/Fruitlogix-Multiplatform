@@ -1,3 +1,5 @@
+import 'package:http/http.dart' as http;
+
 import '../iam/domain/auth_session.dart';
 import 'application/incidents_controller.dart';
 import 'domain/incident.dart';
@@ -9,18 +11,11 @@ import 'infrastructure/fruitlogix_quality_api.dart';
 import 'infrastructure/http_incident_repository.dart';
 import 'infrastructure/local_incident_index.dart';
 
-/// Turns on the platform API for incidents:
-/// `--dart-define=FRUITLOGIX_QUALITY_REMOTE=true`.
-///
-/// Off by default: the API links incidents to real harvest lots, and Order
-/// Management still uses demo orders with fictitious lots.
-const bool qualityRemoteEnabled =
-    bool.fromEnvironment('FRUITLOGIX_QUALITY_REMOTE');
-
 /// Composition root of the Quality Management bounded context (EP02).
 ///
 /// [QualityManagementModule.remote] talks to the platform API with the
-/// signed-in user's JWT and keeps photos on the device.
+/// signed-in user's JWT: photos are uploaded with `POST /files` and their
+/// URLs sent with the incident (a copy stays on the phone).
 /// [QualityManagementModule.demo] works offline.
 class QualityManagementModule {
   QualityManagementModule._({
@@ -32,9 +27,10 @@ class QualityManagementModule {
 
   factory QualityManagementModule.remote(
     AuthSession session, {
-    IncidentTargetSource targets = const DemoIncidentTargets(),
+    required IncidentTargetSource targets,
+    http.Client? client,
   }) {
-    final api = FruitLogixQualityApi(token: () => session.token);
+    final api = FruitLogixQualityApi(token: () => session.token, client: client);
     return QualityManagementModule._(
       api: api,
       targets: targets,
@@ -70,7 +66,7 @@ class QualityManagementModule {
   Future<void> start() => incidents.load();
 
   /// Target for an order code coming from reception or the order card.
-  IncidentTarget targetForOrder(String orderCode) =>
+  IncidentTarget? targetForOrder(String orderCode) =>
       targets.targetForOrder(orderCode);
 
   void dispose() {

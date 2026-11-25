@@ -214,8 +214,8 @@ void main() {
       );
     });
 
-    test('expired session', () async {
-      final repo = repository((_) async => http.Response('Invalid token', 500));
+    test('expired session (401)', () async {
+      final repo = repository((_) async => http.Response('', 401));
       await expectLater(
         repo.fetchMyOrders(),
         throwsA(isA<OrderApiException>()

@@ -14,15 +14,39 @@ enum OrderStatus {
   /// Received by the client.
   delivered,
 
+  /// Received by the client, who reported an incidence at the dock.
+  deliveredWithIncidence,
+
   /// Cancelled by the client or the distributor.
   cancelled,
 
-  /// Rejected by the distributor.
+  /// Rejected by the producer (reason in [CommercialOrder.cancellationReason]).
   rejected;
 
   /// Still expected by the client (counts as "active").
   bool get isActive =>
       this == pending || this == preparing || this == inTransit;
+
+  /// Received, with or without incidence (counts as delivered in metrics).
+  bool get isDelivered => this == delivered || this == deliveredWithIncidence;
+}
+
+/// Reception the client confirmed at the dock (US35).
+class OrderReception {
+  const OrderReception({
+    this.rating,
+    this.comment,
+    this.hasIncidence = false,
+    this.sealAndTemperatureOk,
+    this.receivedAt,
+  });
+
+  /// 1–5, or null when the client did not rate.
+  final int? rating;
+  final String? comment;
+  final bool hasIncidence;
+  final bool? sealAndTemperatureOk;
+  final DateTime? receivedAt;
 }
 
 class OrderLine {
@@ -49,16 +73,30 @@ class CommercialOrder {
     this.createdAt,
     this.producerId,
     this.completedAt,
+    this.producerName,
+    this.batchId,
+    this.cancellationReason,
+    this.reception,
     double? totalAmount,
   }) : _totalAmount = totalAmount;
 
   /// Producer assigned by the distributor; null while unassigned.
   final int? producerId;
 
-  /// When a delivered order was completed (US24). Approximate: the API
-  /// has no delivery timestamp, so it is the last update of a delivered
-  /// order.
+  /// When the client confirmed the reception (`deliveredAt`, US24).
   final DateTime? completedAt;
+
+  /// Name of the assigned producer, when the platform sends it.
+  final String? producerName;
+
+  /// Harvest lot linked by the producer (incidents US11, traceability US72).
+  final int? batchId;
+
+  /// Why the order was rejected or cancelled.
+  final String? cancellationReason;
+
+  /// Reception confirmed by the client, or null.
+  final OrderReception? reception;
 
   /// Platform id (`57`) or demo id (`1042`).
   final String id;
