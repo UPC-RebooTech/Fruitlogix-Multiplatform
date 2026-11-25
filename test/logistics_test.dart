@@ -1,0 +1,352 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:fruitlogix_multiplatform/app/customer_shell.dart';
+import 'package:fruitlogix_multiplatform/app/locale_controller.dart';
+import 'package:fruitlogix_multiplatform/contexts/logistics_and_monitoring/application/shipments_controller.dart';
+import 'package:fruitlogix_multiplatform/contexts/logistics_and_monitoring/domain/shipment.dart';
+import 'package:fruitlogix_multiplatform/contexts/logistics_and_monitoring/infrastructure/delivery_json_parser.dart';
+import 'package:fruitlogix_multiplatform/contexts/logistics_and_monitoring/infrastructure/demo_shipment_repository.dart';
+import 'package:fruitlogix_multiplatform/contexts/logistics_and_monitoring/infrastructure/fruitlogix_logistics_api.dart';
+import 'package:fruitlogix_multiplatform/contexts/logistics_and_monitoring/infrastructure/http_shipment_repository.dart';
+import 'package:fruitlogix_multiplatform/contexts/logistics_and_monitoring/infrastructure/phone_dialer.dart';
+import 'package:fruitlogix_multiplatform/contexts/logistics_and_monitoring/infrastructure/reception_repositories.dart';
+import 'package:fruitlogix_multiplatform/contexts/logistics_and_monitoring/logistics_module.dart';
+import 'package:fruitlogix_multiplatform/l10n/app_localizations.dart';
+import 'package:fruitlogix_multiplatform/shared/ui/theme/theme.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
+
+const order7 = ShipmentOrderRef(orderId: 7, orderCode: 'ORD-0007', itemsSummary: 'Mango Kent');
+
+Map<String, Object?> delivery(int id, int orderId, {String status = 'InTransit'}) => {
+      'id': id,
+      'orderId': orderId,
+      'driverName': 'Luis Ramírez',
+      'driverPhone': '+51 987 111 222',
+      'vehiclePlate': 'ABC-123',
+      'vehicleType': 'Reefer truck',
+      'routeOrigin': 'Piura',
+      'routeDestination': 'Lima',
+      'routeDistanceKm': 980,
+      'estimatedTimeOfArrival': '2026-11-24T20:45:00Z',
+      'currentStatus': status,
+    };
+
+/// JSON answer encoded as UTF-8, like the platform API ("Ramírez").
+http.Response json(Object? body) => http.Response.bytes(
+      utf8.encode(jsonEncode(body)),
+      200,
+      headers: {'content-type': 'application/json; charset=utf-8'},
+    );
+
+class FakeDialer implements PhoneDialer {
+  FakeDialer({this.result = true});
+  final bool result;
+  final List<String> dialed = [];
+
+  @override
+  Future<bool> dial(String phoneNumber) async {
+    dialed.add(phoneNumber);
+    return result;
+  }
+}
+
+void main() {
+  group('DeliveryJsonParser', () {
+    test('statuses as text; unknown or numeric values are a problem state', () {
+      expect(DeliveryJsonParser.parseStatus('PendingDispatch'), ShipmentStatus.scheduled);
+      expect(DeliveryJsonParser.parseStatus('Arrived'), ShipmentStatus.arrived);
+      expect(DeliveryJsonParser.parseStatus('Failed'), ShipmentStatus.failed);
+      expect(DeliveryJsonParser.parseStatus('SomethingNew'), ShipmentStatus.failed);
+      expect(DeliveryJsonParser.parseStatus(2), ShipmentStatus.failed);
+      expect(DeliveryJsonParser.parseStatus('Scheduled'), ShipmentStatus.scheduled);
+      expect(DeliveryJsonParser.parseStatus('DISPATCHED'), ShipmentStatus.dispatched);
+      expect(DeliveryJsonParser.parseStatus('In_Transit'), ShipmentStatus.inTransit);
+      expect(DeliveryJsonParser.parseStatus('Delayed'), ShipmentStatus.delayed);
+      expect(DeliveryJsonParser.parseStatus('Entregado'), ShipmentStatus.delivered);
+      expect(DeliveryJsonParser.parseStatus(null), ShipmentStatus.failed);
+    });
+
+    test('delivery events: labelled by type, in chronological order', () {
+      final events = DeliveryJsonParser.events([
+        {'id': 31, 'type': 'Checkpoint', 'name': 'Peaje Chicama', 'note': 'Sin novedad', 'occurredAt': '2026-11-25T13:10:00+00:00'},
+        {'id': 30, 'type': 'Dispatched', 'occurredAt': '2026-11-25T07:30:00+00:00'},
+        {'id': 32, 'type': 'Whatever', 'occurredAt': null},
+      ]);
+      expect(events.map((e) => e.type), [DeliveryEventType.dispatched, DeliveryEventType.checkpoint]);
+      expect(events.last.place, 'Peaje Chicama');
+      expect(events.last.note, 'Sin novedad');
+      expect(events.every((e) => e.isCompleted), isTrue);
+    });
+
+    test('dispatch and arrival times, and the rating of the order reception', () {
+      const rated = ShipmentOrderRef(orderId: 7, orderCode: 'ORD-0007', isDelivered: true, rating: 4);
+      final shipment = DeliveryJsonParser.parse(
+        {...delivery(12, 7, status: 'Arrived'), 'dispatchedAt': '2026-11-25T07:30:00+00:00', 'arrivedAt': '2026-11-26T09:58:00+00:00'},
+        order: rated,
+      );
+      expect(shipment.status, ShipmentStatus.arrived);
+      expect(shipment.dispatchedAt!.toUtc(), DateTime.utc(2026, 11, 25, 7, 30));
+      expect(shipment.arrivedAt!.toUtc(), DateTime.utc(2026, 11, 26, 9, 58));
+      expect(shipment.rating, 4);
+    });
+
+    test('DeliveryResource with the order code of Orders', () {
+      final shipment = DeliveryJsonParser.parse(delivery(12, 7), order: order7);
+      expect(shipment.trackingNumber, 'TRK-0012');
+      expect(shipment.orderId, 'ORD-0007');
+      expect(shipment.itemsSummary, 'Mango Kent');
+      expect(shipment.driverName, 'Luis Ramírez');
+      expect(shipment.canCallDriver, isTrue);
+      expect(shipment.estimatedArrival!.toUtc(), DateTime.utc(2026, 11, 24, 20, 45));
+      expect(shipment.status, ShipmentStatus.inTransit);
+    });
+
+    test('a delivered order or delivery comes back as received (no second reception)', () {
+      const delivered = ShipmentOrderRef(orderId: 7, orderCode: 'ORD-0007', isDelivered: true);
+      expect(DeliveryJsonParser.parse(delivery(12, 7), order: delivered).isReceived, isTrue);
+      expect(
+        DeliveryJsonParser.parse(delivery(12, 7, status: 'Delivered'), order: order7).isReceived,
+        isTrue,
+      );
+      expect(DeliveryJsonParser.parse(delivery(12, 7), order: order7).isReceived, isFalse);
+    });
+
+    test('latest tracking log wins', () {
+      final reading = DeliveryJsonParser.latestReading([
+        {'deliveryId': 12, 'timestamp': '2026-11-24T10:00:00Z', 'temperature': 5.1, 'humidity': 80},
+        {'deliveryId': 12, 'timestamp': '2026-11-24T12:00:00Z', 'temperature': 4.2, 'humidity': 86},
+        {'deliveryId': 12, 'timestamp': '2026-11-24T11:00:00Z', 'temperature': 6.0, 'humidity': 70},
+      ]);
+      expect(reading!.temperatureC, 4.2);
+      expect(DeliveryJsonParser.latestReading(const []), isNull);
+    });
+  });
+
+  group('HttpShipmentRepository', () {
+    late List<http.Request> requests;
+
+    HttpShipmentRepository repository(
+      Future<http.Response> Function(http.Request) handler, {
+      List<ShipmentOrderRef> orders = const [order7],
+    }) {
+      requests = [];
+      return HttpShipmentRepository(
+        clientOrders: () async => orders,
+        api: FruitLogixLogisticsApi(
+          token: () => 'jwt',
+          baseUri: Uri.parse('https://api.test'),
+          client: MockClient((request) {
+            requests.add(request);
+            return handler(request);
+          }),
+        ),
+      );
+    }
+
+    test("keeps only the deliveries of the client's orders, with their reading and events", () async {
+      final repo = repository((request) async => switch (request.url.path) {
+            '/api/v1/deliveries' => json([delivery(12, 7), delivery(13, 99)]),
+            '/api/v1/deliveries/12/events' => json([
+                {'type': 'Dispatched', 'occurredAt': '2026-11-24T07:00:00Z'},
+              ]),
+            _ => http.Response(
+                jsonEncode([
+                  {'deliveryId': 12, 'timestamp': '2026-11-24T12:00:00Z', 'temperature': 4.2, 'humidity': 86},
+                ]),
+                200,
+              ),
+          });
+      final shipments = await repo.fetchMyShipments();
+      expect(shipments.map((s) => s.trackingNumber), ['TRK-0012']);
+      expect(shipments.single.telemetry!.temperatureC, 4.2);
+      expect(shipments.single.events.single.type, DeliveryEventType.dispatched);
+      final logs = requests.firstWhere((r) => r.url.path == '/api/v1/tracking-logs');
+      expect(logs.url.path, '/api/v1/tracking-logs');
+      expect(logs.url.queryParameters, {'deliveryId': '12'});
+      expect(logs.headers['Authorization'], 'Bearer jwt');
+      // Never asks for readings of other clients' deliveries.
+      expect(requests.where((r) => r.url.path == '/api/v1/tracking-logs'), hasLength(1));
+    });
+
+    test('a delivery without readings (404) still shows', () async {
+      final repo = repository((request) async => request.url.path == '/api/v1/deliveries'
+          ? json([delivery(12, 7)])
+          : http.Response('', 404));
+      final shipments = await repo.fetchMyShipments();
+      expect(shipments.single.telemetry, isNull);
+    });
+
+    test('a client without orders does not call the API', () async {
+      final repo = repository((_) async => http.Response('[]', 200), orders: const []);
+      expect(await repo.fetchMyShipments(), isEmpty);
+      expect(requests, isEmpty);
+    });
+  });
+
+  group('US35 · reception with rating', () {
+    test('ShipmentsController: most relevant first; received after the API accepts', () async {
+      final reception = DemoReceptionRepository(latency: Duration.zero);
+      final controller = ShipmentsController(
+        repository: DemoShipmentRepository(latency: Duration.zero),
+        reception: reception,
+      );
+      await controller.load();
+      expect(controller.shipments.map((s) => s.orderId), ['ORD-1042', 'ORD-1040']);
+      await controller.confirmReception(
+        controller.shipments.first,
+        const ReceptionReport(rating: 4, comment: 'On time', hasIncidence: false, sealAndTemperatureOk: true),
+      );
+      expect(controller.shipments.first.isReceived, isTrue);
+      expect(controller.shipments.first.rating, 4);
+      expect(controller.shipments.first.shipmentProgress, 1);
+      expect(controller.confirming, isFalse);
+    });
+
+    test('a failed reception keeps the delivery pending', () async {
+      final controller = ShipmentsController(
+        repository: DemoShipmentRepository(latency: Duration.zero),
+        reception: HttpReceptionRepository(
+          api: FruitLogixLogisticsApi(
+            token: () => 'jwt',
+            baseUri: Uri.parse('https://api.test'),
+            client: MockClient((_) async => http.Response('boom', 503)),
+          ),
+        ),
+      );
+      await controller.load();
+      final shipment = DeliveryJsonParser.parse(delivery(12, 7), order: order7);
+      await expectLater(
+        controller.confirmReception(
+          shipment,
+          const ReceptionReport(hasIncidence: false, sealAndTemperatureOk: true),
+        ),
+        throwsA(isA<LogisticsApiException>()),
+      );
+      expect(shipment.isReceived, isFalse);
+    });
+
+    test('POST /orders/{id}/reception with rating, comment and incidence', () async {
+      late http.Request sent;
+      final repo = HttpReceptionRepository(
+        api: FruitLogixLogisticsApi(
+          token: () => 'jwt',
+          baseUri: Uri.parse('https://api.test'),
+          client: MockClient((request) async {
+            sent = request;
+            return http.Response('', 200);
+          }),
+        ),
+      );
+      final shipment = DeliveryJsonParser.parse(delivery(12, 7), order: order7);
+      await repo.confirm(
+        shipment,
+        const ReceptionReport(rating: 5, comment: '  Very punctual ', hasIncidence: true, sealAndTemperatureOk: true),
+      );
+      expect(sent.method, 'POST');
+      expect(sent.url.path, '/api/v1/orders/7/reception');
+      expect(sent.headers['Authorization'], 'Bearer jwt');
+      expect(sent.headers['Content-Type'], startsWith('application/json'));
+      expect(jsonDecode(sent.body), {
+        'rating': 5,
+        'comment': 'Very punctual',
+        'hasIncidence': true,
+        'sealAndTemperatureOk': true,
+      });
+    });
+
+    test('scenario 2: without stars the rating is sent as null (not rated)', () {
+      expect(
+        HttpReceptionRepository.toBody(
+          const ReceptionReport(hasIncidence: false, sealAndTemperatureOk: false),
+        ),
+        {'rating': null, 'comment': null, 'hasIncidence': false, 'sealAndTemperatureOk': false},
+      );
+      expect(
+        const ReceptionReport(rating: 6, hasIncidence: false, sealAndTemperatureOk: true).isValid,
+        isFalse,
+      );
+    });
+  });
+
+  testWidgets('US38/US77: driver, vehicle and call button in Tracking', (tester) async {
+    tester.view.physicalSize = const Size(390 * 3, 1800 * 3);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+
+    final dialer = FakeDialer(result: false);
+    await tester.pumpWidget(MaterialApp(
+      theme: CosechaTheme.light,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: CustomerShell(
+        localeController: LocaleController(),
+        logisticsModule: LogisticsModule.demo(dialer: dialer, latency: Duration.zero),
+      ),
+    ));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Tracking'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Driver and vehicle'.toUpperCase()), findsOneWidget);
+    expect(find.text('Luis Ramírez'), findsOneWidget);
+    expect(find.text('ABC-123'), findsOneWidget);
+
+    await tester.tap(find.text('Call driver'));
+    await tester.pumpAndSettle();
+    expect(dialer.dialed, ['+51 987 111 222']);
+    // The phone app could not open: the client is told.
+    expect(find.text("We couldn't open the phone app"), findsOneWidget);
+
+    // The scheduled delivery has no driver yet and no call button.
+    await tester.tap(find.text('ORD-1040'));
+    await tester.pumpAndSettle();
+    expect(find.text("A driver hasn't been assigned yet"), findsOneWidget);
+    expect(find.text('Call driver'), findsNothing);
+  });
+
+  testWidgets('US35: rate the service when confirming the reception', (tester) async {
+    tester.view.physicalSize = const Size(390 * 3, 2200 * 3);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+
+    final reception = DemoReceptionRepository(latency: Duration.zero);
+    await tester.pumpWidget(MaterialApp(
+      theme: CosechaTheme.light,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: CustomerShell(
+        localeController: LocaleController(),
+        logisticsModule: LogisticsModule.demo(
+          dialer: FakeDialer(),
+          reception: reception,
+          latency: Duration.zero,
+        ),
+      ),
+    ));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Tracking'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Confirm reception'));
+    await tester.pumpAndSettle();
+
+    // Not rated by default; 4 stars → "Good".
+    expect(find.text('Not rated'), findsOneWidget);
+    await tester.tap(find.bySemanticsLabel('4 of 5 stars'));
+    await tester.pumpAndSettle();
+    expect(find.text('Good'), findsOneWidget);
+    await tester.enterText(find.byType(TextField), 'Arrived on time');
+    await tester.tap(find.widgetWithText(FilledButton, 'Confirm reception'));
+    await tester.pumpAndSettle();
+
+    final sent = reception.confirmed.single;
+    expect(sent.rating, 4);
+    expect(sent.comment, 'Arrived on time');
+    expect(sent.hasIncidence, isFalse);
+    // Back in Tracking: received, with the rating given.
+    expect(find.text('Reception confirmed'), findsOneWidget);
+    expect(find.bySemanticsLabel('Your rating: 4 of 5 stars'), findsOneWidget);
+  });
+}

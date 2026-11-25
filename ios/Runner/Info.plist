@@ -4,6 +4,12 @@
 <dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>FruitLogix uses the camera to attach photos of damaged fruit when you report an incident.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>FruitLogix uses your location once to set the zone around your warehouse, so you are alerted when a truck arrives.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>FruitLogix lets you attach photos from your gallery when you report an incident.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>

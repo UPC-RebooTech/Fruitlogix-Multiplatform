@@ -144,11 +144,94 @@
   "orderStatusPending": "Pending",
   "orderStatusDelivered": "Delivered",
   "orderStatusRejected": "Rejected",
+  "orderStatusCancelled": "Cancelled",
+  "ordersLoadError": "We couldn't load your orders",
+  "orderSendError": "We couldn't place the order. Your cart was kept; try again.",
+  "orderPlaced": "Order placed",
+  "orderSending": "Sending order…",
+  "orderNotes": "Notes for the distributor",
+  "orderNotesLabel": "Notes for the distributor (optional)",
+  "orderNotesHint": "Unloading hours, ripeness, packaging…",
+  "dashboardNoActiveOrders": "You have no active orders.",
 
   "ordersTitle": "My orders",
-  "ordersSubtitle": "Orders placed in this session (demo)",
+  "ordersSubtitle": "Your orders and their status",
   "ordersEmptyTitle": "No orders yet",
   "ordersEmptyMessage": "Add products in the catalog to create your first order.",
+  "ordersTabActive": "Active ({count})",
+  "@ordersTabActive": { "placeholders": { "count": { "type": "int", "example": "2" } } },
+  "ordersTabHistory": "History ({count})",
+  "@ordersTabHistory": { "placeholders": { "count": { "type": "int", "example": "3" } } },
+  "ordersHistoryEmptyTitle": "No orders in your history yet",
+  "ordersHistoryEmptyMessage": "Delivered, cancelled or rejected orders will appear here.",
+  "ordersSearchHint": "Search by order code or product",
+  "ordersSearchClear": "Clear search",
+  "ordersFilterStatus": "Status",
+  "ordersFilterAll": "All",
+  "ordersFiltersToggle": "Filters",
+  "ordersFiltersToggleActive": "Filters ({count})",
+  "@ordersFiltersToggleActive": { "placeholders": { "count": { "type": "int", "example": "2" } } },
+  "ordersFilterDates": "Delivery date",
+  "ordersFilterProducer": "Producer",
+  "ordersAnyDate": "Any date",
+  "ordersDateRange": "{from} – {to}",
+  "@ordersDateRange": {
+    "placeholders": {
+      "from": { "type": "String", "example": "11/1/2026" },
+      "to": { "type": "String", "example": "11/15/2026" }
+    }
+  },
+  "ordersClearDates": "Remove dates",
+  "ordersResultsCount": "{count, plural, =0{No orders} =1{1 order} other{{count} orders}}",
+  "@ordersResultsCount": { "placeholders": { "count": { "type": "int", "example": "3" } } },
+  "ordersClearFilters": "Clear filters",
+  "ordersNoResultsTitle": "No orders match these filters",
+  "ordersNoResultsMessage": "Try another search or remove some filters.",
+  "ordersProducer": "Producer",
+  "traceOpen": "View traceability",
+  "traceTitle": "Traceability {code}",
+  "@traceTitle": { "placeholders": { "code": { "type": "String", "example": "ORD-1042" } } },
+  "traceStagesTitle": "Lot timeline",
+  "traceProgress": "{done} of {total} stages",
+  "@traceProgress": {
+    "placeholders": {
+      "done": { "type": "int", "example": "3" },
+      "total": { "type": "int", "example": "5" }
+    }
+  },
+  "traceLotUnknown": "Not linked to a lot yet",
+  "traceHarvested": "Harvested",
+  "traceInspected": "Quality inspected",
+  "traceLoaded": "Loaded and dispatched",
+  "traceReceived": "Received",
+  "traceInvoiced": "Invoiced",
+  "tracePending": "To do",
+  "traceNoRecord": "No record",
+  "traceNoDate": "Date not recorded",
+  "traceResponsible": "Responsible: {name}",
+  "@traceResponsible": { "placeholders": { "name": { "type": "String", "example": "Agrícola San José" } } },
+  "traceInspectionApproved": "Approved",
+  "traceInspectionRejected": "Rejected",
+  "traceInvoiceIssuer": "Distributor",
+  "traceNoRecordNote": "\"No record\": the stage already happened, but the platform has no data for it yet.",
+  "performanceTitle": "Compliance by producer",
+  "performanceOnTime": "On time",
+  "performanceLate": "Late",
+  "performanceGood": "Meets",
+  "performanceFair": "Fair",
+  "performanceLow": "Low",
+  "performanceDetail": "{onTime} of {total} on time · {late} late",
+  "@performanceDetail": {
+    "placeholders": {
+      "onTime": { "type": "int", "example": "4" },
+      "total": { "type": "int", "example": "5" },
+      "late": { "type": "int", "example": "1" }
+    }
+  },
+  "performanceNote": "Delivered orders compared with their delivery date; active orders past their date count as late.",
+  "performanceNoData": "No compliance statistics yet. They appear when orders with an assigned producer are delivered.",
+  "ordersProducerFallback": "Producer #{id}",
+  "@ordersProducerFallback": { "placeholders": { "id": { "type": "int", "example": "1" } } },
   "orderDeliveryDate": "Delivery: {date}",
   "@orderDeliveryDate": {
     "placeholders": { "date": { "type": "String", "example": "Nov 14, 2026" } }
@@ -170,6 +253,35 @@
   "trackingHumidity": "Humidity",
   "trackingReefer": "Reefer unit",
   "trackingTransport": "Transport",
+  "trackingYourDeliveries": "Your deliveries",
+  "trackingLoadError": "We couldn't load your deliveries",
+  "trackingEtaUnknown": "To be confirmed",
+  "trackingRoute": "Route",
+  "trackingRouteValue": "{origin} to {destination}",
+  "@trackingRouteValue": {
+    "placeholders": {
+      "origin": { "type": "String", "example": "Piura" },
+      "destination": { "type": "String", "example": "Lima" }
+    }
+  },
+  "trackingStatusScheduled": "Scheduled",
+  "trackingStatusDispatched": "Dispatched",
+  "trackingStatusDelayed": "Delayed",
+  "trackingDriverSection": "Driver and vehicle",
+  "trackingDriverPending": "A driver hasn't been assigned yet",
+  "trackingVehicle": "Vehicle",
+  "trackingPlate": "Plate",
+  "trackingCallDriver": "Call driver",
+  "trackingCallDriverHint": "Opens the phone app to call {name}",
+  "@trackingCallDriverHint": {
+    "placeholders": { "name": { "type": "String", "example": "Luis Ramírez" } }
+  },
+  "trackingCallError": "We couldn't open the phone app",
+  "trackingNoReadings": "The reefer hasn't sent temperature readings yet.",
+  "trackingLastReading": "Last reading: {time}",
+  "@trackingLastReading": {
+    "placeholders": { "time": { "type": "String", "example": "23 November 2026 · 2:10 PM" } }
+  },
   "trackingEvents": "Route checkpoints",
   "trackingEventDone": "Completed",
   "trackingEventPending": "Pending",
@@ -191,6 +303,31 @@
   "receptionNotes": "Notes",
   "receptionNotesHint": "Write what you observed in the cargo",
   "receptionConfirmed": "Reception confirmed.",
+  "receptionRateSection": "Service rating",
+  "receptionRateQuestion": "How was the delivery service?",
+  "receptionRateOptional": "Optional. Tap a star again to remove it.",
+  "receptionNotRated": "Not rated",
+  "receptionStars": "{stars} of {max} stars",
+  "@receptionStars": {
+    "placeholders": {
+      "stars": { "type": "int", "example": "4" },
+      "max": { "type": "int", "example": "5" }
+    }
+  },
+  "receptionRating1": "Very bad",
+  "receptionRating2": "Bad",
+  "receptionRating3": "Fair",
+  "receptionRating4": "Good",
+  "receptionRating5": "Excellent",
+  "receptionComment": "Comment (optional)",
+  "receptionCommentHint": "Punctuality, condition of the fruit, driver…",
+  "receptionSending": "Sending reception…",
+  "receptionSendError": "We couldn't register the reception. Try again.",
+  "receptionYourRatingLabel": "Your rating:",
+  "receptionYourRating": "Your rating: {stars}",
+  "@receptionYourRating": {
+    "placeholders": { "stars": { "type": "String", "example": "4 of 5 stars" } }
+  },
 
   "paymentsInvoices": "Invoices",
   "paymentsEmpty": "No invoices yet",
@@ -230,8 +367,247 @@
   "profileSaved": "Profile updated successfully",
   "profileStoredOnDevice": "Profile information is stored on this device only.",
   "profileSaveFailed": "Could not save your profile. Please try again.",
-  "profileLoadFailed": "Could not load your local profile.",
+  "profileLoadFailed": "Could not load your profile.",
   "profileRetry": "Try again",
 
-  "featurePending": "Implementation pending"
+  "featurePending": "Implementation pending",
+
+  "balanceOverline": "Financial balance",
+  "balanceDebt": "Accumulated debt",
+  "balanceTotal": "Total billed",
+  "balanceOverdue": "Overdue",
+  "balancePaid": "Paid",
+  "balanceLoading": "Loading your balance…",
+  "balanceError": "We couldn't load your balance.",
+  "balanceUpToDate": "You're up to date",
+  "paymentsLoadError": "We couldn't load your invoices.",
+  "paymentsSessionExpired": "Your session expired. Sign in again to see your invoices.",
+  "paymentsRetry": "Retry",
+  "balancePendingInvoices": "{count, plural, =1{1 pending invoice} other{{count} pending invoices}}",
+  "@balancePendingInvoices": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "paymentStatusFailed": "Failed",
+  "paymentStatusRefunded": "Refunded",
+  "invoiceIssued": "Issued",
+  "invoicePaidAt": "Paid on",
+  "remindersTitle": "Invoice reminders",
+  "remindersEnabled": "Notify me before the due date",
+  "remindersLeadDays": "{days, plural, =1{1 day before} other{{days} days before}}",
+  "@remindersLeadDays": {
+    "placeholders": { "days": { "type": "int" } }
+  },
+  "remindersPermissionDenied": "Notifications are off for FruitLogix. Turn them on in your phone settings to get reminders.",
+  "remindersUpcoming": "{count, plural, =1{1 invoice is due soon} other{{count} invoices are due soon}}",
+  "@remindersUpcoming": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "remindersUpcomingDetail": "Pay on time to avoid surcharges or credit holds",
+  "reminderNotificationTitle": "Invoice {invoice} is due soon",
+  "@reminderNotificationTitle": {
+    "placeholders": { "invoice": { "type": "String", "example": "INV-1042" } }
+  },
+  "reminderNotificationBody": "{amount} · due {date}. Pay on time to avoid surcharges.",
+  "@reminderNotificationBody": {
+    "placeholders": { "amount": { "type": "String", "example": "S/ 600.00" }, "date": { "type": "String", "example": "30/11/2026" } }
+  },
+  "invoiceReminder": "Reminder",
+  "invoiceReminderNone": "No reminder · invoice already paid",
+  "invoiceReminderOff": "Reminders are turned off",
+  "invoiceReminderOverdue": "Past due · pay as soon as possible",
+  "proTitle": "Pro plan",
+  "proBadge": "Pro member",
+  "proOverline": "FruitLogix Pro",
+  "proHeadline": "Become a Pro member",
+  "proPrice": "{price} / month",
+  "@proPrice": {
+    "placeholders": { "price": { "type": "String", "example": "US$ 29.00" } }
+  },
+  "proBenefitPriority": "Priority attention for your orders",
+  "proBenefitReports": "Advanced purchase and payment reports",
+  "proBenefitAlerts": "Real-time cold-chain alerts",
+  "proUpgrade": "Upgrade to Pro",
+  "proUpsellDetail": "Upgrade without leaving the app",
+  "proSecureNote": "Secure payment with Stripe. Your card details never pass through FruitLogix.",
+  "proPreparing": "Preparing secure payment…",
+  "proConfirming": "Confirming your payment with Stripe…",
+  "proSuccess": "Welcome to Pro! Your plan is active.",
+  "proPending": "Payment received. We're still waiting for Stripe's confirmation.",
+  "proCheckAgain": "Check again",
+  "proCanceled": "Payment canceled. You were not charged.",
+  "proFailed": "The payment could not be completed.",
+  "proUnavailable": "Payments with Stripe are not available on this device.",
+  "proActive": "You're a Pro member",
+  "proActiveSince": "Active since {date}",
+  "@proActiveSince": {
+    "placeholders": { "date": { "type": "String", "example": "22 November 2026" } }
+  },
+
+  "qmIncidentsTitle": "Incidents",
+  "qmKpiOpen": "Open",
+  "qmKpiInReview": "In review",
+  "qmKpiClosed": "Closed",
+  "qmReportIncident": "Report an incident",
+  "qmNewIncidentTitle": "New incident",
+  "qmYourIncidents": "Your incidents",
+  "qmFilterAll": "All",
+  "qmStatusOpen": "Open",
+  "qmStatusInReview": "In review",
+  "qmStatusResolved": "Resolved",
+  "qmStatusRejected": "Rejected",
+  "qmEmptyTitle": "No incidents",
+  "qmEmptyMessage": "If an order arrives with a problem, report it here with photos.",
+  "qmEmptyFilter": "No incidents with this status",
+  "qmLoadError": "We couldn't load your incidents",
+  "qmRetry": "Try again",
+  "qmSessionExpired": "Your session expired. Sign in again.",
+  "qmIncidentTitle": "Incident {code}",
+  "@qmIncidentTitle": {
+    "placeholders": { "code": { "type": "String", "example": "INC-0007" } }
+  },
+  "qmOrder": "Order",
+  "qmLot": "Lot",
+  "qmReportedAt": "Reported",
+  "qmDescription": "Description",
+  "qmPhotos": "Photos",
+  "qmPhotoCount": "{count, plural, =0{No photos} =1{1 photo} other{{count} photos}}",
+  "@qmPhotoCount": {
+    "placeholders": { "count": { "type": "int", "example": "2" } }
+  },
+  "qmPhotoLabel": "Photo {number}",
+  "@qmPhotoLabel": {
+    "placeholders": { "number": { "type": "int", "example": "1" } }
+  },
+  "qmPhotosLocalNote": "A copy of the photos stays on this phone.",
+  "qmTargetLabel": "Order",
+  "qmTargetRequired": "Choose the order with the problem",
+  "qmTargetValue": "{order} · Lot {lot}",
+  "@qmTargetValue": {
+    "placeholders": {
+      "order": { "type": "String", "example": "ORD-1042" },
+      "lot": { "type": "String", "example": "LOT-2391" }
+    }
+  },
+  "qmDescriptionLabel": "What happened?",
+  "qmDescriptionHint": "Damaged fruit, wrong product, temperature…",
+  "qmDescriptionHelper": "Tell us what you saw and how many boxes are affected.",
+  "qmDescriptionError": "Describe the problem (at least 10 characters)",
+  "qmPhotosLabel": "Photos (optional, up to {max})",
+  "@qmPhotosLabel": {
+    "placeholders": { "max": { "type": "int", "example": "4" } }
+  },
+  "qmAddPhoto": "Add photo",
+  "qmTakePhoto": "Take a photo",
+  "qmChooseGallery": "Choose from gallery",
+  "qmRemovePhoto": "Remove photo {number}",
+  "@qmRemovePhoto": {
+    "placeholders": { "number": { "type": "int", "example": "1" } }
+  },
+  "qmPhotoError": "We couldn't get the photo",
+  "qmSend": "Send report",
+  "qmSent": "Incident reported",
+  "qmSendError": "We couldn't send the report. Try again.",
+  "arrivalsSection": "Arrivals at your warehouse",
+  "arrivalsZoneTitle": "Warehouse zone",
+  "arrivalsZoneActive": "{radius} km around your warehouse · alerts on",
+  "@arrivalsZoneActive": {
+    "placeholders": { "radius": { "type": "String", "example": "3" } }
+  },
+  "arrivalsZoneNotSet": "Not set · set it to get an alert when a truck arrives",
+  "arrivalsEmptyTitle": "No arrivals yet",
+  "arrivalsEmptyMessage": "We'll notify you when a truck enters your warehouse zone.",
+  "arrivalsDistance": "{distance} km away",
+  "@arrivalsDistance": {
+    "placeholders": { "distance": { "type": "String", "example": "1.4" } }
+  },
+  "arrivalsSheetMessage": "Do this from your warehouse: your current location becomes the center of the zone.",
+  "arrivalsRadiusLabel": "Alert radius",
+  "arrivalsRadiusValue": "{radius} km",
+  "@arrivalsRadiusValue": {
+    "placeholders": { "radius": { "type": "String", "example": "3" } }
+  },
+  "arrivalsUseLocation": "Use my current location",
+  "arrivalsUpdateLocation": "Move to my current location",
+  "arrivalsSaveRadius": "Save radius",
+  "arrivalsRemoveZone": "Remove zone",
+  "arrivalsZoneSaved": "Warehouse zone saved",
+  "arrivalsZoneRemoved": "Zone removed. Your arrivals are kept.",
+  "arrivalsLocationDisabled": "Turn on your phone's location and try again.",
+  "arrivalsLocationDenied": "FruitLogix needs your location to set the zone.",
+  "arrivalsLocationDeniedForever": "Location is blocked for FruitLogix. Allow it in your phone settings.",
+  "arrivalsLocationUnavailable": "We couldn't get your location. Try again in a moment.",
+  "arrivalNotificationTitle": "Truck arriving · {order}",
+  "@arrivalNotificationTitle": {
+    "placeholders": { "order": { "type": "String", "example": "ORD-1042" } }
+  },
+  "arrivalNotificationBody": "{driver} entered your warehouse zone ({distance} km).",
+  "@arrivalNotificationBody": {
+    "placeholders": {
+      "driver": { "type": "String", "example": "Luis Ramírez" },
+      "distance": { "type": "String", "example": "1.4" }
+    }
+  },
+  "authWrongRole": "This app is for commercial clients. Producers and distributors use the FruitLogix operations app.",
+  "authSessionExpired": "Your session expired. Sign in again.",
+  "orderStatusDeliveredWithIncidence": "Delivered with incidence",
+  "trackingStatusFailed": "With a problem",
+  "receptionNotInTransit": "The order isn't in transit yet: confirm the reception once it has been dispatched.",
+  "trackingEventCreated": "Delivery scheduled",
+  "trackingEventDispatched": "Dispatched",
+  "trackingEventDelayed": "Delay reported",
+  "trackingEventCheckpoint": "Checkpoint",
+  "trackingEventCheckpointAt": "Checkpoint: {place}",
+  "@trackingEventCheckpointAt": {
+    "placeholders": { "place": { "type": "String", "example": "Peaje Chicama" } }
+  },
+  "trackingEventArrived": "Arrived at the warehouse",
+  "trackingEventDelivered": "Reception confirmed",
+  "trackingEventOther": "Delivery update",
+  "trackingDispatchedAt": "Dispatched",
+  "trackingArrivedAt": "Arrived",
+  "arrivalNotificationBodyNoDistance": "{driver} arrived at your warehouse.",
+  "@arrivalNotificationBodyNoDistance": {
+    "placeholders": { "driver": { "type": "String", "example": "Luis Ramírez" } }
+  },
+  "arrivalsZoneSaveError": "We couldn't save the warehouse zone. Try again.",
+  "profileStoredOnPlatform": "Your profile is saved in your FruitLogix account.",
+  "catalogNotEnoughStock": "Not enough stock for that quantity.",
+  "catalogOneProducer": "An order can only have products of one producer. Place this one in another order.",
+  "catalogLoadError": "We couldn't load the catalog.",
+  "productMinOrder": "Minimum order: {quantity} {unit}",
+  "@productMinOrder": {
+    "placeholders": { "quantity": { "type": "int", "example": "50" }, "unit": { "type": "String", "example": "kg" } }
+  },
+  "traceNotApplicable": "Does not apply",
+  "traceLoadError": "We couldn't load the traceability of this order.",
+  "qmNoReportableOrders": "None of your orders has a harvest lot linked yet. You can report an incident once the producer links it.",
+  "trackingDelayTitle": "Delay in transit",
+  "trackingDelayNoReason": "The distributor reported a delay.",
+  "trackingDelayEta": "Current ETA: {eta}",
+  "@trackingDelayEta": {
+    "placeholders": { "eta": { "type": "String", "example": "26 November 2026 · 4:30 PM" } }
+  },
+  "coldChainOpenCertificate": "View cold-chain certificate",
+  "coldChainCertificateTitle": "Cold-chain certificate",
+  "coldChainCompliance": "{percent}% in range",
+  "@coldChainCompliance": {
+    "placeholders": { "percent": { "type": "String", "example": "99" } }
+  },
+  "coldChainReadings": "{inRange} of {total} readings inside the target range",
+  "@coldChainReadings": {
+    "placeholders": { "inRange": { "type": "int", "example": "5" }, "total": { "type": "int", "example": "5" } }
+  },
+  "coldChainOrder": "Order",
+  "coldChainTargetRange": "Target range",
+  "coldChainMonitored": "Monitored",
+  "coldChainHours": "{hours} h",
+  "@coldChainHours": {
+    "placeholders": { "hours": { "type": "String", "example": "9.5" } }
+  },
+  "coldChainLastReading": "Last reading",
+  "coldChainMetrics": "Temperatures of the trip",
+  "coldChainAverage": "Average",
+  "coldChainMinimum": "Minimum",
+  "coldChainMaximum": "Maximum",
+  "coldChainSource": "Calculated from the reefer readings of this delivery."
 }

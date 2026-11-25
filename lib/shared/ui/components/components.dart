@@ -3,6 +3,7 @@
 library;
 
 export 'cosecha_action_row.dart';
+export 'fruitlogix_logo.dart';
 export 'cosecha_bottom_bar.dart';
 export 'cosecha_buttons.dart';
 export 'cosecha_card.dart';
@@ -15,7 +16,9 @@ export 'cosecha_info_row.dart';
 export 'cosecha_kpi_card.dart';
 export 'cosecha_language_button.dart';
 export 'cosecha_progress_bar.dart';
+export 'cosecha_segmented_tabs.dart';
 export 'cosecha_speed_dial.dart';
+export 'cosecha_star_rating.dart';
 export 'cosecha_status_tag.dart';
 export 'cosecha_surface.dart';
 export 'cosecha_text_field.dart';

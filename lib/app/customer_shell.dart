@@ -1,27 +1,48 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
-import '../contexts/logistics_and_monitoring/infrastructure/in_memory_shipment_repository.dart';
+import '../contexts/logistics_and_monitoring/domain/shipment.dart';
+import '../contexts/logistics_and_monitoring/domain/lot_timeline.dart';
+import '../contexts/logistics_and_monitoring/logistics_module.dart';
+import '../contexts/logistics_and_monitoring/presentation/lot_timeline_page.dart';
 import '../contexts/logistics_and_monitoring/presentation/delivery_tracking_page.dart';
 import '../contexts/order_management/presentation/customer_catalog_page.dart';
 import '../contexts/order_management/presentation/customer_orders_page.dart';
-import '../contexts/payment_management/domain/payment.dart';
+import '../contexts/iam/domain/auth_session.dart';
+import '../contexts/payment_management/application/membership_controller.dart';
+import '../contexts/payment_management/domain/invoice.dart';
+import '../contexts/payment_management/payment_management_module.dart';
 import '../contexts/payment_management/presentation/payment_detail_page.dart';
 import '../contexts/payment_management/presentation/payments_page.dart';
+import '../contexts/payment_management/presentation/pro_badge.dart';
+import '../contexts/payment_management/presentation/pro_membership_page.dart';
+import '../contexts/order_management/domain/commercial_order.dart';
+import '../contexts/order_management/order_management_module.dart';
+import '../contexts/quality_management/domain/incident.dart';
+import '../contexts/quality_management/infrastructure/demo_quality_repositories.dart';
+import '../contexts/quality_management/infrastructure/order_incident_targets.dart';
+import '../contexts/quality_management/presentation/incident_detail_page.dart';
+import '../contexts/quality_management/presentation/incidents_page.dart';
+import '../contexts/quality_management/presentation/report_incident_page.dart';
+import '../contexts/quality_management/quality_management_module.dart';
 import '../contexts/profiles_management/infrastructure/in_memory_commercial_client_profile_repository.dart';
 import '../contexts/profiles_management/presentation/customer_profile_page.dart';
 import '../dashboard/presentation/customer_dashboard_page.dart';
 import '../l10n/app_localizations.dart';
+import '../shared/infrastructure/api_errors.dart';
 import '../shared/ui/components/components.dart';
+import '../shared/ui/formatters/date_format.dart';
 import '../shared/ui/formatters/initials.dart';
+import '../shared/ui/formatters/money_format.dart';
 import 'locale_controller.dart';
 import '../contexts/profiles_management/domain/commercial_client_profile_repository.dart';
 
 /// Sections reachable from the "More" speed dial. They open inside the
 /// shell, keeping both bars visible.
 ///
-/// Reserved for later sprints: incident history, messages, Pro plan
-/// (Stripe) and biometric sign-in settings.
-enum MoreSection { payments, profile }
+/// Reserved for later sprints: messages and biometric sign-in settings.
+enum MoreSection { payments, incidents, proPlan, profile }
 
 /// A detail screen opened inside a section (e.g. an invoice). Detail screens
 /// also keep both bars; the top bar back button goes back one level.
@@ -41,19 +62,44 @@ class CustomerShell extends StatefulWidget {
   const CustomerShell({
     required this.localeController,
     this.onSignOut,
+    this.onSessionExpired,
+    this.session,
+    this.paymentModule,
+    this.qualityModule,
+    this.orderModule,
+    this.logisticsModule,
     super.key,
     this.profileRepository,
   });
 
   final LocaleController localeController;
   final VoidCallback? onSignOut;
+
+  /// Called once when the platform answers 401 (expired or revoked token).
+  final VoidCallback? onSessionExpired;
   final CommercialClientProfileRepository? profileRepository;
+
+  /// Signed-in user. Without it (tests, previews) payments use demo data.
+  final AuthSession? session;
+
+  /// Overrides the Payment Management wiring (tests).
+  final PaymentManagementModule? paymentModule;
+
+  /// Overrides the Quality Management wiring (tests).
+  final QualityManagementModule? qualityModule;
+
+  /// Overrides the Order Management wiring (tests).
+  final OrderManagementModule? orderModule;
+
+  /// Overrides the Logistics & Monitoring wiring (tests).
+  final LogisticsModule? logisticsModule;
 
   @override
   State<CustomerShell> createState() => _CustomerShellState();
 }
 
-class _CustomerShellState extends State<CustomerShell> {
+class _CustomerShellState extends State<CustomerShell>
+    with WidgetsBindingObserver {
   static const int _homeTab = 0;
   static const int _catalogTab = 1;
   static const int _ordersTab = 2;
@@ -72,10 +118,193 @@ class _CustomerShellState extends State<CustomerShell> {
   /// Detail screens opened inside the current section, innermost last.
   final List<_DetailPage> _details = [];
 
+  /// One HTTP client for every bounded context of the session: a 401 from
+  /// any of them signs out (back to the login).
+  late final SessionGuardClient _http = SessionGuardClient(
+    onUnauthorized: () => scheduleMicrotask(
+      () => (widget.onSessionExpired ?? widget.onSignOut)?.call(),
+    ),
+  );
+
   late final CommercialClientProfileRepository _profileRepository =
       widget.profileRepository ??
           InMemoryCommercialClientProfileRepository();
-  final _shipmentRepository = InMemoryShipmentRepository();
+  /// Tracking: deliveries of the client's orders (demo without session).
+  late final LogisticsModule _logistics = widget.logisticsModule ??
+      (widget.session == null
+          ? LogisticsModule.demo()
+          : LogisticsModule.remote(
+              widget.session!,
+              clientOrders: _clientOrderRefs,
+              client: _http,
+            ));
+
+  /// The client's orders, to keep only their deliveries.
+  Future<List<ShipmentOrderRef>> _clientOrderRefs() async {
+    final orders = _orders.orders;
+    if (!orders.hasData) await orders.load();
+    return [
+      for (final order in orders.orders)
+        if (int.tryParse(order.id) case final id?)
+          ShipmentOrderRef(
+            orderId: id,
+            orderCode: order.code,
+            itemsSummary: order.productSummary.isEmpty ? null : order.productSummary,
+            isDelivered: order.status.isDelivered,
+            rating: order.reception?.rating,
+          ),
+    ];
+  }
+
+  late final PaymentManagementModule _payments = widget.paymentModule ??
+      (widget.session == null
+          ? PaymentManagementModule.demo()
+          : PaymentManagementModule.remote(widget.session!, client: _http));
+  bool _paymentsStarted = false;
+  ProCheckoutStage _lastProStage = ProCheckoutStage.idle;
+
+  /// Quality Management (EP02 · US11): the platform with a session (orders
+  /// with a lot linked), demo lots without one.
+  late final QualityManagementModule _quality = widget.qualityModule ??
+      (widget.session != null
+          ? QualityManagementModule.remote(
+              widget.session!,
+              targets: OrderIncidentTargets(orders: _ordersWithLot),
+              client: _http,
+            )
+          : QualityManagementModule.demo(targets: _incidentTargets));
+
+  /// The client's orders whose producer linked the harvest lot (the
+  /// platform needs it for an incident), newest first.
+  List<IncidentTarget> _ordersWithLot() => [
+    for (final order in _orders.orders.orders)
+      if (order.batchId case final batchId?)
+        if (order.status != OrderStatus.cancelled &&
+            order.status != OrderStatus.rejected)
+          IncidentTarget(
+            orderCode: order.code,
+            batchId: batchId,
+            orderId: int.tryParse(order.id),
+            productSummary: order.productSummary,
+          ),
+  ];
+
+  /// Order Management: the signed-in client's orders from the platform API
+  /// (demo without session).
+  late final OrderManagementModule _orders = widget.orderModule ??
+      (widget.session == null
+          ? OrderManagementModule.demo()
+          : OrderManagementModule.remote(widget.session!, client: _http));
+
+  /// Orders the client can report about: their orders (newest first). Lots
+  /// are demo values until the API links orders to harvest lots.
+  late final DemoIncidentTargets _incidentTargets = DemoIncidentTargets(
+    extraOrders: () => [
+      for (final order in _orders.orders.orders)
+        IncidentTarget(
+          orderCode: order.code,
+          batchId: DemoIncidentTargets.demoBatchFor(order.code),
+          productSummary: order.productSummary,
+        ),
+    ],
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _payments.membership.addListener(_onMembershipChanged);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Reminder texts follow the UI language.
+    final l10n = AppLocalizations.of(context);
+    _payments.reminders.textBuilder = (invoice) => (
+          title: l10n.reminderNotificationTitle(invoice.code),
+          body: l10n.reminderNotificationBody(
+            formatMoney(invoice.amount, invoice.currency),
+            formatNumericDate(invoice.dueDate),
+          ),
+        );
+    _logistics.arrivals.textBuilder = (arrival) => (
+          title: l10n.arrivalNotificationTitle(arrival.orderCode),
+          body: switch (arrival.distanceKm) {
+            final km? => l10n.arrivalNotificationBody(
+              arrival.driverName ?? arrival.trackingNumber,
+              km.toStringAsFixed(1),
+            ),
+            null => l10n.arrivalNotificationBodyNoDistance(
+              arrival.driverName ?? arrival.trackingNumber,
+            ),
+          },
+        );
+    if (!_paymentsStarted) {
+      _paymentsStarted = true;
+      // Not awaited: the dashboard renders at once (US36).
+      _payments.start();
+      _orders.start();
+      _logistics.start();
+      _quality.start();
+      _arrivalsWatch = Timer.periodic(arrivalsCheckInterval, (_) => _checkArrivals());
+    }
+  }
+
+  /// US65 — How often the truck positions are compared with the warehouse
+  /// zone while the app is open or in the background.
+  static const Duration arrivalsCheckInterval = Duration(minutes: 1);
+  Timer? _arrivalsWatch;
+
+  /// Only with a zone set: without it there is nothing to detect.
+  Future<void> _checkArrivals() async {
+    if (_logistics.arrivals.zone == null) return;
+    await _logistics.refresh();
+  }
+
+  /// Back in the app: refresh balances and re-evaluate reminders (US70), and
+  /// look for trucks that arrived meanwhile (US65).
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) return;
+    _payments.overview.load();
+    _checkArrivals();
+  }
+
+  /// US30: once the backend confirms the plan, celebrate and show the badge.
+  void _onMembershipChanged() {
+    if (!mounted) return;
+    final stage = _payments.membership.stage;
+    final upgraded = stage == ProCheckoutStage.success &&
+        _lastProStage != ProCheckoutStage.success;
+    _lastProStage = stage;
+    setState(() {}); // Top bar badge.
+    if (upgraded) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context).proSuccess)),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _arrivalsWatch?.cancel();
+    _payments.membership.removeListener(_onMembershipChanged);
+    if (widget.paymentModule == null) _payments.dispose();
+    if (widget.orderModule == null) _orders.dispose();
+    if (widget.logisticsModule == null) _logistics.dispose();
+    if (widget.qualityModule == null) _quality.dispose();
+    _http.dispose();
+    super.dispose();
+  }
+
+  /// Email sent to Stripe: the IAM username when it is an email, otherwise
+  /// the profile email.
+  String get _billingEmail {
+    final username = widget.session?.username ?? '';
+    return username.contains('@') ? username : _profileRepository.current.email;
+  }
 
   void _navigateTo(int index) {
     setState(() {
@@ -86,6 +315,8 @@ class _CustomerShellState extends State<CustomerShell> {
   }
 
   void _openSection(MoreSection section) {
+    // A previous "canceled"/"failed" notice should not greet a new visit.
+    if (section == MoreSection.proPlan) _payments.membership.acknowledge();
     setState(() {
       _section = section;
       _details.clear();
@@ -107,11 +338,108 @@ class _CustomerShellState extends State<CustomerShell> {
     });
   }
 
-  void _openPayment(Payment payment) {
-    _openDetail(_DetailPage(
-      title: (l10n) => l10n.invoiceTitle(payment.id),
-      builder: (_) => PaymentDetailPage(payment: payment),
+  /// US72 — Lot timeline of an order, assembled from Orders, Tracking,
+  /// Payments and the lot records.
+  void _openTraceability(CommercialOrder order) {
+    final l10n = AppLocalizations.of(context);
+    final orderNumber = int.tryParse(order.id);
+    final summary = order.productSummary.isEmpty ? null : order.productSummary;
+    // With a session the platform assembles the timeline.
+    if (_logistics.traceability case final source? when orderNumber != null) {
+      Navigator.of(context).push(MaterialPageRoute<void>(
+        builder: (_) => LotTimelineLoader(
+          orderCode: order.code,
+          load: () => source.timelineFor(
+            orderId: orderNumber,
+            orderCode: order.code,
+            productSummary: summary,
+          ),
+        ),
+      ));
+      return;
+    }
+    final shipment = _logistics.shipments.shipments
+        .where((s) => s.orderId == order.code)
+        .firstOrNull;
+    final invoice = orderNumber == null
+        ? null
+        : _payments.overview.invoices
+            .where((i) => i.orderId == orderNumber)
+            .firstOrNull;
+    final profile = _profileRepository.current;
+    final driver = shipment == null || !shipment.hasDriver
+        ? null
+        : [shipment.driverName!, ?shipment.vehiclePlate].join(' · ');
+
+    final timeline = buildLotTimeline(TraceInputs(
+      orderCode: order.code,
+      productSummary: order.productSummary.isEmpty ? null : order.productSummary,
+      lot: _logistics.lots.forOrder(order.code),
+      loaded: order.status == OrderStatus.inTransit ||
+          order.status.isDelivered ||
+          (shipment != null &&
+              (shipment.status.isOnTheWay ||
+                  shipment.status == ShipmentStatus.delivered)),
+      loadedBy: driver,
+      received: order.status.isDelivered ||
+          (shipment?.isReceived ?? false),
+      receivedAt: order.completedAt,
+      receivedBy: profile.businessName.trim().isEmpty
+          ? profile.fullName
+          : profile.businessName,
+      invoiced: invoice != null,
+      invoicedAt: invoice?.issuedAt,
+      invoicedBy: invoice == null ? null : l10n.traceInvoiceIssuer,
     ));
+    Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => LotTimelinePage(timeline: timeline),
+    ));
+  }
+
+  void _openInvoice(Invoice invoice) {
+    _openDetail(_DetailPage(
+      title: (l10n) => l10n.invoiceTitle(invoice.code),
+      builder: (_) => PaymentDetailPage(
+        invoice: invoice,
+        reminders: _payments.reminders,
+      ),
+    ));
+  }
+
+  void _openIncident(Incident incident) {
+    _openDetail(_incidentDetailPage(incident));
+  }
+
+  _DetailPage _incidentDetailPage(Incident incident) => _DetailPage(
+        title: (l10n) => l10n.qmIncidentTitle(incident.code),
+        builder: (_) => IncidentDetailPage(incident: incident),
+      );
+
+  /// US11 — Report form inside "More → Incidents" (both bars visible).
+  /// [orderCode] fixes the order (from reception or an order card).
+  void _openIncidentReport({String? orderCode}) {
+    final target =
+        orderCode == null ? null : _quality.targetForOrder(orderCode);
+    setState(() {
+      _section = MoreSection.incidents;
+      _details
+        ..clear()
+        ..add(_DetailPage(
+          title: (l10n) => l10n.qmNewIncidentTitle,
+          builder: (_) => ReportIncidentPage(
+            controller: _quality.incidents,
+            targets: _quality.targets,
+            picker: _quality.picker,
+            initialTarget: target,
+            // Back from the new incident returns to the history.
+            onSubmitted: (incident) => setState(() {
+              _details
+                ..clear()
+                ..add(_incidentDetailPage(incident));
+            }),
+          ),
+        ));
+    });
   }
 
   Future<void> _openMore(Rect anchor) async {
@@ -127,6 +455,16 @@ class _CustomerShellState extends State<CustomerShell> {
           label: l10n.paymentsTitle,
         ),
         CosechaSpeedDialItem(
+          value: MoreSection.incidents,
+          icon: Icons.report_problem_outlined,
+          label: l10n.qmIncidentsTitle,
+        ),
+        CosechaSpeedDialItem(
+          value: MoreSection.proPlan,
+          icon: Icons.workspace_premium_outlined,
+          label: l10n.proTitle,
+        ),
+        CosechaSpeedDialItem(
           value: MoreSection.profile,
           icon: Icons.storefront_outlined,
           label: l10n.profileTitle,
@@ -140,11 +478,29 @@ class _CustomerShellState extends State<CustomerShell> {
   String _sectionTitle(AppLocalizations l10n, MoreSection section) =>
       switch (section) {
         MoreSection.payments => l10n.paymentsTitle,
+        MoreSection.incidents => l10n.qmIncidentsTitle,
+        MoreSection.proPlan => l10n.proTitle,
         MoreSection.profile => l10n.profileTitle,
       };
 
   Widget _sectionBody(MoreSection section) => switch (section) {
-        MoreSection.payments => PaymentsPage(onOpenPayment: _openPayment),
+        MoreSection.payments => PaymentsPage(
+            overview: _payments.overview,
+            reminders: _payments.reminders,
+            membership: _payments.membership,
+            onOpenInvoice: _openInvoice,
+            onOpenPro: () => _openSection(MoreSection.proPlan),
+          ),
+        MoreSection.incidents => IncidentsPage(
+            controller: _quality.incidents,
+            onOpenIncident: _openIncident,
+            onReport: _openIncidentReport,
+          ),
+        MoreSection.proPlan => ProMembershipPage(
+            controller: _payments.membership,
+            email: _billingEmail,
+            name: _profileRepository.current.fullName,
+          ),
         MoreSection.profile => CustomerProfilePage(
             repository: _profileRepository,
             onSaved: () => setState(() {}),
@@ -154,17 +510,36 @@ class _CustomerShellState extends State<CustomerShell> {
 
   Widget _tabBody(int index) => switch (index) {
         _catalogTab => CustomerCatalogPage(
+            catalog: _orders.catalog,
+            orders: _orders.orders,
             onOrderCreated: () => _navigateTo(_ordersTab),
           ),
         _ordersTab => CustomerOrdersPage(
+            orders: _orders.orders,
             onNewOrder: () => _navigateTo(_catalogTab),
+            onOpenTraceability: _openTraceability,
+            onReportIncident: (orderCode) =>
+                _openIncidentReport(orderCode: orderCode),
           ),
-        _trackingTab => DeliveryTrackingPage(repository: _shipmentRepository),
+        _trackingTab => DeliveryTrackingPage(
+            controller: _logistics.shipments,
+            dialer: _logistics.dialer,
+            arrivals: _logistics.arrivals,
+            onRefresh: _logistics.refresh,
+            // The order changes status in the platform after reception.
+            onReceptionConfirmed: _orders.orders.load,
+            onReportIncident: (orderCode) =>
+                _openIncidentReport(orderCode: orderCode),
+          ),
         _ => CustomerDashboardPage(
             customerName: _profileRepository.current.firstName,
             onNewOrder: () => _navigateTo(_catalogTab),
             onTrack: () => _navigateTo(_trackingTab),
             onPayments: () => _openSection(MoreSection.payments),
+            balance: _payments.overview,
+            reminders: _payments.reminders,
+            orders: _orders.orders,
+            onOpenOrders: () => _navigateTo(_ordersTab),
           ),
       };
 
@@ -205,6 +580,7 @@ class _CustomerShellState extends State<CustomerShell> {
           onAvatarTap: () => _openSection(MoreSection.profile),
           avatarTooltip: l10n.openProfileTooltip,
           onBack: section == null ? null : _goBack,
+          badge: _payments.membership.isPro ? const ProBadge(compact: true) : null,
           actions: [
             CosechaLanguageButton(
               current: Localizations.localeOf(context),

@@ -102,6 +102,23 @@ class AuthSessionController extends ChangeNotifier {
     }
   }
 
+  bool _expired = false;
+
+  /// The platform answered 401 (token expired, revoked or user deleted):
+  /// back to the login, which tells the client why once.
+  Future<void> expire() async {
+    if (_session == null) return;
+    _expired = true;
+    await signOut();
+  }
+
+  /// True once after [expire].
+  bool consumeExpiredNotice() {
+    final expired = _expired;
+    _expired = false;
+    return expired;
+  }
+
   @override
   void dispose() {
     _api.close();

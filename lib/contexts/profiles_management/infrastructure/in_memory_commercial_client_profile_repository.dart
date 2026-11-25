@@ -32,4 +32,7 @@ class InMemoryCommercialClientProfileRepository
 
   @override
   bool get isPersistent => false;
+
+  @override
+  bool get syncsWithPlatform => false;
 }

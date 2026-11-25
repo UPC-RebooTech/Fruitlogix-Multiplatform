@@ -6,11 +6,21 @@ class AuthSession {
     required this.userId,
     required this.username,
     required this.token,
+    this.role = commercialClientRole,
   });
+
+  /// Role this app is for. Producers and distributors use the Kotlin app.
+  static const String commercialClientRole = 'CommercialClient';
 
   final int userId;
   final String username;
   final String token;
+
+  /// From the sign-in response (the JWT does not carry it).
+  final String role;
+
+  bool get isCommercialClient =>
+      role.toLowerCase() == commercialClientRole.toLowerCase();
 
   /// Client-side expiration check only. The backend remains the authority.
   bool get isExpired {
@@ -36,6 +46,7 @@ class AuthSession {
         'userId': userId,
         'username': username,
         'token': token,
+        'role': role,
       };
 
   factory AuthSession.fromJson(Map<String, dynamic> value) {
@@ -46,6 +57,13 @@ class AuthSession {
         token is! String || token.isEmpty) {
       throw const FormatException('Malformed stored session');
     }
-    return AuthSession(userId: id, username: username, token: token);
+    // Sessions saved before the platform returned roles were clients.
+    final role = value['role'];
+    return AuthSession(
+      userId: id,
+      username: username,
+      token: token,
+      role: role is String && role.isNotEmpty ? role : commercialClientRole,
+    );
   }
 }
