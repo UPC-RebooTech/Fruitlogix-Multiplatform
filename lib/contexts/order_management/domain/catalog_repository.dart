@@ -1,7 +1,8 @@
 import 'fruit_product.dart';
 
-/// Contract for accessing products relevant to Order Management.
+/// Read-only catalog port for Order Management.
+///
+/// Caching and HTTP transport belong to Infrastructure, not Domain.
 abstract interface class CatalogRepository {
-  /// Active products with stock, for the client's catalog.
   Future<List<FruitProduct>> fetchProducts();
 }
