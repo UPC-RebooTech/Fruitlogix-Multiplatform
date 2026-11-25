@@ -1,4 +1,7 @@
-/// Product representation used by the Order Management bounded context.
+/// Product information visible to a Commercial Client.
+///
+/// The server is the source of truth for stock and price. Values in this
+/// object are a snapshot taken when the catalog was last refreshed.
 class FruitProduct {
   const FruitProduct({
     required this.id,
@@ -17,23 +20,25 @@ class FruitProduct {
   final int id;
   final String name;
   final String description;
-
-  /// Filter group: the fruit type in the platform (`Mango`), or the demo
-  /// group (`Fruits`, `Vegetables`).
   final String category;
-
-  /// Price per [unit] (per kg in the platform).
   final double price;
-
-  /// Available quantity (`availableKg`).
   final int stock;
   final String unit;
-
-  /// Smallest quantity per order (`minOrderKg`).
   final int minQuantity;
-
-  /// Producer that sells it. An order can only have one producer.
   final int? producerId;
   final String? producerName;
   final String? imageUrl;
+
+  /// Whether the product can be selected for a new commercial order.
+  bool get isOrderable =>
+      id > 0 &&
+      name.trim().isNotEmpty &&
+      price.isFinite &&
+      price > 0 &&
+      minQuantity > 0 &&
+      stock >= minQuantity;
+
+  /// Checks an integer quantity against the catalog's latest stock snapshot.
+  bool allowsQuantity(int quantity) =>
+      isOrderable && quantity >= minQuantity && quantity <= stock;
 }
